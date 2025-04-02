@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 /**
  * This interface represents an item. It will be implemented in classes that will represent items of a specific category.
  * These classes will have the following fields:
@@ -29,7 +31,7 @@ interface Item {
      * @param name, The name of the item.
      * @return List<Item>, list of matches
      */
-    List<Item> searchByName(String name);
+    ArrayList<Item> searchByName(String name);
 
     /**
      * Search items by category
@@ -37,7 +39,7 @@ interface Item {
      * @param category, The category of the item.
      * @return List<Item>, list of matches
      */
-    List<Item> searchByCategory(String category);
+    ArrayList<Item> searchByCategory(String category);
 
     /**
      * Mark item as sold (change isAvailable to false)
