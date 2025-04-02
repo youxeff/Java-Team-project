@@ -62,5 +62,5 @@ public interface IMarketplace {
      * @return ArrayList of all registered Users
      * @throws IOException if file reading fails somehow
      */
-    ArrayList<User> loadAllUsers() throws IOException, ClassNotFoundException;
+    ArrayList<User> loadAllUsers() throws IOException;
 }
