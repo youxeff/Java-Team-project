@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 /**
  * Represents a marketplace that manages items for sale, sellers, and buyers.
  * Handles transactions and searches.
@@ -15,7 +17,7 @@ interface IMarketplace {
     /**
      * Searches for items by name
      *
-     * @param itemSearch: the name or partial name to search for
+     * @param nameSearch: the name or partial name to search for
      * @return new ArrayList of matching items. If empty, no matches.
      * @throws IllegalArgumentException if nameSearch is null
      */
@@ -24,7 +26,7 @@ interface IMarketplace {
     /**
      * Searches for items by category
      *
-     * @param sellerSearch: the name or partial name to search for
+     * @param categorySearch: the name or partial name to search for
      * @return new ArrayList of matching Sellers (never null). If empty, no matches.
      * @throws IllegalArgumentException if categorySearch is null
      */
