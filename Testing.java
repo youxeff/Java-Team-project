@@ -6,10 +6,12 @@ public class Testing {
         Seller seller = null;
         Buyer buyer = null;
 
-        System.out.println("Would you like to register as a Seller or Buyer? (Enter 'seller' or 'buyer'):");
-        String userType = scanner.nextLine().trim().toLowerCase();
+        System.out.println("Would you like to register as a Seller or Buyer?" +
+                "\n1.Seller\n2.Buyer");
+        int userType = scanner.nextInt();
+        scanner.nextLine();
 
-        if (userType.equals("seller")) {
+        if (userType == 1) {
             try {
                 // Seller input
                 System.out.println("Enter Seller First Name:");
@@ -64,7 +66,7 @@ public class Testing {
             } else {
                 System.out.println("Seller registration failed. Cannot attempt login.");
             }
-        } else if (userType.equals("buyer")) {
+        } else if (userType == 2) {
             try {
                 // Buyer input
                 System.out.println("\nRegister as Buyer:");
