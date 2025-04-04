@@ -1,7 +1,6 @@
 import java.util.HashMap;
 import java.util.Map;
 import java.io.*;
-import java.util.*;
 
 public abstract class AbstractUser implements User {
     protected static final Map<String, String> userCredentials = new HashMap<>();
