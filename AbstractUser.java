@@ -3,19 +3,30 @@ import java.util.Map;
 import java.io.*;
 
 public abstract class AbstractUser implements User {
-    protected static final Map<String, String> userCredentials = new HashMap<>();
     private static final String USERS_FILE = "users.txt";
-    private static final String SELLERS_FILE = "sellers.txt";
-    private static final String BUYERS_FILE = "buyers.txt";
-
+    protected static final Map<String, UserData> userCredentials = new HashMap<>();
+    
+    protected static class UserData {
+        String password;
+        Role role;
+        
+        UserData(String password, Role role) {
+            this.password = password;
+            this.role = role;
+        }
+    }
+    
     static {
         loadUserCredentials();
     }
-
-    AbstractUser(String firstName, String lastName, String userName, String password) {
+    
+    private Role role;
+    
+    AbstractUser(String firstName, String lastName, String userName, String password, Role role) {
+        this.role = role;
         createNewUser(firstName, lastName, userName, password);
     }
-
+    
     private static void loadUserCredentials() {
         try {
             File file = new File(USERS_FILE);
@@ -28,8 +39,8 @@ public abstract class AbstractUser implements User {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",");
-                if (parts.length >= 2) {
-                    userCredentials.put(parts[0], parts[1]);
+                if (parts.length >= 3) {
+                    userCredentials.put(parts[0], new UserData(parts[1], Role.valueOf(parts[4])));
                 }
             }
             reader.close();
@@ -37,10 +48,10 @@ public abstract class AbstractUser implements User {
             System.out.println("Error loading user credentials: " + e.getMessage());
         }
     }
-
-    private void saveToFile(String fileName, String userData) {
+    
+    private void saveToFile(String userData) {
         try {
-            FileWriter fw = new FileWriter(fileName, true);
+            FileWriter fw = new FileWriter(USERS_FILE, true);
             BufferedWriter bw = new BufferedWriter(fw);
             bw.write(userData + "\n");
             bw.close();
@@ -60,22 +71,35 @@ public abstract class AbstractUser implements User {
             return false;
         }
 
-        // Save to users.txt
-        String userData = String.format("%s,%s,%s,%s,%s", userName, password, firstName, lastName, this instanceof Seller ? "SELLER" : "BUYER");
-        saveToFile(USERS_FILE, userData);
-
-        // Save to respective role file
-        String roleData = String.format("%s,%s,%s,%s,0.0", userName, firstName, lastName, password);
-        saveToFile(this instanceof Seller ? SELLERS_FILE : BUYERS_FILE, roleData);
-
-        userCredentials.put(userName, password);
+        String userData = String.format("%s,%s,%s,%s,%s", userName, password, firstName, lastName, role);
+        saveToFile(userData);
+        
+        userCredentials.put(userName, new UserData(password, role));
         return true;
     }
 
     @Override
     public boolean login(String userName, String password) {
-        return userCredentials.containsKey(userName) && userCredentials.get(userName).equals(password);
+        UserData userData = userCredentials.get(userName);
+        return userData != null && userData.password.equals(password);
     }
-
-
+    
+    @Override
+    public Role getRole() {
+        return role;
+    }
+    
+    @Override
+    public void setRole(Role role) {
+        this.role = role;
+    }
+    
+    @Override
+    public boolean addRole(Role newRole) {
+        if (role == Role.BOTH || newRole == this.role) {
+            return false;
+        }
+        role = Role.BOTH;
+        return true;
+    }
 }

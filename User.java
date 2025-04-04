@@ -1,4 +1,3 @@
-
 public interface User {
 
 
@@ -18,5 +17,9 @@ public interface User {
 
         boolean createNewUser(String firstName, String lastName, String userName, String password);
         boolean login(String userName, String password);
+
+        Role getRole();
+        void setRole(Role role);
+        boolean addRole(Role role); // Returns true if role was added successfully
     }
 

@@ -3,129 +3,87 @@ import java.util.Scanner;
 public class Testing {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        Seller seller = null;
-        Buyer buyer = null;
+        MarketplaceUser user = null;
 
-        System.out.println("Would you like to register as a Seller or Buyer?" +
-                "\n1.Seller\n2.Buyer");
+        System.out.println("Would you like to register as:" +
+                "\n1. Seller" +
+                "\n2. Buyer" +
+                "\n3. Both");
         int userType = scanner.nextInt();
         scanner.nextLine();
 
-        if (userType == 1) {
-            try {
-                // Seller input
-                System.out.println("Enter Seller First Name:");
-                String sellerFirstName = scanner.nextLine();
+        Role initialRole;
+        switch (userType) {
+            case 1:
+                initialRole = Role.SELLER;
+                break;
+            case 2:
+                initialRole = Role.BUYER;
+                break;
+            case 3:
+                initialRole = Role.BOTH;
+                break;
+            default:
+                System.out.println("Invalid choice. Defaulting to BUYER.");
+                initialRole = Role.BUYER;
+                break;
+        }
 
-                System.out.println("Enter Seller Last Name:");
-                String sellerLastName = scanner.nextLine();
+        try {
+            System.out.println("\nEnter First Name:");
+            String firstName = scanner.nextLine();
 
-                System.out.println("Enter Seller Username:");
-                String sellerUsername = scanner.nextLine();
+            System.out.println("Enter Last Name:");
+            String lastName = scanner.nextLine();
 
-                System.out.println("Enter Seller Password:");
-                String sellerPassword = scanner.nextLine();
+            System.out.println("Enter Username:");
+            String username = scanner.nextLine();
 
-                seller = Seller.registerNewSeller(sellerFirstName, sellerLastName, sellerUsername, sellerPassword);
+            System.out.println("Enter Password:");
+            String password = scanner.nextLine();
 
-                System.out.println("\nSeller Details:");
-                System.out.println("First Name: " + seller.getFirstName());
-                System.out.println("Last Name: " + seller.getLastName());
-                System.out.println("Username: " + seller.getUserName());
-                System.out.println("Password: " + seller.getPassword());
-                System.out.println("Balance: " + seller.getBalance());
+            user = MarketplaceUser.registerNewUser(firstName, lastName, username, password, initialRole);
 
-                System.out.println("Enter amount to update Seller balance:");
-                double newSellerBalance = Double.parseDouble(scanner.nextLine());
-                seller.setBalance(newSellerBalance);
-                System.out.println("Updated Balance: " + seller.getBalance());
-            } catch (Exception e) {
-                System.out.println("An error occurred during input: " + e.getMessage());
-            }
+            System.out.println("\nUser Details:");
+            System.out.println("First Name: " + user.getFirstName());
+            System.out.println("Last Name: " + user.getLastName());
+            System.out.println("Username: " + user.getUserName());
+            System.out.println("Password: " + user.getPassword());
+            System.out.println("Balance: " + user.getBalance());
+            System.out.println("Role: " + user.getRole());
 
-            // Seller login
-            if (seller != null) {
-                while (true) {
-                    try {
-                        System.out.println("\nLogin as Seller:");
-                        System.out.println("Enter Username:");
-                        String loginSellerUsername = scanner.nextLine();
-                        System.out.println("Enter Password:");
-                        String loginSellerPassword = scanner.nextLine();
-                        boolean sellerLoginSuccess = seller.login(loginSellerUsername, loginSellerPassword);
-                        if (sellerLoginSuccess) {
-                            System.out.println("Seller login successful: ");
-                            break;
-                        } else {
-                            System.out.println("Seller login failed: ");
-                        }
-                    } catch (Exception e) {
-                        System.out.println("An error occurred during input: " + e.getMessage());
+            System.out.println("Enter amount to update balance:");
+            double newBalance = Double.parseDouble(scanner.nextLine());
+            user.setBalance(newBalance);
+            System.out.println("Updated Balance: " + user.getBalance());
+
+        } catch (Exception e) {
+            System.out.println("An error occurred during input: " + e.getMessage());
+        }
+
+        // User login
+        if (user != null) {
+            while (true) {
+                try {
+                    System.out.println("\nLogin:");
+                    System.out.println("Enter Username:");
+                    String loginUsername = scanner.nextLine();
+                    System.out.println("Enter Password:");
+                    String loginPassword = scanner.nextLine();
+
+                    boolean loginSuccess = user.login(loginUsername, loginPassword);
+                    if (loginSuccess) {
+                        System.out.println("Login successful!");
+                        break;
+                    } else {
+                        System.out.println("Login failed. Try again.");
                     }
+                } catch (Exception e) {
+                    System.out.println("An error occurred during login: " + e.getMessage());
                 }
-            } else {
-                System.out.println("Seller registration failed. Cannot attempt login.");
-            }
-        } else if (userType == 2) {
-            try {
-                // Buyer input
-                System.out.println("\nRegister as Buyer:");
-
-                System.out.println("\nEnter Buyer First Name:");
-                String buyerFirstName = scanner.nextLine();
-
-                System.out.println("Enter Buyer Last Name:");
-                String buyerLastName = scanner.nextLine();
-
-                System.out.println("Enter Buyer Username:");
-                String buyerUsername = scanner.nextLine();
-
-                System.out.println("Enter Buyer Password:");
-                String buyerPassword = scanner.nextLine();
-
-                buyer = Buyer.registerNewSeller(buyerFirstName, buyerLastName, buyerUsername, buyerPassword);
-
-                System.out.println("\nBuyer Details:");
-                System.out.println("First Name: " + buyer.getFirstName());
-                System.out.println("Last Name: " + buyer.getLastName());
-                System.out.println("Username: " + buyer.getUserName());
-                System.out.println("Password: " + buyer.getPassword());
-                System.out.println("Balance: " + buyer.getBalance());
-
-                System.out.println("Enter amount to update Buyer balance:");
-                double newBuyerBalance = Double.parseDouble(scanner.nextLine());
-                buyer.setBalance(newBuyerBalance);
-                System.out.println("Updated Balance: " + buyer.getBalance());
-            } catch (Exception e) {
-                System.out.println("An error occurred during input: " + e.getMessage());
-            }
-
-            // Buyer login
-            if (buyer != null) {
-                while (true) {
-                    try {
-                        System.out.println("\nLogin as Buyer:");
-                        System.out.println("Enter Username:");
-                        String loginBuyerUsername = scanner.nextLine();
-                        System.out.println("Enter Password:");
-                        String loginBuyerPassword = scanner.nextLine();
-
-                        boolean buyerLoginSuccess = buyer.login(loginBuyerUsername, loginBuyerPassword);
-                        if (buyerLoginSuccess) {
-                            System.out.println("Buyer login successful: ");
-                            break;
-                        } else {
-                            System.out.println("Buyer login failed: ");
-                        }
-                    } catch (Exception e) {
-                        System.out.println("An error occurred during input: " + e.getMessage());
-                    }
-                }
-            } else {
-                System.out.println("Buyer registration failed. Cannot attempt login.");
             }
         } else {
-            System.out.println("Invalid input. Please restart and enter either 'seller' or 'buyer'.");
+            System.out.println("Registration failed. Cannot attempt login.");
         }
 
         scanner.close();
