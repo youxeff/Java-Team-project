@@ -1,91 +1,135 @@
 import java.util.Scanner;
 
 public class Testing {
+    private static Scanner scanner = new Scanner(System.in);
+    private static MarketplaceUser currentUser = null;
+
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        MarketplaceUser user = null;
+        boolean running = true;
+        while (running) {
+            System.out.println("\n=== Marketplace System ===");
+            System.out.println("1. Register New User");
+            System.out.println("2. Login");
+            System.out.println("3. Exit");
+            System.out.print("Choose an option: ");
 
-        System.out.println("Would you like to register as:" +
-                "\n1. Seller" +
-                "\n2. Buyer" +
-                "\n3. Both");
-        int userType = scanner.nextInt();
-        scanner.nextLine();
-
-        Role initialRole;
-        switch (userType) {
-            case 1:
-                initialRole = Role.SELLER;
-                break;
-            case 2:
-                initialRole = Role.BUYER;
-                break;
-            case 3:
-                initialRole = Role.BOTH;
-                break;
-            default:
-                System.out.println("Invalid choice. Defaulting to BUYER.");
-                initialRole = Role.BUYER;
-                break;
+            try {
+                int choice = Integer.parseInt(scanner.nextLine());
+                switch (choice) {
+                    case 1:
+                        registerUser();
+                        break;
+                    case 2:
+                        loginUser();
+                        break;
+                    case 3:
+                        running = false;
+                        break;
+                    default:
+                        System.out.println("Invalid option. Please try again.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Please enter a valid number.");
+            }
         }
+        scanner.close();
+        System.out.println("Goodbye!");
+    }
 
+    private static void registerUser() {
         try {
-            System.out.println("\nEnter First Name:");
+            System.out.println("\n=== User Registration ===");
+            System.out.print("Enter First Name: ");
             String firstName = scanner.nextLine();
-
-            System.out.println("Enter Last Name:");
+            
+            System.out.print("Enter Last Name: ");
             String lastName = scanner.nextLine();
-
-            System.out.println("Enter Username:");
+            
+            System.out.print("Enter Username: ");
             String username = scanner.nextLine();
-
-            System.out.println("Enter Password:");
+            
+            System.out.print("Enter Password: ");
             String password = scanner.nextLine();
 
-            user = MarketplaceUser.registerNewUser(firstName, lastName, username, password, initialRole);
-
-            System.out.println("\nUser Details:");
-            System.out.println("First Name: " + user.getFirstName());
-            System.out.println("Last Name: " + user.getLastName());
-            System.out.println("Username: " + user.getUserName());
-            System.out.println("Password: " + user.getPassword());
-            System.out.println("Balance: " + user.getBalance());
-            System.out.println("Role: " + user.getRole());
-
-            System.out.println("Enter amount to update balance:");
-            double newBalance = Double.parseDouble(scanner.nextLine());
-            user.setBalance(newBalance);
-            System.out.println("Updated Balance: " + user.getBalance());
-
-        } catch (Exception e) {
-            System.out.println("An error occurred during input: " + e.getMessage());
-        }
-
-        // User login
-        if (user != null) {
-            while (true) {
-                try {
-                    System.out.println("\nLogin:");
-                    System.out.println("Enter Username:");
-                    String loginUsername = scanner.nextLine();
-                    System.out.println("Enter Password:");
-                    String loginPassword = scanner.nextLine();
-
-                    boolean loginSuccess = user.login(loginUsername, loginPassword);
-                    if (loginSuccess) {
-                        System.out.println("Login successful!");
-                        break;
-                    } else {
-                        System.out.println("Login failed. Try again.");
-                    }
-                } catch (Exception e) {
-                    System.out.println("An error occurred during login: " + e.getMessage());
-                }
+            currentUser = new MarketplaceUser(firstName, lastName, username, password);
+            if (currentUser != null) {
+                System.out.println("Registration successful!");
+                showUserMenu();
             }
-        } else {
-            System.out.println("Registration failed. Cannot attempt login.");
+        } catch (Exception e) {
+            System.out.println("Error during registration: " + e.getMessage());
         }
+    }
 
-        scanner.close();
+    private static void loginUser() {
+        try {
+            System.out.println("\n=== User Login ===");
+            System.out.print("Enter Username: ");
+            String username = scanner.nextLine();
+            
+            System.out.print("Enter Password: ");
+            String password = scanner.nextLine();
+
+            if (MarketplaceUser.verifyCredentials(username, password)) {
+                currentUser = new MarketplaceUser("temp", "temp", username, password);
+                System.out.println("Login successful!");
+                showUserMenu();
+            } else {
+                System.out.println("Login failed. Invalid credentials.");
+            }
+        } catch (Exception e) {
+            System.out.println("Error during login: " + e.getMessage());
+        }
+    }
+
+    private static void showUserMenu() {
+        boolean userMenuRunning = true;
+        while (userMenuRunning && currentUser != null) {
+            System.out.println("\n=== User Menu ===");
+            System.out.println("1. View Profile");
+            System.out.println("2. Update Balance");
+            System.out.println("3. Logout");
+            System.out.print("Choose an option: ");
+
+            try {
+                int choice = Integer.parseInt(scanner.nextLine());
+                switch (choice) {
+                    case 1:
+                        displayUserProfile();
+                        break;
+                    case 2:
+                        updateBalance();
+                        break;
+                    case 3:
+                        userMenuRunning = false;
+                        currentUser = null;
+                        System.out.println("Logged out successfully.");
+                        break;
+                    default:
+                        System.out.println("Invalid option. Please try again.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Please enter a valid number.");
+            }
+        }
+    }
+
+    private static void displayUserProfile() {
+        System.out.println("\n=== User Profile ===");
+        System.out.println("First Name: " + currentUser.getFirstName());
+        System.out.println("Last Name: " + currentUser.getLastName());
+        System.out.println("Username: " + currentUser.getUserName());
+        System.out.println("Balance: $" + String.format("%.2f", currentUser.getBalance()));
+    }
+
+    private static void updateBalance() {
+        try {
+            System.out.print("Enter new balance amount: $");
+            double newBalance = Double.parseDouble(scanner.nextLine());
+            currentUser.setBalance(newBalance);
+            System.out.println("Balance updated successfully!");
+        } catch (NumberFormatException e) {
+            System.out.println("Please enter a valid number.");
+        }
     }
 }

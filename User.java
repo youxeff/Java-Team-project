@@ -1,25 +1,17 @@
 public interface User {
+    String getFirstName();
+    String getLastName();
+    String getUserName();
+    String getPassword();
+    double getBalance();
 
+    void setFirstName(String firstName);
+    void setLastName(String lastName);
+    void setUsername(String userName);
+    void setPassword(String password);
+    void setBalance(double balance);
 
-
-
-        String getFirstName();
-        String getLastName();
-        String getUserName();
-        String getPassword();
-        double getBalance();
-
-        void setFirstName(String firstName);
-        void setLastName(String lastName);
-        void setUsername(String userName);
-        void setPassword(String password);
-        void setBalance(double balance);
-
-        boolean createNewUser(String firstName, String lastName, String userName, String password);
-        boolean login(String userName, String password);
-
-        Role getRole();
-        void setRole(Role role);
-        boolean addRole(Role role); // Returns true if role was added successfully
-    }
+    boolean createNewUser(String firstName, String lastName, String userName, String password);
+    boolean login(String userName, String password);
+}
 
