@@ -3,12 +3,12 @@ import java.util.ArrayList;
 public abstract class AbstractItem implements Item {
     protected String name;
     protected double cost;
-    protected Seller soldBy;
+    protected User soldBy;
     protected boolean isAvailable;
     protected String image;
     protected String category;
 
-    public AbstractItem(String name, double cost, Seller soldBy, String image, String category) {
+    public AbstractItem(String name, double cost, User soldBy, String image, String category) {
         this.name = name;
         this.cost = cost;
         this.soldBy = soldBy;
@@ -18,11 +18,11 @@ public abstract class AbstractItem implements Item {
     }
 
     @Override
-    public Boolean sellItem(Buyer buyer) {
-        if (!isAvailable || buyer.getBalance() < cost) {
+    public Boolean sellItem(User user) {
+        if (!isAvailable || user.getBalance() < cost) {
             return false;
         }
-        buyer.setBalance(buyer.getBalance() - cost);
+        user.setBalance(user.getBalance() - cost);
         soldBy.setBalance(soldBy.getBalance() + cost);
         markSold();
         return true;
@@ -60,7 +60,7 @@ public abstract class AbstractItem implements Item {
     // Common getters and setters
     public String getName() { return name; }
     public double getCost() { return cost; }
-    public Seller getSoldBy() { return soldBy; }
+    public User getSoldBy() { return soldBy; }
     public boolean isAvailable() { return isAvailable; }
     public String getImage() { return image; }
     public String getCategory() { return category; }
