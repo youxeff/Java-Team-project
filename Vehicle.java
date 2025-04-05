@@ -3,7 +3,7 @@ public class Vehicle extends AbstractItem {
     private int year;
     private String brand;
 
-    public Vehicle(String name, double cost, Seller soldBy, String image,
+    public Vehicle(String name, double cost, User soldBy, String image,
                    String category, int mileage, int year, String brand) {
         super(name, cost, soldBy, image, category);
         this.mileage = mileage;
