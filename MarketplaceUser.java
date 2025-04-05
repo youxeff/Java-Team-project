@@ -25,21 +25,34 @@ public class MarketplaceUser implements User {
         createNewUser(firstName, lastName, userName, password);
     }
 
+    private MarketplaceUser(String firstName, String lastName, String userName, String password, double balance, boolean saveToFile) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.password = password;
+        this.balance = balance;
+        this.userName = userName;
+        if (saveToFile) {
+            createNewUser(firstName, lastName, userName, password);
+        }
+    }
+
     private static void loadUserCredentials() {
         try {
             File file = new File(USERS_FILE);
             if (!file.exists()) {
-                file.createNewFile();
-                return;
+                if (file.createNewFile()) {
+                    System.out.println("User file created: " + file.getName());
+                } else {
+                    System.out.println("User file already exists.");
+                }
             }
-            
+
             BufferedReader reader = new BufferedReader(new FileReader(file));
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",");
-                if (parts.length >= 4) {  // username,password,firstName,lastName
-                    userCredentials.put(parts[0], parts[1]);
-                    // Store user details for later use
+                if (parts.length >= 4) {  // username,password,firstName,lastName,balance
+                    userCredentials.put(parts[0], line); // store entire line: username,password,firstName,lastName,balance
                 }
             }
             reader.close();
@@ -48,10 +61,20 @@ public class MarketplaceUser implements User {
         }
     }
 
+    public static MarketplaceUser loadUser(String userName) {
+        loadUserCredentials();
+        if (!userCredentials.containsKey(userName)) return null;
+
+        String[] parts = userCredentials.get(userName).split(",");
+        if (parts.length < 4) return null;
+        double balance = parts.length >= 5 ? Double.parseDouble(parts[4]) : 0.0;
+        return new MarketplaceUser(parts[2], parts[3], parts[0], parts[1], balance, false); // use the private constructor
+    }
+
     public static boolean verifyCredentials(String userName, String password) {
         loadUserCredentials(); // Reload credentials to get latest data
-        return userCredentials.containsKey(userName) && 
-               userCredentials.get(userName).equals(password);
+        return userCredentials.containsKey(userName) &&
+               userCredentials.get(userName).split(",")[1].equals(password);
     }
 
     private void saveToFile(String userData) {
@@ -76,7 +99,7 @@ public class MarketplaceUser implements User {
             return false;
         }
 
-        String userData = String.format("%s,%s,%s,%s", userName, password, firstName, lastName);
+        String userData = String.format("%s,%s,%s,%s,%.2f", userName, password, firstName, lastName, balance);
         saveToFile(userData);
         
         userCredentials.put(userName, password);
@@ -88,6 +111,9 @@ public class MarketplaceUser implements User {
         return verifyCredentials(userName, password);
     }
 
+    public boolean verifyPassword(String inputPassword) {
+        return this.password.equals(inputPassword);
+    }
     @Override
     public String getFirstName() {
         return firstName;

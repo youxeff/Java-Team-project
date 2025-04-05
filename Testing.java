@@ -1,4 +1,7 @@
 import java.util.Scanner;
+import java.nio.file.*;
+import java.util.*;
+import java.io.*;
 
 public class Testing {
     private static Scanner scanner = new Scanner(System.in);
@@ -41,21 +44,23 @@ public class Testing {
             System.out.println("\n=== User Registration ===");
             System.out.print("Enter First Name: ");
             String firstName = scanner.nextLine();
-            
+
             System.out.print("Enter Last Name: ");
             String lastName = scanner.nextLine();
-            
+
             System.out.print("Enter Username: ");
             String username = scanner.nextLine();
-            
+
             System.out.print("Enter Password: ");
             String password = scanner.nextLine();
 
-            currentUser = new MarketplaceUser(firstName, lastName, username, password);
-            if (currentUser != null) {
-                System.out.println("Registration successful!");
-                showUserMenu();
+            if (MarketplaceUser.loadUser(username) != null) {
+                System.out.println("Username already exists.");
+                return;
             }
+            MarketplaceUser newUser = new MarketplaceUser(firstName, lastName, username, password);
+            System.out.println("Registration successful!");
+
         } catch (Exception e) {
             System.out.println("Error during registration: " + e.getMessage());
         }
@@ -66,12 +71,12 @@ public class Testing {
             System.out.println("\n=== User Login ===");
             System.out.print("Enter Username: ");
             String username = scanner.nextLine();
-            
+
             System.out.print("Enter Password: ");
             String password = scanner.nextLine();
 
-            if (MarketplaceUser.verifyCredentials(username, password)) {
-                currentUser = new MarketplaceUser("temp", "temp", username, password);
+            currentUser = MarketplaceUser.loadUser(username);
+            if (currentUser != null && currentUser.verifyPassword(password)) {
                 System.out.println("Login successful!");
                 showUserMenu();
             } else {
@@ -127,9 +132,32 @@ public class Testing {
             System.out.print("Enter new balance amount: $");
             double newBalance = Double.parseDouble(scanner.nextLine());
             currentUser.setBalance(newBalance);
+
+            File file = new File("users.txt");
+            List<String> lines = Files.readAllLines(file.toPath());
+            List<String> updatedLines = new ArrayList<>();
+
+            for (String line : lines) {
+                String[] parts = line.split(",");
+                if (parts.length >= 5 && parts[0].equals(currentUser.getUserName())) {
+                    String updatedLine = String.format("%s,%s,%s,%s,%.2f",
+                        currentUser.getUserName(),
+                        currentUser.getPassword(),
+                        currentUser.getFirstName(),
+                        currentUser.getLastName(),
+                        newBalance);
+                    updatedLines.add(updatedLine);
+                } else {
+                    updatedLines.add(line);
+                }
+            }
+
+            Files.write(file.toPath(), updatedLines);
             System.out.println("Balance updated successfully!");
         } catch (NumberFormatException e) {
             System.out.println("Please enter a valid number.");
+        } catch (IOException e) {
+            System.out.println("Error updating balance: " + e.getMessage());
         }
     }
 }
