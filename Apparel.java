@@ -3,7 +3,7 @@ public class Apparel extends AbstractItem {
     private String color;
     private String brand;
 
-    public Apparel(String name, double cost, Seller soldBy, String image,
+    public Apparel(String name, double cost, User soldBy, String image,
                    String category, String size, String color, String brand) {
         super(name, cost, soldBy, image, category);
         this.size = size;
