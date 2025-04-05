@@ -1,7 +1,7 @@
 public class Home extends AbstractItem {
     private String type;
 
-    public Home(String name, double cost, Seller soldBy, String image,
+    public Home(String name, double cost, User soldBy, String image,
                 String category, String type) {
         super(name, cost, soldBy, image, category);
         this.type = type;
