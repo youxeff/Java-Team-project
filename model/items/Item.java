@@ -1,4 +1,7 @@
+package model.items;
 import java.util.ArrayList;
+
+import model.users.User;
 
 public interface Item {
     // Transaction methods

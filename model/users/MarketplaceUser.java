@@ -1,0 +1,181 @@
+package model.users;
+import java.util.HashMap;
+import java.util.Map;
+// ...existing code...
+import java.io.*;
+
+public class MarketplaceUser implements User {
+    private static final String USERS_FILE = "users.txt";
+    private static final Map<String, String> userCredentials = new HashMap<>();
+    private static final Object staticLock = new Object();
+    private final Object lock = new Object();
+    
+    private String firstName;
+    private String lastName;
+    private String password;
+    private double balance;
+    private String userName;
+
+    static {
+        loadUserCredentials();
+    }
+
+    public MarketplaceUser(String firstName, String lastName, String userName, String password) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.password = password;
+        this.balance = 0.0;
+        this.userName = userName;
+        createNewUser(firstName, lastName, userName, password);
+    }
+
+    private MarketplaceUser(String firstName, String lastName, String userName, String password, double balance, boolean saveToFile) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.password = password;
+        this.balance = balance;
+        this.userName = userName;
+        if (saveToFile) {
+            createNewUser(firstName, lastName, userName, password);
+        }
+    }
+
+    private static synchronized void loadUserCredentials() {
+        synchronized(staticLock) {
+            try {
+                File file = new File(USERS_FILE);
+                if (!file.exists()) {
+                    if (file.createNewFile()) {
+                        System.out.println("User file created: " + file.getName());
+                    } else {
+                        System.out.println("User file already exists.");
+                    }
+                }
+
+                BufferedReader reader = new BufferedReader(new FileReader(file));
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    String[] parts = line.split(",");
+                    if (parts.length >= 4) {  // username,password,firstName,lastName,balance
+                        userCredentials.put(parts[0], line); // store entire line: username,password,firstName,lastName,balance
+                    }
+                }
+                reader.close();
+            } catch (IOException e) {
+                System.out.println("Error loading user credentials: " + e.getMessage());
+            }
+        }
+    }
+
+    public static synchronized MarketplaceUser loadUser(String userName) {
+        synchronized(staticLock) {
+            loadUserCredentials();
+            if (!userCredentials.containsKey(userName)) return null;
+
+            String[] parts = userCredentials.get(userName).split(",");
+            if (parts.length < 4) return null;
+            double balance = parts.length >= 5 ? Double.parseDouble(parts[4]) : 0.0;
+            return new MarketplaceUser(parts[2], parts[3], parts[0], parts[1], balance, false); // use the private constructor
+        }
+    }
+
+    public static synchronized boolean verifyCredentials(String userName, String password) {
+        synchronized(staticLock) {
+            loadUserCredentials(); // Reload credentials to get latest data
+            return userCredentials.containsKey(userName) &&
+                   userCredentials.get(userName).split(",")[1].equals(password);
+        }
+    }
+
+    private synchronized void saveToFile(String userData) {
+        synchronized(lock) {
+            try {
+                FileWriter fw = new FileWriter(USERS_FILE, true);
+                BufferedWriter bw = new BufferedWriter(fw);
+                bw.write(userData + "\n");
+                bw.close();
+            } catch (IOException e) {
+                System.out.println("Error saving to file: " + e.getMessage());
+            }
+        }
+    }
+
+    @Override
+    public synchronized boolean createNewUser(String firstName, String lastName, String userName, String password) {
+        synchronized(staticLock) {
+            if (firstName.isEmpty() || lastName.isEmpty() || userName.isEmpty() || password.isEmpty()) {
+                System.out.println("All fields must be filled.");
+                return false;
+            }
+            if (userCredentials.containsKey(userName)) {
+                System.out.println("Username already exists.");
+                return false;
+            }
+
+            String userData = String.format("%s,%s,%s,%s,%.2f", userName, password, firstName, lastName, balance);
+            saveToFile(userData);
+            
+            userCredentials.put(userName, password);
+            return true;
+        }
+    }
+
+    @Override
+    public synchronized boolean login(String userName, String password) {
+        return verifyCredentials(userName, password);
+    }
+
+    public synchronized boolean verifyPassword(String inputPassword) {
+        return this.password.equals(inputPassword);
+    }
+
+    @Override
+    public synchronized String getFirstName() {
+        return firstName;
+    }
+
+    @Override
+    public synchronized String getLastName() {
+        return lastName;
+    }
+
+    @Override
+    public synchronized String getUserName() {
+        return userName;
+    }
+
+    @Override
+    public synchronized String getPassword() {
+        return password;
+    }
+
+    @Override
+    public synchronized double getBalance() {
+        return balance;
+    }
+
+    @Override
+    public synchronized void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    @Override
+    public synchronized void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    @Override
+    public synchronized void setUsername(String userName) {
+        this.userName = userName;
+    }
+
+    @Override
+    public synchronized void setPassword(String password) {
+        this.password = password;
+    }
+
+    @Override
+    public synchronized void setBalance(double balance) {
+        this.balance = balance;
+    }
+}

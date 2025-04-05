@@ -1,4 +1,6 @@
+package model.items;
 import java.util.ArrayList;
+import model.users.User;
 
 public abstract class AbstractItem implements Item {
     protected String name;
@@ -7,6 +9,8 @@ public abstract class AbstractItem implements Item {
     protected boolean isAvailable;
     protected String image;
     protected String category;
+
+    private final Object lock = new Object(); // Add this lock
 
     public AbstractItem(String name, double cost, User soldBy, String image, String category) {
         this.name = name;
@@ -18,7 +22,7 @@ public abstract class AbstractItem implements Item {
     }
 
     @Override
-    public Boolean sellItem(User user) {
+    public synchronized Boolean sellItem(User user) {
         if (!isAvailable || user.getBalance() < cost) {
             return false;
         }
@@ -29,7 +33,7 @@ public abstract class AbstractItem implements Item {
     }
 
     @Override
-    public Boolean deleteItem() {
+    public synchronized Boolean deleteItem() {
         isAvailable = false;
         return true;
     }
@@ -47,21 +51,21 @@ public abstract class AbstractItem implements Item {
     }
 
     @Override
-    public void markSold() {
+    public synchronized void markSold() {
         isAvailable = false;
     }
 
     @Override
-    public String toString() {
+    public synchronized String toString() {
         return String.format("%s - $%.2f - Sold by: %s - %s",
                 name, cost, soldBy.getUserName(), isAvailable ? "Available" : "Sold");
     }
 
     // Common getters and setters
-    public String getName() { return name; }
-    public double getCost() { return cost; }
-    public User getSoldBy() { return soldBy; }
-    public boolean isAvailable() { return isAvailable; }
-    public String getImage() { return image; }
-    public String getCategory() { return category; }
+    public synchronized String getName() { return name; }
+    public synchronized double getCost() { return cost; }
+    public synchronized User getSoldBy() { return soldBy; }
+    public synchronized boolean isAvailable() { return isAvailable; }
+    public synchronized String getImage() { return image; }
+    public synchronized String getCategory() { return category; }
 }

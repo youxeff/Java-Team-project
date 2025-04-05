@@ -1,6 +1,10 @@
+
+package model.items;
+import model.users.User;
 public class Collectible extends AbstractItem {
     private String type;
     private String condition;
+    private final Object lock = new Object();
 
     public Collectible(String name, double cost, User soldBy, String image,
                        String category, String type, String condition) {
@@ -10,14 +14,14 @@ public class Collectible extends AbstractItem {
     }
 
     // ICollectibles specific methods
-    public String getType() { return type; }
-    public String getCondition() { return condition; }
+    public synchronized String getType() { return type; }
+    public synchronized String getCondition() { return condition; }
 
-    public void setType(String type) { this.type = type; }
-    public void setCondition(String condition) { this.condition = condition; }
+    public synchronized void setType(String type) { this.type = type; }
+    public synchronized void setCondition(String condition) { this.condition = condition; }
 
     @Override
-    public String toString() {
+    public synchronized String toString() {
         return super.toString() + String.format(" - Type: %s - Condition: %s", type, condition);
     }
 }

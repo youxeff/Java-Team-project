@@ -1,5 +1,11 @@
+package model.items;
+
+
+import model.users.User;
+
 public class Home extends AbstractItem {
     private String type;
+    private final Object lock = new Object();
 
     public Home(String name, double cost, User soldBy, String image,
                 String category, String type) {
@@ -8,12 +14,12 @@ public class Home extends AbstractItem {
     }
 
     // home specific methods
-    public String getType() { return type; }
+    public synchronized String getType() { return type; }
 
-    public void setType(String type) { this.type = type; }
+    public synchronized void setType(String type) { this.type = type; }
 
     @Override
-    public String toString() {
+    public synchronized String toString() {
         return super.toString() + String.format(" - Type: %s", type);
     }
 }

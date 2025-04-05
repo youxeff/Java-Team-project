@@ -1,36 +1,68 @@
-# Team Project
+# Team Project - Marketplace System
 
 ## Overview
-This project is a marketplace application that allows users to register as either buyers or sellers. Sellers can list items for sale, while buyers can browse and purchase items. The application supports various item categories, including electronics, apparel, home goods, vehicles, and collectibles.
+This project is a **Marketplace System** that allows users to register, log in, and interact with a marketplace. Users can buy and sell items, manage their profiles, and search for items or sellers. The system is implemented in Java and follows an object-oriented design.
 
 ## Features
-- **User Registration and Login**: Users can register as buyers or sellers and log in to their accounts.
-- **Item Management**: Sellers can list, update, and delete items for sale.
-- **Search Functionality**: Buyers can search for items by name or category.
-- **Transaction Handling**: Buyers can purchase items, and sellers can manage their balances.
-- **Data Persistence**: User data is stored and managed for future use.
+1. **User Management**:
+    - Register new users with first name, last name, username, and password.
+    - Login functionality with credential verification.
+    - Update user balance and profile information.
+    - Persistent user data storage in `users.txt`.
+
+2. **Marketplace Functionality**:
+    - Add, search, and manage items in the marketplace.
+    - Support for multiple item categories:
+      - **Apparel**: Includes size, color, and brand.
+      - **Electronics**: Includes type and year.
+      - **Home Items**: Includes type.
+      - **Vehicles**: Includes mileage, year, and brand.
+      - **Collectibles**: Includes type and condition.
+    - Search for items by name or category.
+    - Search for sellers by name.
+
+3. **Transactions**:
+    - Users can purchase items if they have sufficient balance.
+    - Items are marked as sold after purchase.
+    - Persistent item data storage in `items.txt`.
+
+4. **Concurrency**:
+    - Thread-safe operations using synchronized methods and locks.
 
 ## Project Structure
-- **Interfaces**:
-    - `Item`: Represents a generic item with common fields and methods.
-    - `IMarketplace`: Manages marketplace operations such as searches and user data management.
-    - `User`: Represents a generic user with common fields and methods.
+The project is organized into the following packages and files:
 
-- **Abstract Classes**:
-    - `AbstractUser`: Provides a base implementation for user-related operations.
-    - `AbstractItem`: Provides a base implementation for item-related operations.
+### 1. **Main**
+- `Main.java`: Entry point of the application. Handles user registration, login, and menu navigation.
 
-- **Classes**:
-    - `Buyer`: Represents a buyer in the marketplace.
-    - `Seller`: Represents a seller in the marketplace.
-    - `Main`: Entry point for the application.
-    - `Electronic`, `Apparel`, `Home`, `Vehicle`, `Collectibles`: Specialized methods for different item categories.
-    - 'Marketplace': Handles buying and selling
+### 2. **Service**
+- `Marketplace.java`: Implements the core marketplace functionality, including user and item management, file persistence, and search operations.
 
+### 3. **Model**
+#### Users
+- `User.java`: Interface defining user-related methods.
+- `MarketplaceUser.java`: Implementation of the `User` interface. Handles user creation, login, and data persistence.
+
+#### Items
+- `Item.java`: Interface defining item-related methods.
+- `AbstractItem.java`: Abstract class implementing common item functionality.
+- `Apparel.java`: Represents apparel items.
+- `Electronic.java`: Represents electronic items.
+- `Home.java`: Represents home-related items.
+- `Vehicle.java`: Represents vehicles.
+- `Collectible.java`: Represents collectible items.
+
+### 4. **Util**
+- Placeholder for utility classes (currently empty).
 
 ## How to Run
-1. Compile all `.java` files in the project directory.
-2. Run the `Main` class to start the application.
-3. Follow the prompts to register as a buyer or seller and interact with the marketplace.
+1. Compile the project using a Java compiler.
+2. Run the `Main.java` file to start the application.
+3. Follow the on-screen instructions to register, log in, and interact with the marketplace.
 
-
+## File Persistence
+- **Users**: Stored in `users.txt` with the format:
+  ```
+  username,password,firstName,lastName,balance
+  ```
+- **Items**: Stored in `items.txt` with category-specific formats.

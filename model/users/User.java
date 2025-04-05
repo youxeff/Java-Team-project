@@ -1,3 +1,4 @@
+package model.users;
 public interface User {
     String getFirstName();
     String getLastName();

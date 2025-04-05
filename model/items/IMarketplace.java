@@ -1,4 +1,8 @@
+package model.items;
 import java.util.ArrayList;
+
+import model.users.User;
+
 import java.io.IOException;
 
 /**

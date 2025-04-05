@@ -1,9 +1,13 @@
+package Main;
 import java.util.Scanner;
+
+import model.users.MarketplaceUser;
+
 import java.nio.file.*;
 import java.util.*;
 import java.io.*;
 
-public class Testing {
+public class Main {
     private static Scanner scanner = new Scanner(System.in);
     private static MarketplaceUser currentUser = null;
 

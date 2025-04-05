@@ -1,7 +1,12 @@
+package model.items;
+import model.users.User;
+import model.items.AbstractItem;
+
 public class Apparel extends AbstractItem {
     private String size;
     private String color;
     private String brand;
+    private final Object lock = new Object();
 
     public Apparel(String name, double cost, User soldBy, String image,
                    String category, String size, String color, String brand) {
@@ -12,16 +17,16 @@ public class Apparel extends AbstractItem {
     }
 
     // IApparel specific methods
-    public String getSize() { return size; }
-    public String getColor() { return color; }
-    public String getBrand() { return brand; }
+    public synchronized String getSize() { return size; }
+    public synchronized String getColor() { return color; }
+    public synchronized String getBrand() { return brand; }
 
-    public void setSize(String size) { this.size = size; }
-    public void setColor(String color) { this.color = color; }
-    public void setBrand(String brand) { this.brand = brand; }
+    public synchronized void setSize(String size) { this.size = size; }
+    public synchronized void setColor(String color) { this.color = color; }
+    public synchronized void setBrand(String brand) { this.brand = brand; }
 
     @Override
-    public String toString() {
+    public synchronized String toString() {
         return super.toString() + String.format(" - Size: %s - Color: %s - Brand: %s",
                 size, color, brand);
     }
