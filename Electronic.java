@@ -2,7 +2,7 @@ public class Electronic extends AbstractItem {
     private String type;
     private int year;
 
-    public Electronic(String name, double cost, Seller soldBy, String image,
+    public Electronic(String name, double cost, User soldBy, String image,
                       String category, String type, int year) {
         super(name, cost, soldBy, image, category);
         this.type = type;
