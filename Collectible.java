@@ -2,7 +2,7 @@ public class Collectible extends AbstractItem {
     private String type;
     private String condition;
 
-    public Collectible(String name, double cost, Seller soldBy, String image,
+    public Collectible(String name, double cost, User soldBy, String image,
                        String category, String type, String condition) {
         super(name, cost, soldBy, image, category);
         this.type = type;
