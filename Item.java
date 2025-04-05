@@ -2,7 +2,8 @@ import java.util.ArrayList;
 
 public interface Item {
     // Transaction methods
-    Boolean sellItem(Buyer buyer);
+    Boolean sellItem(User buyer);
+
     Boolean deleteItem();
     void markSold();
 
@@ -16,7 +17,7 @@ public interface Item {
     // Getter methods
     String getName();
     double getCost();
-    Seller getSoldBy();
+    User getSoldBy();
     boolean isAvailable();
     String getImage();
     String getCategory();
