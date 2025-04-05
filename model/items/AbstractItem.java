@@ -1,8 +1,11 @@
 package model.items;
+import java.io.Serializable;
 import java.util.ArrayList;
 import model.users.User;
 
-public abstract class AbstractItem implements Item {
+public abstract class AbstractItem implements Item, Serializable {
+    private static final long serialVersionUID = 1L;
+
     protected String name;
     protected double cost;
     protected User soldBy;

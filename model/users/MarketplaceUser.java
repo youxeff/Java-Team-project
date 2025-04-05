@@ -1,10 +1,11 @@
 package model.users;
 import java.util.HashMap;
 import java.util.Map;
-// ...existing code...
+import java.io.Serializable;
 import java.io.*;
 
-public class MarketplaceUser implements User {
+public class MarketplaceUser implements User, Serializable {
+    private static final long serialVersionUID = 1L;
     private static final String USERS_FILE = "users.txt";
     private static final Map<String, String> userCredentials = new HashMap<>();
     private static final Object staticLock = new Object();
