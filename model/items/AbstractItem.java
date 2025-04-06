@@ -3,6 +3,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import model.users.User;
 
+/**
+ * Abstract base class for all items in the marketplace.
+ * Implements the Item interface and provides common functionality.
+ */
 public abstract class AbstractItem implements Item, Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -13,8 +17,16 @@ public abstract class AbstractItem implements Item, Serializable {
     protected String image;
     protected String category;
 
-    private final Object lock = new Object(); // Add this lock
+    private final Object lock = new Object();
 
+    /**
+     * Constructs a new AbstractItem
+     * @param name The name of the item
+     * @param cost The price of the item
+     * @param soldBy The user selling the item
+     * @param image Image path/URL for the item
+     * @param category Category of the item
+     */
     public AbstractItem(String name, double cost, User soldBy, String image, String category) {
         this.name = name;
         this.cost = cost;
@@ -64,11 +76,16 @@ public abstract class AbstractItem implements Item, Serializable {
                 name, cost, soldBy.getUserName(), isAvailable ? "Available" : "Sold");
     }
 
-    // Common getters and setters
+    @Override
     public synchronized String getName() { return name; }
+    @Override
     public synchronized double getCost() { return cost; }
+    @Override
     public synchronized User getSoldBy() { return soldBy; }
+    @Override
     public synchronized boolean isAvailable() { return isAvailable; }
+    @Override
     public synchronized String getImage() { return image; }
+    @Override
     public synchronized String getCategory() { return category; }
 }
