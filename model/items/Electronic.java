@@ -1,12 +1,25 @@
 package model.items;
-
 import model.users.User;
 
-public class Electronic extends AbstractItem {
+/**
+ * Represents an electronic item in the marketplace.
+ * Extends AbstractItem and implements IElectronic interface.
+ */
+public class Electronic extends AbstractItem implements IElectronic {
     private String type;
     private int year;
     private final Object lock = new Object();
 
+    /**
+     * Constructs a new Electronic item
+     * @param name The name of the electronic item
+     * @param cost The price of the electronic item
+     * @param soldBy The user selling the electronic item
+     * @param image Image path/URL for the electronic item
+     * @param category Category of the electronic item
+     * @param type Type of the electronic item
+     * @param year Manufacturing year of the electronic item
+     */
     public Electronic(String name, double cost, User soldBy, String image,
                       String category, String type, int year) {
         super(name, cost, soldBy, image, category);
@@ -14,25 +27,28 @@ public class Electronic extends AbstractItem {
         this.year = year;
     }
 
-    // IElectronic specific methods
+    @Override
     public String getType() { 
         synchronized(lock) {
             return type;
         }
     }
     
+    @Override
     public int getYear() { 
         synchronized(lock) {
             return year;
         }
     }
 
+    @Override
     public void setType(String type) { 
         synchronized(lock) {
             this.type = type;
         }
     }
     
+    @Override
     public void setYear(int year) { 
         synchronized(lock) {
             this.year = year;
