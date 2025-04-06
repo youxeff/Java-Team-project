@@ -98,6 +98,8 @@ public class Main {
             System.out.println("1. View Profile");
             System.out.println("2. Update Balance");
             System.out.println("3. Logout");
+            System.out.println("4. Send a Message");
+            System.out.println("5. View Messages");
             System.out.print("Choose an option: ");
 
             try {
@@ -113,6 +115,20 @@ public class Main {
                         userMenuRunning = false;
                         currentUser = null;
                         System.out.println("Logged out successfully.");
+                        break;
+                    case 4:
+                        System.out.println("Who do u want to message?");
+                        String recipientUsername = scanner.nextLine();
+                        if (!MarketplaceUser.userExists(recipientUsername)) {
+                            System.out.println("User \"" + recipientUsername + "\" does not exist.");
+                            break;
+                        }
+                        System.out.println("What is your message");
+                        String message = scanner.nextLine();
+                        currentUser.sendMessageTo(recipientUsername, message);
+                        break;
+                    case 5:
+                        currentUser.viewMessages();
                         break;
                     default:
                         System.out.println("Invalid option. Please try again.");

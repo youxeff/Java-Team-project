@@ -101,6 +101,74 @@ public class MarketplaceUser implements User, Serializable {
         }
     }
 
+    public void sendMessageTo(String recipientUsername, String message) {
+        String messageFilePath = "messages/" + recipientUsername + ".txt";
+        File messageFile = new File(messageFilePath);
+        
+        try {
+            File dir = new File("messages");
+            if (!dir.exists()) dir.mkdirs();
+
+            BufferedWriter writer = new BufferedWriter(new FileWriter(messageFile, true));
+            writer.write("FROM: " + this.userName + "\n");
+            
+            LocalDateTime now = LocalDateTime.now();
+            //format time to be prettier
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM d, yyyy: h:mma");
+            String formatted = now.format(formatter);
+            writer.write("DATE: " + formatted + "\n");
+            writer.write(message + "\n");
+            writer.write("-------------------\n");
+            writer.close();
+            System.out.println("Message sent to " + recipientUsername);
+        } catch (IOException e) {
+            System.out.println("Failed to send message: " + e.getMessage());
+        }
+    }
+    
+    public void viewMessages() {
+        String messageFilePath = "messages/" + this.userName + ".txt";
+        File messageFile = new File(messageFilePath);
+    
+        if (!messageFile.exists()) {
+            System.out.println("No messages yet.");
+            return;
+        }
+    
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(messageFile));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                System.out.println(line);
+            }
+            reader.close();
+        } catch (IOException e) {
+            System.out.println("Error reading messages: " + e.getMessage());
+        }
+    }
+
+    public static boolean userExists(String recipientUsername) {
+        File file = new File("users.txt");
+        if (!file.exists()) {
+            return false;
+        }
+    
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length >= 1 && parts[0].equals(recipientUsername)) {
+                    return true;
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Error checking user existence: " + e.getMessage());
+        }
+        return false;
+    }
+    
+
+
     @Override
     public synchronized boolean createNewUser(String firstName, String lastName, String userName, String password) {
         synchronized(staticLock) {
