@@ -159,6 +159,7 @@ public class TestCases {
             marketplace.addItem(item);
 
             ArrayList<AbstractItem> available = marketplace.getAvailableItems();
+
             assertEquals(1, available.size());
         }
     }
