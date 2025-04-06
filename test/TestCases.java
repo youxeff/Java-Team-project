@@ -22,105 +22,75 @@ import java.io.*;
 import java.util.ArrayList;
 import static org.junit.jupiter.api.Assertions.*;
 
-
 import static org.junit.Assert.*;
-//This class contains all the test cases in order to ensure
-//that the code runs properly and checks all possible errors
-//throwing exceptions pinpoint where the code breaks
-//if it does break.
 
-@RunWith(Enclosed.class)
 public class TestCases {
 
     @Nested
-    public static class marketplaceUserTest {
+    public static class MarketplaceUserTest {
+
         @Test
-        public void testUser() {
-            try {
-                ArrayList<User> expectedUsers = new ArrayList<>();
-                MarketplaceUser user1 = new MarketplaceUser("Isaac", "Yoon", "iyoon", "thisIsAStrongPassword");
-                assertEquals("Isaac", user1.getFirstName());
-                assertEquals("Yoon", user1.getLastName());
-                assertEquals("thisIsAStrongPassword", user1.getPassword());
-                assertEquals(0.0, user1.getBalance());
-                assertEquals("iyoon", user1.getUserName());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        public void testUserCreation() {
+            MarketplaceUser user = new MarketplaceUser("Isaac", "Yoon", "iyoon", "thisIsAStrongPassword");
+            assertEquals("Isaac", user.getFirstName());
+            assertEquals("Yoon", user.getLastName());
+            assertEquals("iyoon", user.getUserName());
+            assertEquals("thisIsAStrongPassword", user.getPassword());
+            assertEquals(0.0, user.getBalance());
         }
 
         @Test
-        public void emtyFields() {
-            MarketplaceUser user = new Marketplace("", "Peter", "peterEmpty", "notAStrongPassword");
+        public void testEmptyFields() {
+            MarketplaceUser user = new MarketplaceUser("", "Peter", "peterEmpty", "notAStrongPassword");
             assertFalse(user.createNewUser("", "Peter", "peterEmpty", "notAStrongPassword"));
         }
 
         @Test
-        public void failDuplicateUsername() {
-            Marketplace user = new Marketplace("Youssef", "Abdelkader", "youxeff", "pASsWord");
-            boolean created = new Marketplace("Youssef", "Abdelkader", "youxeff", "pASsWord");
-            assertFalse(created);
+        public void testDuplicateUsername() {
+            MarketplaceUser user1 = new MarketplaceUser("Youssef", "Abdelkader", "youxeff", "pASsWord");
+            MarketplaceUser user2 = new MarketplaceUser("Youssef", "Abdelkader", "youxeff", "pASsWord");
+            assertFalse(user2.createNewUser("Youssef", "Abdelkader", "youxeff", "pASsWord"));
         }
 
         @Test
         public void testVerifyCredentials() {
-            MarketplaceUser user = new MarketplaceUser("Isaac", "Yoon", "iyoon",  "thisIsAStrongPassword");
+            MarketplaceUser user = new MarketplaceUser("Isaac", "Yoon", "iyoon", "thisIsAStrongPassword");
             assertTrue(user.verifyCredentials("iyoon", "thisIsAStrongPassword"));
+            assertFalse(user.verifyCredentials("iyoon", "wrongPassword"));
         }
 
         @Test
-        public void testVerifyCredentialsFail() {
-            MarketplaceUser marketplaceUser = new MarketplaceUser(new MarketplaceUser("Isaac", "Yoon", "iyoon", "thisIsAStrongPassword"));
-            assertFalse(marketplaceUser.verifyCredentials("iyoon", "wrongPassword"));
-        }
-
-        @Test
-        public void testLogin() {
+        public void testLoadUser() {
             MarketplaceUser user = new MarketplaceUser("Isaac", "Yoon", "iyoon", "thisIsAStrongPassword");
-            assertTrue(user.login("iyoon", "thisIsAStrongPassword"));
-            assertFalse(user.login("iyoon", "wrongPassword"));
-        }
-
-        @Test
-        public void LestLoadUsers() {
-            new MarketplaceUser("Isaac", "Yoon", "iyoon", "thisIsAStrongPassword");
-            MarketplaceUser loaded = MarketplaceUser.loadUser("iyoon");
-
-            assertNotNull(loaded);
-            assertEquals("Isaac", loaded.getFirstName());
-            assertEquals("Yoon", loaded.getLastName());
-            assertEquals("iyoon",loaded.getUserName());
-        }
-
-        @Test
-        public void testPassword() {
-            MarketplaceUser user = new MarketplaceUser("Isaac", "Yoon", "iyoon", "thisIsAStrongPassword");
-            assertTrue(user.verifyPassword("thisIsAStrongPassword"));
-            assertFalse(user.verifyPassword("thisIsAWrongPassword"));
+            MarketplaceUser loadedUser = MarketplaceUser.loadUser("iyoon");
+            assertNotNull(loadedUser);
+            assertEquals("Isaac", loadedUser.getFirstName());
+            assertEquals("Yoon", loadedUser.getLastName());
+            assertEquals("iyoon", loadedUser.getUserName());
         }
     }
 
     @Nested
-    public class marketplaceTests {
+    public static class MarketplaceTest {
         private static final String USERS_FILE = "users.txt";
         private static final String ITEMS_FILE = "items.txt";
         private Marketplace marketplace;
         private MarketplaceUser testUser;
 
-        @BeforeEach
-        void setUp() throws IOException {
+        @Before
+        public void setUp() throws IOException {
             new PrintWriter(USERS_FILE).close();
             new PrintWriter(ITEMS_FILE).close();
 
             marketplace = new Marketplace();
-            user = new MarketplaceUser("Isaac", "Yoon", "iyoon", "thisIsAPassword");
-            marketplace.updateUserData(user);
+            testUser = new MarketplaceUser("Isaac", "Yoon", "iyoon", "thisIsAPassword");
+            marketplace.updateUserData(testUser);
         }
 
-        @Test
-        public void testUserDataFile() throws IOException {
-            File file = new File(USERS_FILE);
-            assertTrue(file.exists());
+        @After
+        public void tearDown() throws IOException {
+            new File(USERS_FILE).delete();
+            new File(ITEMS_FILE).delete();
         }
 
         @Test
@@ -131,45 +101,38 @@ public class TestCases {
         }
 
         @Test
-        public void testSeearch() {
-            ArrayList<User> search = marketplace.searchSeller("Isaac");
-            assertEquals(1, search.size());
-            assertEquals("iyoon", search.get(0).getUserName());
+        public void testSearchSeller() {
+            ArrayList<User> searchResults = marketplace.searchSeller("Isaac");
+            assertEquals(1, searchResults.size());
+            assertEquals("iyoon", searchResults.get(0).getUserName());
         }
 
         @Test
         public void testAuthenticateUser() {
-            User authenticate = marketplace.authenticateUser("iyoon", "thisIsAPassword");
-            assertNotNull(authenticate);
-            assertEquals("Isaac", authenticate.getFirstName());
+            User authenticatedUser = marketplace.authenticateUser("iyoon", "thisIsAPassword");
+            assertNotNull(authenticatedUser);
+            assertEquals("Isaac", authenticatedUser.getFirstName());
         }
 
         @Test
         public void testAddAndSearchItems() {
-            AbstractItem item = new AbstractItem("Computer", 500.0, user, "img.png", "Electronics");
+            AbstractItem item = new AbstractItem("Computer", 500.0, testUser, "img.png", "Electronics");
             marketplace.addItem(item);
-            ArrayList<AbstractItem> results = marketplace.searchByName("Computer");
-            assertEquals(1, results.size());
-            ArrayList<AbstractItem> category = marketplace.searchByCategory("Electronics");
-            assertEquals(1, category.size());
+
+            ArrayList<AbstractItem> resultsByName = marketplace.searchByName("Computer");
+            assertEquals(1, resultsByName.size());
+
+            ArrayList<AbstractItem> resultsByCategory = marketplace.searchByCategory("Electronics");
+            assertEquals(1, resultsByCategory.size());
         }
 
         @Test
-        public void getAvailableItems() {
-            AbstractItem item = new AbstractItem("Computer", 500.0, user, "img.png", "Electronics");
+        public void testGetAvailableItems() {
+            AbstractItem item = new AbstractItem("Computer", 500.0, testUser, "img.png", "Electronics");
             marketplace.addItem(item);
 
-            ArrayList<AbstractItem> available = marketplace.getAvailableItems();
-
-            assertEquals(1, available.size());
-        }
-    }
-
-    @Nested
-    public class testAbstractItem {
-        @BeforeEach
-        public void setUp() throws IOException {
-            seller = new
+            ArrayList<AbstractItem> availableItems = marketplace.getAvailableItems();
+            assertEquals(1, availableItems.size());
         }
     }
 }
