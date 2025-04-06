@@ -1,7 +1,6 @@
 package Service;
 import java.io.*;
 import java.util.ArrayList;
-
 import model.items.Apparel;
 import model.items.Collectible;
 import model.items.Electronic;
@@ -12,6 +11,10 @@ import model.items.Vehicle;
 import model.users.MarketplaceUser;
 import model.users.User;
 
+/**
+ * The Marketplace class implements the IMarketplace interface and serves as the core service
+ * for managing users, items, and transactions in the marketplace system.
+ */
 public class Marketplace implements IMarketplace {
     private ArrayList<User> users;
     private ArrayList<Item> items;
@@ -19,6 +22,14 @@ public class Marketplace implements IMarketplace {
     private static final String ITEMS_FILE = "items.txt";
     private final Object lock = new Object();
 
+    /**
+     * Constructs a new Marketplace instance and initializes the system by loading
+     * existing user and item data from files.
+     * 
+     * If the data files don't exist, they will be created. Any IO errors during
+     * initialization will be printed to stderr but won't prevent the marketplace
+     * from being created.
+     */
     public Marketplace() {
         this.users = new ArrayList<>();
         this.items = new ArrayList<>();
@@ -31,6 +42,13 @@ public class Marketplace implements IMarketplace {
         }
     }
 
+    /**
+     * Updates the user data file with a new or existing user's information.
+     * 
+     * @param user The user to be added or updated in the system
+     * @return true if the operation was successful, false otherwise
+     * @throws IOException if there's an error writing to the user data file
+     */
     @Override
     public synchronized boolean updateUserData(User user) throws IOException {
         synchronized (lock) {
@@ -52,6 +70,12 @@ public class Marketplace implements IMarketplace {
         }
     }
 
+    /**
+     * Initializes the user data file if it doesn't already exist.
+     * 
+     * @return true if the file was created or already exists, false if creation failed
+     * @throws IOException if there's an error creating the file
+     */
     @Override
     public synchronized boolean initializeUserDataFile() throws IOException {
         File file = new File(USERS_FILE);
@@ -61,6 +85,12 @@ public class Marketplace implements IMarketplace {
         return true;
     }
 
+    /**
+     * Loads all users from the user data file into memory.
+     * 
+     * @return An ArrayList containing all registered users
+     * @throws IOException if there's an error reading the user data file
+     */
     @Override
     public synchronized ArrayList<User> loadAllUsers() throws IOException {
         ArrayList<User> loadedUsers = new ArrayList<>();
@@ -86,6 +116,11 @@ public class Marketplace implements IMarketplace {
         }
     }
 
+    /**
+     * Adds a new item to the marketplace and persists it to the items file.
+     * 
+     * @param item The item to be added to the marketplace
+     */
     public synchronized void addItem(Item item) {
         synchronized (lock) {
             items.add(item);
@@ -93,6 +128,11 @@ public class Marketplace implements IMarketplace {
         }
     }
 
+    /**
+     * Saves an item to the items data file.
+     * 
+     * @param item The item to be saved
+     */
     private synchronized void saveItemToFile(Item item) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(ITEMS_FILE, true))) {
             writer.write(itemToString(item));
@@ -102,6 +142,12 @@ public class Marketplace implements IMarketplace {
         }
     }
 
+    /**
+     * Converts an item to a string representation for file storage.
+     * 
+     * @param item The item to convert
+     * @return A comma-separated string representing the item
+     */
     private String itemToString(Item item) {
         String className = item.getClass().getSimpleName();
         String base = String.format("%s,%s,%.2f,%s,%b,%s,%s",
@@ -132,6 +178,11 @@ public class Marketplace implements IMarketplace {
         return base;
     }
 
+    /**
+     * Loads all items from the items data file into memory.
+     * 
+     * @throws IOException if there's an error reading the items file
+     */
     private synchronized void loadAllItems() throws IOException {
         File file = new File(ITEMS_FILE);
         if (!file.exists()) {
@@ -150,6 +201,12 @@ public class Marketplace implements IMarketplace {
         }
     }
 
+    /**
+     * Parses a line from the items file into an Item object.
+     * 
+     * @param line The line from the items file to parse
+     * @return The parsed Item object, or null if parsing fails
+     */
     private Item parseItem(String line) {
         String[] parts = line.split(",");
         if (parts.length < 7) return null;
@@ -191,6 +248,12 @@ public class Marketplace implements IMarketplace {
         }
     }
 
+    /**
+     * Searches for sellers by username, first name, or last name (case-insensitive).
+     * 
+     * @param sellerSearch The search string to match against seller information
+     * @return A list of matching sellers
+     */
     @Override
     public synchronized ArrayList<User> searchSeller(String sellerSearch) {
         ArrayList<User> result = new ArrayList<>();
@@ -208,6 +271,12 @@ public class Marketplace implements IMarketplace {
         return result;
     }
 
+    /**
+     * Searches for items by name (case-insensitive).
+     * 
+     * @param nameSearch The search string to match against item names
+     * @return A list of matching items
+     */
     @Override
     public synchronized ArrayList<Item> searchByName(String nameSearch) {
         ArrayList<Item> result = new ArrayList<>();
@@ -223,6 +292,12 @@ public class Marketplace implements IMarketplace {
         return result;
     }
 
+    /**
+     * Searches for items by category (case-insensitive exact match).
+     * 
+     * @param categorySearch The category to search for
+     * @return A list of items in the specified category
+     */
     @Override
     public synchronized ArrayList<Item> searchByCategory(String categorySearch) {
         ArrayList<Item> result = new ArrayList<>();
@@ -236,6 +311,13 @@ public class Marketplace implements IMarketplace {
         return result;
     }
 
+    /**
+     * Authenticates a user based on username and password.
+     * 
+     * @param username The username to authenticate
+     * @param password The password to verify
+     * @return The authenticated User object if successful, null otherwise
+     */
     public synchronized User authenticateUser(String username, String password) {
         synchronized (lock) {
             return users.stream()
@@ -245,6 +327,11 @@ public class Marketplace implements IMarketplace {
         }
     }
 
+    /**
+     * Retrieves all available (unsold) items in the marketplace.
+     * 
+     * @return A list of all available items
+     */
     public synchronized ArrayList<Item> getAvailableItems() {
         ArrayList<Item> result = new ArrayList<>();
         synchronized (lock) {
@@ -257,6 +344,13 @@ public class Marketplace implements IMarketplace {
         return result;
     }
 
+    /**
+     * Processes a purchase transaction for an item.
+     * 
+     * @param item The item to be purchased
+     * @param buyer The user purchasing the item
+     * @return true if the purchase was successful, false otherwise
+     */
     public synchronized boolean purchaseItem(Item item, User buyer) {
         synchronized (lock) {
             if (item.sellItem(buyer)) {
@@ -267,6 +361,9 @@ public class Marketplace implements IMarketplace {
         }
     }
 
+    /**
+     * Rewrites the entire items file with current item data.
+     */
     private synchronized void rewriteItemsFile() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(ITEMS_FILE))) {
             for (Item item : items) {
