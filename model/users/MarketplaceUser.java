@@ -1,10 +1,13 @@
 package model.users;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.io.Serializable;
 import java.io.*;
 
 public class MarketplaceUser implements User, Serializable {
+    @Serial
     private static final long serialVersionUID = 1L;
     private static final String USERS_FILE = "users.txt";
     private static final Map<String, String> userCredentials = new HashMap<>();
@@ -27,18 +30,15 @@ public class MarketplaceUser implements User, Serializable {
         this.password = password;
         this.balance = 0.0;
         this.userName = userName;
-        createNewUser(firstName, lastName, userName, password);
     }
 
-    private MarketplaceUser(String firstName, String lastName, String userName, String password, double balance, boolean saveToFile) {
+    public MarketplaceUser(String firstName, String lastName, String userName,
+                           String password, double balance, boolean saveToFile) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.password = password;
         this.balance = balance;
         this.userName = userName;
-        if (saveToFile) {
-            createNewUser(firstName, lastName, userName, password);
-        }
     }
 
     private static synchronized void loadUserCredentials() {
@@ -104,14 +104,14 @@ public class MarketplaceUser implements User, Serializable {
     public void sendMessageTo(String recipientUsername, String message) {
         String messageFilePath = "messages/" + recipientUsername + ".txt";
         File messageFile = new File(messageFilePath);
-        
+
         try {
             File dir = new File("messages");
             if (!dir.exists()) dir.mkdirs();
 
             BufferedWriter writer = new BufferedWriter(new FileWriter(messageFile, true));
             writer.write("FROM: " + this.userName + "\n");
-            
+
             LocalDateTime now = LocalDateTime.now();
             //format time to be prettier
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM d, yyyy: h:mma");
@@ -125,16 +125,16 @@ public class MarketplaceUser implements User, Serializable {
             System.out.println("Failed to send message: " + e.getMessage());
         }
     }
-    
+
     public void viewMessages() {
         String messageFilePath = "messages/" + this.userName + ".txt";
         File messageFile = new File(messageFilePath);
-    
+
         if (!messageFile.exists()) {
             System.out.println("No messages yet.");
             return;
         }
-    
+
         try {
             BufferedReader reader = new BufferedReader(new FileReader(messageFile));
             String line;
@@ -152,7 +152,7 @@ public class MarketplaceUser implements User, Serializable {
         if (!file.exists()) {
             return false;
         }
-    
+
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
             while ((line = reader.readLine()) != null) {
@@ -166,7 +166,7 @@ public class MarketplaceUser implements User, Serializable {
         }
         return false;
     }
-    
+
 
 
     @Override
@@ -183,7 +183,7 @@ public class MarketplaceUser implements User, Serializable {
 
             String userData = String.format("%s,%s,%s,%s,%.2f", userName, password, firstName, lastName, balance);
             saveToFile(userData);
-            
+
             userCredentials.put(userName, password);
             return true;
         }
@@ -246,5 +246,15 @@ public class MarketplaceUser implements User, Serializable {
     @Override
     public synchronized void setBalance(double balance) {
         this.balance = balance;
+    }
+
+    public static MarketplaceUser registerNewUser(String firstName, String lastName, String userName, String password) {
+        if (userCredentials.containsKey(userName)) {
+            System.out.println("Username already exists.");
+            return null;
+        }
+        MarketplaceUser user = new MarketplaceUser(firstName, lastName, userName, password, 0.0, false);
+        user.createNewUser(firstName, lastName, userName, password);
+        return user;
     }
 }
