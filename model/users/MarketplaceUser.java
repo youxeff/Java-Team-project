@@ -3,6 +3,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.io.Serializable;
 import java.io.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class MarketplaceUser implements User, Serializable {
     private static final long serialVersionUID = 1L;
@@ -30,7 +32,7 @@ public class MarketplaceUser implements User, Serializable {
         createNewUser(firstName, lastName, userName, password);
     }
 
-    private MarketplaceUser(String firstName, String lastName, String userName, String password, double balance, boolean saveToFile) {
+    public MarketplaceUser(String firstName, String lastName, String userName, String password, double balance, boolean saveToFile) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.password = password;
