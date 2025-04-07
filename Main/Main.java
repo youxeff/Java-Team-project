@@ -65,11 +65,10 @@ public class Main {
                 System.out.println("Username already exists.");
                 return;
             }
-            MarketplaceUser newUser = new MarketplaceUser(firstName, lastName, username, password);
-            Marketplace marketplace = new Marketplace();
-            marketplace.updateUserData(newUser);
-
-            System.out.println("Registration successful!");
+            MarketplaceUser newUser = MarketplaceUser.registerNewUser(firstName, lastName, username, password);
+            if (newUser != null) {
+                System.out.println("Registration successful!");
+            }
 
         } catch (Exception e) {
             System.out.println("Error during registration: " + e.getMessage());
@@ -104,7 +103,9 @@ public class Main {
             System.out.println("1. View Profile");
             System.out.println("2. Update Balance");
             System.out.println("3. Choose Buy or Sell");
-            System.out.println("4. Logout");
+            System.out.println("4. Send a Message");
+            System.out.println("5. View Messages");
+            System.out.println("6. Logout");
             System.out.print("Choose an option: ");
 
             try {
@@ -120,6 +121,20 @@ public class Main {
                         buyOrSell();
                         break;
                     case 4:
+                        System.out.println("Who do u want to message?");
+                        String recipientUsername = scanner.nextLine();
+                        if (!MarketplaceUser.userExists(recipientUsername)) {
+                            System.out.println("User \"" + recipientUsername + "\" does not exist.");
+                            break;
+                        }
+                        System.out.println("What is your message");
+                        String message = scanner.nextLine();
+                        currentUser.sendMessageTo(recipientUsername, message);
+                        break;
+                    case 5:
+                        currentUser.viewMessages();
+                        break;
+                    case 6:
                         userMenuRunning = false;
                         currentUser = null;
                         System.out.println("Logged out successfully.");
@@ -203,202 +218,218 @@ public class Main {
     }
 
     private static void sellItem() {
-        try {
-            System.out.println("\n=== Add Item for Sale ===");
-
-            System.out.println("Choose a category:");
-            System.out.println("1. Apparel");
-            System.out.println("2. Collectible");
-            System.out.println("3. Electronic");
-            System.out.println("4. Home");
-            System.out.println("5. Vehicle");
-            System.out.print("Enter category number: ");
-            int category = Integer.parseInt(scanner.nextLine());
-
-            Marketplace sellingItems = new Marketplace() {
-                @Override
-                public synchronized ArrayList<User> loadAllUsers() {
-                    return new ArrayList<>();
-                }
-            };
-
-            switch (category) {
-                case 1:
-                    String categoryName = "Apparel";
-                    System.out.println("Enter name of Apparel: ");
-                    String itemName = scanner.nextLine();
-                    System.out.println("Enter cost of Apparel: ");
-                    double itemCost = Double.parseDouble(scanner.nextLine());
-                    System.out.println("Enter image of Apparel: ");
-                    String itemImage = scanner.nextLine();
-                    System.out.println("Enter size of Apparel: ");
-                    String itemSize = scanner.nextLine();
-                    System.out.println("Enter color of Apparel: ");
-                    String itemColor = scanner.nextLine();
-                    System.out.println("Enter brand of Apparel: ");
-                    String itemBrand = scanner.nextLine();
-
-                    Apparel apparel = new Apparel(itemName, itemCost, currentUser, itemImage,
-                            categoryName, itemSize, itemColor, itemBrand);
-                    sellingItems.addItem(apparel);
-
-                    break;
-                case 2:
-                    categoryName = "Collectible";
-                    System.out.println("Enter name of Collectible: ");
-                    itemName = scanner.nextLine();
-                    System.out.println("Enter cost of Collectible: ");
-                    itemCost = Double.parseDouble(scanner.nextLine());
-                    System.out.println("Enter image of Collectible: ");
-                    itemImage = scanner.nextLine();
-                    System.out.println("Enter type of Collectible: ");
-                    String itemType = scanner.nextLine();
-                    System.out.println("Enter condition of Collectible: ");
-                    String itemCondition = scanner.nextLine();
-
-                    Collectible collectile = new Collectible(itemName, itemCost, currentUser,
-                            itemImage, categoryName, itemType, itemCondition);
-                    sellingItems.addItem(collectile);
-
-                    break;
-                case 3:
-                    categoryName = "Electronic";
-                    System.out.println("Enter name of Electronic: ");
-                    itemName = scanner.nextLine();
-                    System.out.println("Enter cost of Electronic: ");
-                    itemCost = Double.parseDouble(scanner.nextLine());
-                    System.out.println("Enter image of Electronic: ");
-                    itemImage = scanner.nextLine();
-                    System.out.println("Enter type of Electronic: ");
-                    itemType = scanner.nextLine();
-                    System.out.println("Enter year of Electronic: ");
-                    int itemYear = Integer.parseInt(scanner.nextLine());
-
-                    Electronic electronic = new Electronic(itemName, itemCost, currentUser, itemImage,
-                            categoryName, itemType, itemYear);
-                    sellingItems.addItem(electronic);
-
-                    break;
-                case 4:
-                    categoryName = "Home";
-                    System.out.println("Enter name of Home: ");
-                    itemName = scanner.nextLine();
-                    System.out.println("Enter cost of Home: ");
-                    itemCost = Double.parseDouble(scanner.nextLine());
-                    System.out.println("Enter image of Home: ");
-                    itemImage = scanner.nextLine();
-                    System.out.println("Enter type of Home: ");
-                    itemType = scanner.nextLine();
-
-                    Home home = new Home(itemName, itemCost, currentUser, itemImage,
-                            categoryName, itemType);
-                    sellingItems.addItem(home);
-
-                    break;
-                case 5:
-                    categoryName = "Vehicle";
-                    System.out.println("Enter name of Vehicle: ");
-                    itemName = scanner.nextLine();
-                    System.out.println("Enter cost of Vehicle: ");
-                    itemCost = Double.parseDouble(scanner.nextLine());
-                    System.out.println("Enter image of Vehicle: ");
-                    itemImage = scanner.nextLine();
-                    System.out.println("Enter mileage of Vehicle: ");
-                    int itemMileage = Integer.parseInt(scanner.nextLine());
-                    System.out.println("Enter year of Vehicle: ");
-                    itemYear = Integer.parseInt(scanner.nextLine());
-                    System.out.println("Enter brand of Vehicle: ");
-                    itemBrand = scanner.nextLine();
-
-                    Vehicle vehicle = new Vehicle (itemName, itemCost, currentUser, itemImage,
-                            categoryName, itemMileage, itemYear, itemBrand);
-                    sellingItems.addItem(vehicle);
-
-                    break;
-                default:
-                    System.out.println("Invalid category.");
-                    return;
-            }
-            System.out.println("Item added successfully!");
-        } catch (NumberFormatException e) {
-            System.out.println("Please enter a valid number.");
-        }
-    }
-
-    private static void buyItem() {
-        try {
+        while (true) {
             try {
-                System.out.println("Choose a category: \n 1. Apparel\n 2. Collectible\n 3. Electronic\n 4. Home\n 5. Vehicle");
-                int categoryChoice = Integer.parseInt(scanner.nextLine());
+                System.out.println("\n=== Add Item for Sale ===");
 
-                String category = "";
-                switch (categoryChoice) {
-                    case 1:
-                        category = "Apparel";
+                System.out.println("Choose a category:");
+                System.out.println("1. Apparel");
+                System.out.println("2. Collectible");
+                System.out.println("3. Electronic");
+                System.out.println("4. Home");
+                System.out.println("5. Vehicle");
+                System.out.println("6. Return ");
+                System.out.print("Enter category number: ");
+                int category = Integer.parseInt(scanner.nextLine());
+
+                Marketplace sellingItems = new Marketplace() {
+                    @Override
+                    public synchronized ArrayList<User> loadAllUsers() {
+                        return new ArrayList<>();
+                    }
+                };
+
+                switch (category) {
+                    case 1: {
+                        String categoryName = "Apparel";
+                        System.out.println("Enter name of Apparel: ");
+                        String itemName = scanner.nextLine();
+                        System.out.println("Enter cost of Apparel: ");
+                        double itemCost = Double.parseDouble(scanner.nextLine());
+                        System.out.println("Enter image of Apparel: ");
+                        String itemImage = scanner.nextLine();
+                        System.out.println("Enter size of Apparel: ");
+                        String itemSize = scanner.nextLine();
+                        System.out.println("Enter color of Apparel: ");
+                        String itemColor = scanner.nextLine();
+                        System.out.println("Enter brand of Apparel: ");
+                        String itemBrand = scanner.nextLine();
+
+                        Apparel apparel = new Apparel(itemName, itemCost, currentUser, itemImage,
+                                categoryName, itemSize, itemColor, itemBrand);
+                        sellingItems.addItem(apparel);
+
                         break;
-                    case 2:
-                        category = "Collectible";
+                    }
+                    case 2: {
+                        String categoryName = "Collectible";
+                        System.out.println("Enter name of Collectible: ");
+                        String itemName = scanner.nextLine();
+                        System.out.println("Enter cost of Collectible: ");
+                        double itemCost = Double.parseDouble(scanner.nextLine());
+                        System.out.println("Enter image of Collectible: ");
+                        String itemImage = scanner.nextLine();
+                        System.out.println("Enter type of Collectible: ");
+                        String itemType = scanner.nextLine();
+                        System.out.println("Enter condition of Collectible: ");
+                        String itemCondition = scanner.nextLine();
+
+                        Collectible collectile = new Collectible(itemName, itemCost, currentUser,
+                                itemImage, categoryName, itemType, itemCondition);
+                        sellingItems.addItem(collectile);
+
                         break;
-                    case 3:
-                        category = "Electronic";
+                    }
+                    case 3: {
+                        String categoryName = "Electronic";
+                        System.out.println("Enter name of Electronic: ");
+                        String itemName = scanner.nextLine();
+                        System.out.println("Enter cost of Electronic: ");
+                        double itemCost = Double.parseDouble(scanner.nextLine());
+                        System.out.println("Enter image of Electronic: ");
+                        String itemImage = scanner.nextLine();
+                        System.out.println("Enter type of Electronic: ");
+                        String itemType = scanner.nextLine();
+                        System.out.println("Enter year of Electronic: ");
+                        int itemYear = Integer.parseInt(scanner.nextLine());
+
+                        Electronic electronic = new Electronic(itemName, itemCost, currentUser, itemImage,
+                                categoryName, itemType, itemYear);
+                        sellingItems.addItem(electronic);
                         break;
-                    case 4:
-                        category = "Home";
+                    }
+                    case 4: {
+                        String categoryName = "Home";
+                        System.out.println("Enter name of Home: ");
+                        String itemName = scanner.nextLine();
+                        System.out.println("Enter cost of Home: ");
+                        double itemCost = Double.parseDouble(scanner.nextLine());
+                        System.out.println("Enter image of Home: ");
+                        String itemImage = scanner.nextLine();
+                        System.out.println("Enter type of Home: ");
+                        String itemType = scanner.nextLine();
+
+                        Home home = new Home(itemName, itemCost, currentUser, itemImage,
+                                categoryName, itemType);
+                        sellingItems.addItem(home);
+
                         break;
-                    case 5:
-                        category = "Vehicle";
+                    }
+                    case 5: {
+                        String categoryName = "Vehicle";
+                        System.out.println("Enter name of Vehicle: ");
+                        String itemName = scanner.nextLine();
+                        System.out.println("Enter cost of Vehicle: ");
+                        double itemCost = Double.parseDouble(scanner.nextLine());
+                        System.out.println("Enter image of Vehicle: ");
+                        String itemImage = scanner.nextLine();
+                        System.out.println("Enter mileage of Vehicle: ");
+                        int itemMileage = Integer.parseInt(scanner.nextLine());
+                        System.out.println("Enter year of Vehicle: ");
+                        int itemYear = Integer.parseInt(scanner.nextLine());
+                        System.out.println("Enter brand of Vehicle: ");
+                        String itemBrand = scanner.nextLine();
+
+                        Vehicle vehicle = new Vehicle(itemName, itemCost, currentUser, itemImage,
+                                categoryName, itemMileage, itemYear, itemBrand);
+                        sellingItems.addItem(vehicle);
                         break;
+                    }
+                    case 6: {
+                        return;
+                    }
                     default:
                         System.out.println("Invalid category.");
                         return;
                 }
-
-                Marketplace marketplace = new Marketplace();
-                ArrayList<Item> categoryItems = marketplace.searchByCategory(category);
-                if (categoryItems.isEmpty()) {
-                    System.out.println("No items found in this category.");
-                    return;
-                }
-
-                System.out.println("\nAvailable Items:");
-                for (int i = 0; i < categoryItems.size(); i++) {
-                    Item item = categoryItems.get(i);
-                    if (item.isAvailable()) {
-                        System.out.printf("[%d] %s - $%.2f (Seller: %s)%n", i + 1,
-                                item.getName(), item.getCost(), item.getSoldBy().getUserName());
-                    }
-                }
-
-                System.out.print("\nEnter the number of the item to purchase: ");
-                int itemIndex = Integer.parseInt(scanner.nextLine()) - 1;
-
-                if (itemIndex < 0 || itemIndex >= categoryItems.size()) {
-                    System.out.println("Invalid item number.");
-                    return;
-                }
-
-                Item selectedItem = categoryItems.get(itemIndex);
-
-                if (selectedItem.getCost() > currentUser.getBalance()) {
-                    System.out.println("Insufficient balance to complete the purchase.");
-                    return;
-                }
-
-                boolean success = marketplace.purchaseItem(selectedItem, currentUser);
-                if (success) {
-                    currentUser.setBalance(currentUser.getBalance() - selectedItem.getCost());
-                    System.out.println("Purchase successful! Remaining Balance: $" + String.format("%.2f", currentUser.getBalance()));
-                } else {
-                    System.out.println("Purchase failed.");
-                }
-
+                System.out.println("Item added successfully!");
             } catch (NumberFormatException e) {
                 System.out.println("Please enter a valid number.");
-            } catch (Exception e) {
-                System.out.println("Error during purchase: " + e.getMessage());
             }
-        } catch (NumberFormatException e) {
-            System.out.println("Please enter a valid number.");
+        }
+    }
+
+    private static void buyItem() {
+        while (true) {
+            try {
+                try {
+                    System.out.println("Choose a category:\n" +
+                            " 1. Apparel\n 2. Collectible\n" +
+                            " 3. Electronic\n 4. Home\n 5. Vehicle\n 6. Exit");
+                    int categoryChoice = Integer.parseInt(scanner.nextLine());
+
+                    String category;
+                    switch (categoryChoice) {
+                        case 1:
+                            category = "Apparel";
+                            break;
+                        case 2:
+                            category = "Collectible";
+                            break;
+                        case 3:
+                            category = "Electronic";
+                            break;
+                        case 4:
+                            category = "Home";
+                            break;
+                        case 5:
+                            category = "Vehicle";
+                            break;
+                        case 6: {
+                            return;
+                        }
+                        default:
+                            System.out.println("Invalid category.");
+                            return;
+                    }
+
+                    Marketplace marketplace = new Marketplace();
+                    ArrayList<Item> categoryItems = marketplace.searchByCategory(category);
+                    if (categoryItems.isEmpty()) {
+                        System.out.println("No items found in this category.");
+                        return;
+                    }
+
+                    System.out.println("\nAvailable Items:");
+                    for (int i = 0; i < categoryItems.size(); i++) {
+                        Item item = categoryItems.get(i);
+                        if (item.isAvailable()) {
+                            System.out.printf("[%d] %s - $%.2f (Seller: %s)%n", i + 1,
+                                    item.getName(), item.getCost(), item.getSoldBy().getUserName());
+                        }
+                    }
+
+                    System.out.print("\nEnter the number of the item to purchase: ");
+                    int itemIndex = Integer.parseInt(scanner.nextLine()) - 1;
+
+                    if (itemIndex < 0 || itemIndex >= categoryItems.size()) {
+                        System.out.println("Invalid item number.");
+                        return;
+                    }
+
+                    Item selectedItem = categoryItems.get(itemIndex);
+
+                    if (selectedItem.getCost() > currentUser.getBalance()) {
+                        System.out.println("Insufficient balance to complete the purchase.");
+                        return;
+                    }
+
+                    boolean success = marketplace.purchaseItem(selectedItem, currentUser);
+                    if (success) {
+                        currentUser.setBalance(currentUser.getBalance() - selectedItem.getCost());
+                        System.out.println("Purchase successful! Remaining Balance: $" + String.format("%.2f", currentUser.getBalance()));
+                    } else {
+                        System.out.println("Purchase failed.");
+                    }
+
+                } catch (NumberFormatException e) {
+                    System.out.println("Please enter a valid number.");
+                } catch (Exception e) {
+                    System.out.println("Error during purchase: " + e.getMessage());
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Please enter a valid number.");
+            }
         }
     }
 }
