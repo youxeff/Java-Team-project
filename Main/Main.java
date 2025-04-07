@@ -10,11 +10,14 @@ import java.nio.file.*;
 import java.util.*;
 import java.io.*;
 
-public class Main {
-    private static Scanner scanner = new Scanner(System.in);
-    private static MarketplaceUser currentUser = null;
+public class Main implements IMain, Runnable {
+    private Scanner scanner = new Scanner(System.in);
+    private MarketplaceUser currentUser = null;
 
     public static void main(String[] args) {
+        new Main().run();
+    }
+    public void run() {
         boolean running = true;
         while (running) {
             System.out.println("\n=== Marketplace System ===");
@@ -46,7 +49,7 @@ public class Main {
         System.out.println("Goodbye!");
     }
 
-    private static void registerUser() {
+    public void registerUser() {
         try {
             System.out.println("\n=== User Registration ===");
             System.out.print("Enter First Name: ");
@@ -75,7 +78,7 @@ public class Main {
         }
     }
 
-    private static void loginUser() {
+    public void loginUser() {
         try {
             System.out.println("\n=== User Login ===");
             System.out.print("Enter Username: ");
@@ -96,7 +99,7 @@ public class Main {
         }
     }
 
-    private static void showUserMenu() {
+    public void showUserMenu() {
         boolean userMenuRunning = true;
         while (userMenuRunning && currentUser != null) {
             System.out.println("\n=== User Menu ===");
@@ -148,7 +151,7 @@ public class Main {
         }
     }
 
-    private static void displayUserProfile() {
+    public void displayUserProfile() {
         System.out.println("\n=== User Profile ===");
         System.out.println("First Name: " + currentUser.getFirstName());
         System.out.println("Last Name: " + currentUser.getLastName());
@@ -156,7 +159,7 @@ public class Main {
         System.out.println("Balance: $" + String.format("%.2f", currentUser.getBalance()));
     }
 
-    private static void updateBalance() {
+    public void updateBalance() {
         try {
             System.out.print("Enter new balance amount: $");
             double newBalance = Double.parseDouble(scanner.nextLine());
@@ -190,7 +193,7 @@ public class Main {
         }
     }
 
-    private static void buyOrSell() {
+    public void buyOrSell() {
         boolean buyOrSellMenu = true;
         while (buyOrSellMenu) {
             try {
@@ -217,7 +220,7 @@ public class Main {
         }
     }
 
-    private static void sellItem() {
+    public void sellItem() {
         while (true) {
             try {
                 System.out.println("\n=== Add Item for Sale ===");
@@ -349,7 +352,7 @@ public class Main {
         }
     }
 
-    private static void buyItem() {
+    public void buyItem() {
         while (true) {
             try {
                 try {
