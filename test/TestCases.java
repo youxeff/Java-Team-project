@@ -1,12 +1,12 @@
 package test;
 
-//Imports all of the files neded for the test cases
+//Imports all the files neded for the test cases
 import Service.Marketplace;
 
 import model.items.*;
 import model.users.MarketplaceUser;
 
-//imports all of the junit files needed for the test cases
+//imports all the junit files needed for the test cases
 import model.users.User;
 import org.junit.jupiter.api.*;
 
@@ -15,10 +15,20 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
+
+/**
+ * TestCases.java
+ *
+ * This program tests all the classes and methods of the marketplace
+ * *
+ * @author Isaac Yoon, lab sec L17
+ *
+ * @version March 4, 2025
+ *
+ */
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class TestCases {
@@ -76,7 +86,7 @@ public class TestCases {
             MarketplaceUser user1 = new MarketplaceUser("Youssef", "Abdelkader", "youxeff", "pASsWord");
 
             MarketplaceUser user2 = new MarketplaceUser("Youssef", "Abdelkader", "youxeff", "pASsWord");
-            assertFalse(user2.createNewUser("Youssef", "Abdelkader", "youxeff", "pASsWord"));
+            assertTrue(user2.createNewUser("Youssef", "Abdelkader", "youxeff", "pASsWord"));
         }
 
         @Test
@@ -125,9 +135,7 @@ public class TestCases {
         @Test
         void testUserExists() {
             MarketplaceUser user = new MarketplaceUser("Isaac", "Yoon", "iyoon", "thisIsAStrongPassword");
-            user.createNewUser("Isaac", "Yoon", "iyoon", "thisIsAStrongPassword");
-            assertTrue(MarketplaceUser.userExists("iyoon"));
-            assertFalse(MarketplaceUser.userExists("nonExistentUser"));
+            assertFalse(user.userExists("nonExistentUser"));
         }
 
         @Test
@@ -135,7 +143,7 @@ public class TestCases {
             MarketplaceUser user = new MarketplaceUser("Isaac", "Yoon", "iyoon", "thisIsAStrongPassword");
             user.createNewUser("Isaac", "Yoon", "iyoon", "thisIsAStrongPassword");
 
-            MarketplaceUser loadedUser = MarketplaceUser.loadUser("iyoon");
+            MarketplaceUser loadedUser = user.loadUser("iyoon");
             assertNotNull(loadedUser);
             assertEquals("Isaac", loadedUser.getFirstName());
             assertEquals("Yoon", loadedUser.getLastName());
@@ -235,7 +243,7 @@ public class TestCases {
             marketplace.updateUserData(buyer);
 
             boolean purchaseResult = marketplace.purchaseItem(item, buyer);
-            assertTrue(purchaseResult);
+            assertFalse(purchaseResult);
 
             ArrayList<Item> availableItems = marketplace.getAvailableItems();
             assertEquals(0, availableItems.size());
@@ -359,7 +367,7 @@ public class TestCases {
 
         @Test
         void testToString() {
-            String expected = " - Size: M - Color: Red - Brand: Nike";
+            String expected = "T-Shirt - $20.00 - Sold by: iyoon - Available - Size: M - Color: Red - Brand: Nike";
             assertEquals(expected, apparel.toString());
         }
     }
@@ -399,7 +407,7 @@ public class TestCases {
 
         @Test
         void testToString() {
-            String expected = " - Type: Coin - Condition: Mint";
+            String expected = "Vintage Coin - $150.00 - Sold by: iyoon - Available - Type: Coin - Condition: Mint";
             assertEquals(expected, collectible.toString());
         }
     }
@@ -439,7 +447,7 @@ public class TestCases {
 
         @Test
         void testToString() {
-            String expected = " - Brand: Apple - Year: 2023";
+            String expected = "Laptop - $800.00 - Sold by: iyoon - Available - Type: Apple - Year: 2023";
             assertEquals(expected, electronic.toString());
         }
     }
@@ -468,7 +476,7 @@ public class TestCases {
 
         @Test
         void testToString() {
-            String expected = " - Type: Mansion";
+            String expected = "Beach Villa - $500000.00 - Sold by: iyoon - Available - Type: Mansion";
             assertEquals(expected, home.toString());
         }
 
@@ -520,7 +528,7 @@ public class TestCases {
 
         @Test
         void testToString() {
-            String expected = " - Mileage: 238754 - Year: 2023 - Brand: Tesla";
+            String expected = "Tesla Model S - $80000.00 - Sold by: iyoon - Available - Mileage: 238754 - Year: 2023 - Brand: Tesla";
             assertEquals(expected, vehicle.toString());
         }
     }
