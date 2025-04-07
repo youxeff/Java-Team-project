@@ -1,4 +1,10 @@
 package model.users;
+
+/**
+ * This program creates an Interface for the MarketplaceUser class.
+ * This is implemented in the MarketplaceUser class for User related functions.
+ */
+
 public interface User {
     String getFirstName();
     String getLastName();
@@ -12,18 +18,8 @@ public interface User {
     void setPassword(String password);
     void setBalance(double balance);
 
-    void loadUserCredentials();
-    boolean verifyCredentials(String userName, String password);
-    void saveToFile(String userData);
-    MarketplaceUser loadUser(String userName);
-    boolean userExists(String recipientUsername);
-    boolean createNewUser(String firstName, String lastName, String userName, String password);
-    
-    
-
     boolean createNewUser(String firstName, String lastName, String userName, String password);
     boolean login(String userName, String password);
     boolean verifyPassword(String inputPassword);
-    MarketplaceUser registerNewUser(String firstName, String lastName, String userName, String password);
 }
 
