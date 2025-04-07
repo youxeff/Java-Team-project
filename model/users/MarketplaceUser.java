@@ -4,10 +4,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
-import java.io.Serializable;
-import java.io.*;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 public class MarketplaceUser implements User, Serializable, Message {
     private static final long serialVersionUID = 1L;
@@ -32,18 +28,15 @@ public class MarketplaceUser implements User, Serializable, Message {
         this.password = password;
         this.balance = 0.0;
         this.userName = userName;
-        createNewUser(firstName, lastName, userName, password);
     }
 
-    public MarketplaceUser(String firstName, String lastName, String userName, String password, double balance, boolean saveToFile) {
+    public MarketplaceUser(String firstName, String lastName, String userName,
+                           String password, double balance, boolean saveToFile) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.password = password;
         this.balance = balance;
         this.userName = userName;
-        if (saveToFile) {
-            createNewUser(firstName, lastName, userName, password);
-        }
     }
 
     private static synchronized void loadUserCredentials() {
@@ -109,14 +102,14 @@ public class MarketplaceUser implements User, Serializable, Message {
     public synchronized void sendMessageTo(String recipientUsername, String message) {
         String messageFilePath = "messages/" + recipientUsername + ".txt";
         File messageFile = new File(messageFilePath);
-        
+
         try {
             File dir = new File("messages");
             if (!dir.exists()) dir.mkdirs();
 
             BufferedWriter writer = new BufferedWriter(new FileWriter(messageFile, true));
             writer.write("FROM: " + this.userName + "\n");
-            
+
             LocalDateTime now = LocalDateTime.now();
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM d, yyyy: h:mma"); // Format time to be prettier
             String formatted = now.format(formatter);
@@ -138,7 +131,7 @@ public class MarketplaceUser implements User, Serializable, Message {
             System.out.println("No messages yet.");
             return;
         }
-    
+
         try {
             BufferedReader reader = new BufferedReader(new FileReader(messageFile));
             String line;
@@ -156,7 +149,7 @@ public class MarketplaceUser implements User, Serializable, Message {
         if (!file.exists()) {
             return false;
         }
-    
+
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
             while ((line = reader.readLine()) != null) {
@@ -170,7 +163,7 @@ public class MarketplaceUser implements User, Serializable, Message {
         }
         return false;
     }
-    
+
 
 
     @Override
@@ -187,7 +180,7 @@ public class MarketplaceUser implements User, Serializable, Message {
 
             String userData = String.format("%s,%s,%s,%s,%.2f", userName, password, firstName, lastName, balance);
             saveToFile(userData);
-            
+
             userCredentials.put(userName, password);
             return true;
         }
@@ -250,5 +243,15 @@ public class MarketplaceUser implements User, Serializable, Message {
     @Override
     public synchronized void setBalance(double balance) {
         this.balance = balance;
+    }
+
+    public static MarketplaceUser registerNewUser(String firstName, String lastName, String userName, String password) {
+        if (userCredentials.containsKey(userName)) {
+            System.out.println("Username already exists.");
+            return null;
+        }
+        MarketplaceUser user = new MarketplaceUser(firstName, lastName, userName, password, 0.0, false);
+        user.createNewUser(firstName, lastName, userName, password);
+        return user;
     }
 }
