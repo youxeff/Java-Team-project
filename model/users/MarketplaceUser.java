@@ -1,10 +1,13 @@
 package model.users;
+import java.io.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.io.Serializable;
 import java.io.*;
 
-public class MarketplaceUser implements User, Serializable {
+public class MarketplaceUser implements User, Serializable, Message {
     private static final long serialVersionUID = 1L;
     private static final String USERS_FILE = "users.txt";
     private static final Map<String, String> userCredentials = new HashMap<>();
@@ -101,7 +104,7 @@ public class MarketplaceUser implements User, Serializable {
         }
     }
 
-    public void sendMessageTo(String recipientUsername, String message) {
+    public synchronized void sendMessageTo(String recipientUsername, String message) {
         String messageFilePath = "messages/" + recipientUsername + ".txt";
         File messageFile = new File(messageFilePath);
         
@@ -113,8 +116,7 @@ public class MarketplaceUser implements User, Serializable {
             writer.write("FROM: " + this.userName + "\n");
             
             LocalDateTime now = LocalDateTime.now();
-            //format time to be prettier
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM d, yyyy: h:mma");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM d, yyyy: h:mma"); // Format time to be prettier
             String formatted = now.format(formatter);
             writer.write("DATE: " + formatted + "\n");
             writer.write(message + "\n");
@@ -126,7 +128,7 @@ public class MarketplaceUser implements User, Serializable {
         }
     }
     
-    public void viewMessages() {
+    public synchronized void viewMessages() {
         String messageFilePath = "messages/" + this.userName + ".txt";
         File messageFile = new File(messageFilePath);
     
@@ -145,7 +147,7 @@ public class MarketplaceUser implements User, Serializable {
         } catch (IOException e) {
             System.out.println("Error reading messages: " + e.getMessage());
         }
-    }
+    }   
 
     public static boolean userExists(String recipientUsername) {
         File file = new File("users.txt");
