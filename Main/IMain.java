@@ -1,5 +1,10 @@
 package Main;
 
+/**
+ * This program creates an Interface for the Main class.
+ * This is implemented in the Main class for user interactions.
+ */
+
 public interface IMain {
 
     void registerUser();

@@ -1,14 +1,17 @@
 package Main;
-import java.util.Scanner;
-
 import Service.Marketplace;
+import java.io.*;
+import java.nio.file.*;
+import java.util.*;
 import model.items.*;
 import model.users.MarketplaceUser;
 import model.users.User;
 
-import java.nio.file.*;
-import java.util.*;
-import java.io.*;
+/**
+ * The {@code Main} class serves as the entry point for the Marketplace system.
+ * It provides a console-based user interface to register users, login, update balances,
+ * view profiles, and buy or sell various items in the marketplace.
+ **/
 
 public class Main implements IMain, Runnable {
     private Scanner scanner = new Scanner(System.in);
