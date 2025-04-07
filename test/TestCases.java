@@ -3,20 +3,18 @@ package test;
 //Imports all of the files neded for the test cases
 import Service.Marketplace;
 
+import model.items.*;
 import model.users.MarketplaceUser;
 
-import model.items.AbstractItem;
-import model.items.Apparel;
-import model.items.Collectible;
-import model.items.Electronic;
-import model.items.Home;
-import model.items.Vehicle;
-
 //imports all of the junit files needed for the test cases
+import model.users.User;
 import org.junit.jupiter.api.*;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -75,7 +73,6 @@ public class TestCases {
         @Test
         void testCreateDuplicateUser() {
             MarketplaceUser user1 = new MarketplaceUser("Youssef", "Abdelkader", "youxeff", "pASsWord");
-            user1.createNewUser("Youssef", "Abdelkader", "youxeff", "pASsWord");
 
             MarketplaceUser user2 = new MarketplaceUser("Youssef", "Abdelkader", "youxeff", "pASsWord");
             assertFalse(user2.createNewUser("Youssef", "Abdelkader", "youxeff", "pASsWord"));
@@ -84,14 +81,12 @@ public class TestCases {
         @Test
         void testLoginSuccess() {
             MarketplaceUser user = new MarketplaceUser("Isaac", "Yoon", "iyoon", "thisIsAStrongPassword");
-            user.createNewUser("Isaac", "Yoon", "iyoon", "thisIsAStrongPassword");
             assertTrue(user.login("iyoon", "thisIsAStrongPassword"));
         }
 
         @Test
         void testLoginFails() {
             MarketplaceUser user = new MarketplaceUser("Isaac", "Yoon", "iyoon", "thisIsAStrongPassword");
-            user.createNewUser("Isaac", "Yoon", "iyoon", "thisIsAStrongPassword");
             assertFalse(user.login("iyoon", "wrongPassword"));
         }
 
@@ -101,16 +96,21 @@ public class TestCases {
             MarketplaceUser user2 = new MarketplaceUser("Arjun", "Anilkumar", "aanil", "anotherStrongPassword");
 
             user1.sendMessageTo("aanil", "Hello, Isaac!");
-            File messageFile = new File(MESSAGES_DIR + "/aanil.txt");
+
             assertTrue(messageFile.exists());
         }
 
         @Test
-        void testViewMessages() {
+        void testViewMessages() throws IOException {
+            BufferedReader br = new BufferedReader(new FileWriter("messages", true));
             MarketplaceUser user = new MarketplaceUser("Isaac", "Yoon", "iyoon", "thisIsAStrongPassword");
+            MarketplaceUser user2 = new MarketplaceUser("Arjun", "Anilkumar", "aanil", "anotherStrongPassword");
+
             user.sendMessageTo("aanil", "Hello, Isaac!");
-            ArrayList<String> messages = user.viewMessages();
-            assertFalse(messages.isEmpty());
+
+            assertTrue(messageFile.exists());
+            String content = br.readLine();
+            assertEquals(content, "Hello, Isaac!");
         }
 
         @Test
@@ -143,15 +143,15 @@ public class TestCases {
 
         @BeforeEach
         void setUp() throws IOException {
-            new File(USERS_FILE).close();
-            new File(ITEMS_FILE).close();
+            new File(USERS_FILE).createNewFile();
+            new File(ITEMS_FILE).createNewFile();
 
             marketplace = new Marketplace();
             testUser = new MarketplaceUser("Isaac", "Yoon", "iyoon", "thisIsAPassword");
             marketplace.updateUserData(testUser);
         }
 
-        @After
+        @AfterEach
         void tearDown() {
             new File(USERS_FILE).delete();
             new File(ITEMS_FILE).delete();
@@ -218,7 +218,7 @@ public class TestCases {
         }
 
         @Test
-        void testPurchaseItem() {
+        void testPurchaseItem() throws IOException {
             AbstractItem item = new Electronic("Laptop", 1000.0, testUser, "laptop.png", "Electronics", "Gaming", 2023);
             marketplace.addItem(item);
 
@@ -238,7 +238,7 @@ public class TestCases {
 
         private AbstractItem testItem;
         private MarketplaceUser seller;
-        private UseMarketplaceUser buyer;
+        private MarketplaceUser buyer;
     
         @BeforeEach
         void setUp() {
@@ -407,8 +407,8 @@ public class TestCases {
         }
 
         @Test
-        void testGetBrand() {
-            assertEquals("Apple", electronic.getBrand());
+        void testGetType() {
+            assertEquals("Apple", electronic.getType());
         }
 
         @Test
@@ -417,9 +417,9 @@ public class TestCases {
         }
 
         @Test
-        void testSetBrand() {
-            electronic.setBrand("Dell");
-            assertEquals("Dell", electronic.getBrand());
+        void testSetType() {
+            electronic.setType("Dell");
+            assertEquals("Dell", electronic.getType());
         }
 
         @Test
