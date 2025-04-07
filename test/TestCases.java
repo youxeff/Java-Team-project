@@ -13,6 +13,7 @@ import org.junit.jupiter.api.*;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -96,20 +97,28 @@ public class TestCases {
             MarketplaceUser user2 = new MarketplaceUser("Arjun", "Anilkumar", "aanil", "anotherStrongPassword");
 
             user1.sendMessageTo("aanil", "Hello, Isaac!");
-
+            File messageFile = new File("messages/aanil.txt");
             assertTrue(messageFile.exists());
         }
 
         @Test
         void testViewMessages() throws IOException {
-            BufferedReader br = new BufferedReader(new FileWriter("messages", true));
+            
             MarketplaceUser user = new MarketplaceUser("Isaac", "Yoon", "iyoon", "thisIsAStrongPassword");
             MarketplaceUser user2 = new MarketplaceUser("Arjun", "Anilkumar", "aanil", "anotherStrongPassword");
-
+            
             user.sendMessageTo("aanil", "Hello, Isaac!");
 
+            File messageFile = new File("messages/aanil.txt");
             assertTrue(messageFile.exists());
+
+            BufferedReader br = new BufferedReader(new FileReader("messages/aanil.txt"));
             String content = br.readLine();
+            assertEquals(content, "FROM: iyoon");
+
+            content = br.readLine(); // Ignore date and time check
+            content = br.readLine();
+
             assertEquals(content, "Hello, Isaac!");
         }
 
