@@ -110,7 +110,10 @@ public class Main implements IMain, Runnable {
             System.out.println("1. View Profile");
             System.out.println("2. Update Balance");
             System.out.println("3. Choose Buy or Sell");
-            System.out.println("4. Logout");
+            System.out.println("4. Send a Message");
+            System.out.println("5. View Messages");
+
+            System.out.println("6. Logout");
             System.out.print("Choose an option: ");
 
             try {
@@ -125,7 +128,21 @@ public class Main implements IMain, Runnable {
                     case 3:
                         buyOrSell();
                         break;
-                    case 4:
+                        case 4:
+                        System.out.println("Who do u want to message?");
+                        String recipientUsername = scanner.nextLine();
+                        if (!MarketplaceUser.userExists(recipientUsername)) {
+                            System.out.println("User \"" + recipientUsername + "\" does not exist.");
+                            break;
+                        }
+                        System.out.println("What is your message");
+                        String message = scanner.nextLine();
+                        currentUser.sendMessageTo(recipientUsername, message);
+                        break;
+                    case 5:
+                        currentUser.viewMessages();
+                        break;
+                    case 6:
                         userMenuRunning = false;
                         currentUser = null;
                         System.out.println("Logged out successfully.");
