@@ -2,6 +2,10 @@ package model.items;
 import java.io.Serializable;
 import java.util.ArrayList;
 import model.users.User;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.List;
 
 /**
  * Abstract base class for all items in the marketplace.
@@ -41,8 +45,48 @@ public abstract class AbstractItem implements Item, Serializable {
         if (!isAvailable || user.getBalance() < cost) {
             return false;
         }
-        user.setBalance(user.getBalance() - cost);
-        soldBy.setBalance(soldBy.getBalance() + cost);
+        
+        // Calculate new balances
+        double buyerNewBalance = user.getBalance() - cost;
+        double sellerNewBalance = soldBy.getBalance() + cost;
+        
+        // Update balances
+        user.setBalance(buyerNewBalance);
+        soldBy.setBalance(sellerNewBalance);
+        
+        // Update the balances in the users.txt file
+        try {
+            File file = new File("users.txt");
+            List<String> lines = Files.readAllLines(file.toPath());
+            List<String> updatedLines = new ArrayList<>();
+
+            for (String line : lines) {
+                String[] parts = line.split(",");
+                if (parts.length >= 5) {
+                    if (parts[0].equals(user.getUserName())) {
+                        // Update buyer's balance
+                        String updatedLine = String.format("%s,%s,%s,%s,%.2f",
+                                parts[0], parts[1], parts[2], parts[3], buyerNewBalance);
+                        updatedLines.add(updatedLine);
+                    } else if (parts[0].equals(soldBy.getUserName())) {
+                        // Update seller's balance
+                        String updatedLine = String.format("%s,%s,%s,%s,%.2f",
+                                parts[0], parts[1], parts[2], parts[3], sellerNewBalance);
+                        updatedLines.add(updatedLine);
+                    } else {
+                        updatedLines.add(line);
+                    }
+                } else {
+                    updatedLines.add(line);
+                }
+            }
+
+            Files.write(file.toPath(), updatedLines);
+        } catch (IOException e) {
+            System.err.println("Error updating balances in file: " + e.getMessage());
+            return false;
+        }
+
         markSold();
         return true;
     }
