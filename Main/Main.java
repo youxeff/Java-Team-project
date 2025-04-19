@@ -162,6 +162,9 @@ public class Main implements IMain, Runnable {
         System.out.println("Last Name: " + currentUser.getLastName());
         System.out.println("Username: " + currentUser.getUserName());
         System.out.println("Balance: $" + String.format("%.2f", currentUser.getBalance()));
+        System.out.printf("Seller Rating: %.1f (%d ratings)%n",
+                currentUser.getAverageSellerRating(),
+                currentUser.getNumberOfRatings());
     }
 
     public void updateBalance() {
@@ -411,6 +414,9 @@ public class Main implements IMain, Runnable {
                 if (success) {
                     currentUser.setBalance(currentUser.getBalance() - selectedItem.getCost());
                     System.out.println("Purchase successful! Remaining Balance: $" + String.format("%.2f", currentUser.getBalance()));
+                    
+                    // Add rating prompt after successful purchase
+                    promptForSellerRating(selectedItem.getSoldBy());
                 } else {
                     System.out.println("Purchase failed.");
                 }
@@ -422,6 +428,27 @@ public class Main implements IMain, Runnable {
             }
         } catch (NumberFormatException e) {
             System.out.println("Please enter a valid number.");
+        }
+    }
+
+    private void promptForSellerRating(User seller) {
+        System.out.println("\nWould you like to rate the seller? (Y/N)");
+        String response = scanner.nextLine();
+        if (response.equalsIgnoreCase("Y")) {
+            System.out.println("Rate the seller from 1-5 (5 being the best):");
+            try {
+                int rating = Integer.parseInt(scanner.nextLine());
+                if (seller.addSellerRating(rating, currentUser)) {
+                    System.out.println("Rating submitted successfully!");
+                    System.out.printf("Seller's current rating: %.1f (%d ratings)%n",
+                            seller.getAverageSellerRating(),
+                            seller.getNumberOfRatings());
+                } else {
+                    System.out.println("Rating must be between 1 and 5.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Please enter a valid number.");
+            }
         }
     }
 }

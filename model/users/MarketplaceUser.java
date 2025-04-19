@@ -15,6 +15,8 @@ public class MarketplaceUser implements User, Serializable, Message {
     private static final Map<String, String> userCredentials = new HashMap<>();
     private static final Object staticLock = new Object();
     private final Object lock = new Object();
+    private final Map<String, Integer> ratings = new HashMap<>();
+    private final Object ratingsLock = new Object();
     
     private String firstName;
     private String lastName;
@@ -32,6 +34,7 @@ public class MarketplaceUser implements User, Serializable, Message {
         this.password = password;
         this.balance = 0.0;
         this.userName = userName;
+        loadRatingsFromFile();
     }
 
     public MarketplaceUser(String firstName, String lastName, String userName,
@@ -41,6 +44,7 @@ public class MarketplaceUser implements User, Serializable, Message {
         this.password = password;
         this.balance = balance;
         this.userName = userName;
+        loadRatingsFromFile();
     }
 
     private static synchronized void loadUserCredentials() {
@@ -168,7 +172,78 @@ public class MarketplaceUser implements User, Serializable, Message {
         return false;
     }
 
+    @Override
+    public synchronized boolean addSellerRating(int rating, User fromUser) {
+        if (rating < 1 || rating > 5) {
+            return false;
+        }
+        
+        synchronized(ratingsLock) {
+            // Each user can only rate a seller once
+            ratings.put(fromUser.getUserName(), rating);
+            saveRatingsToFile();
+            return true;
+        }
+    }
 
+    @Override
+    public synchronized double getAverageSellerRating() {
+        synchronized(ratingsLock) {
+            if (ratings.isEmpty()) {
+                return 0;
+            }
+            double sum = 0;
+            for (int rating : ratings.values()) {
+                sum += rating;
+            }
+            return sum / ratings.size();
+        }
+    }
+
+    @Override
+    public synchronized int getNumberOfRatings() {
+        synchronized(ratingsLock) {
+            return ratings.size();
+        }
+    }
+
+    private void saveRatingsToFile() {
+        String ratingsFile = "ratings/" + this.userName + ".txt";
+        try {
+            File dir = new File("ratings");
+            if (!dir.exists()) dir.mkdirs();
+
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(ratingsFile))) {
+                synchronized(ratingsLock) {
+                    for (Map.Entry<String, Integer> entry : ratings.entrySet()) {
+                        writer.write(String.format("%s,%d%n", entry.getKey(), entry.getValue()));
+                    }
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error saving ratings: " + e.getMessage());
+        }
+    }
+
+    private void loadRatingsFromFile() {
+        String ratingsFile = "ratings/" + this.userName + ".txt";
+        File file = new File(ratingsFile);
+        if (!file.exists()) return;
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line;
+            synchronized(ratingsLock) {
+                while ((line = reader.readLine()) != null) {
+                    String[] parts = line.split(",");
+                    if (parts.length == 2) {
+                        ratings.put(parts[0], Integer.parseInt(parts[1]));
+                    }
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error loading ratings: " + e.getMessage());
+        }
+    }
 
     @Override
     public synchronized boolean createNewUser(String firstName, String lastName, String userName, String password) {
