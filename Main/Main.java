@@ -518,7 +518,7 @@ public class Main implements IMain, Runnable {
 
             boolean success = marketplace.purchaseItem(selectedItem, currentUser);
             if (success) {
-                currentUser.setBalance(currentUser.getBalance() - selectedItem.getCost());
+                // Remove the redundant balance update since it's already handled in purchaseItem
                 System.out.println("Purchase successful! Remaining Balance: $" + String.format("%.2f", currentUser.getBalance()));
                 
                 // Add rating prompt after successful purchase
