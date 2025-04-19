@@ -194,7 +194,7 @@ public class Main implements IMain, Runnable {
     public void updateBalance() {
         try {
             System.out.println("Current balance: $" + String.format("%.2f", currentUser.getBalance()));
-            System.out.println("Enter amount to add (or type 'back' to return to menu): $");
+            System.out.print("Enter amount to add (or type 'back' to return to menu): $");
             String input = scanner.nextLine();
             
             if (input.equalsIgnoreCase("back")) {
