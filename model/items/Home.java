@@ -14,7 +14,7 @@ import model.users.User;
  */
 public class Home extends AbstractItem implements IHome {
     private String type;
-    private final Object lock = new Object();
+    private final Object LOCK = new Object();
 
     /**
      * Constructs a new Home item
@@ -33,22 +33,22 @@ public class Home extends AbstractItem implements IHome {
 
     @Override
     public String getType() {
-        synchronized(lock) {
+        synchronized (LOCK) {
             return type;
         }
     }
 
     @Override
     public void setType(String type) {
-        synchronized(lock) {
+        synchronized (LOCK) {
             this.type = type;
         }
     }
 
     @Override
     public String toString() {
-        synchronized(lock) {
-            return String.format(" - Type: %s", type);
+        synchronized (LOCK) {
+            return super.toString() + String.format(" - Type: %s", type);
         }
     }
 }

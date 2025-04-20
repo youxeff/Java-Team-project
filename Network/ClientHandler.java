@@ -343,12 +343,19 @@ public class ClientHandler implements Runnable {
                 out.println("Enter mileage of Vehicle: ");
                 int itemMileage = Integer.parseInt(in.readLine());
                 out.println("Enter year of Vehicle: ");
-                itemYear = Integer.parseInt(in.readLine());
+                int itemYear = Integer.parseInt(in.readLine());
                 out.println("Enter brand of Vehicle: ");
                 itemBrand = in.readLine();
 
-                Vehicle vehicle = new Vehicle(itemName, itemCost, currentUser, itemImage,
-                        categoryName, itemMileage, itemYear, itemBrand);
+                Vehicle vehicle = new Vehicle(
+                        itemName, 
+                        itemCost, 
+                        currentUser, 
+                        itemImage,
+                        categoryName, 
+                        itemMileage, 
+                        itemYear, 
+                        itemBrand);
                 sellingItems.addItem(vehicle);
                 break;
                 
@@ -423,7 +430,8 @@ public class ClientHandler implements Runnable {
             boolean success = marketplace.purchaseItem(selectedItem, currentUser);
             if (success) {
                 currentUser.setBalance(currentUser.getBalance() - selectedItem.getCost());
-                out.println("Purchase successful! Remaining Balance: $" + String.format("%.2f", currentUser.getBalance()));
+                out.println("Purchase successful! Remaining Balance: $" + 
+                        String.format("%.2f", currentUser.getBalance()));
             } else {
                 out.println("Purchase failed.");
             }

@@ -549,7 +549,9 @@ public class TestCases {
          */
         @Test
         void testToString() {
-            String expected = "T-Shirt - $20.00 - Sold by: iyoon - Available - Size: M - Color: Red - Brand: Nike";
+            String expected = 
+                "T-Shirt - $20.00 - Sold by: iyoon - Available - " + 
+                "Size: M - Color: Red - Brand: Nike";
             assertEquals(expected, apparel.toString());
         }
     }
@@ -616,7 +618,9 @@ public class TestCases {
          */
         @Test
         void testToString() {
-            String expected = "Vintage Coin - $150.00 - Sold by: iyoon - Available - Type: Coin - Condition: Mint";
+            String expected = 
+                "Vintage Coin - $150.00 - Sold by: iyoon - Available - " +
+                "Type: Coin - Condition: Mint";
             assertEquals(expected, collectible.toString());
         }
     }

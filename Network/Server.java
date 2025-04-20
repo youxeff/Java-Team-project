@@ -37,7 +37,9 @@ public class Server {
 
             while (true) {
                 Socket clientSocket = serverSocket.accept();
-                System.out.println("New client connected: " + clientSocket.getInetAddress().getHostAddress());
+                System.out.println(
+                    "New client connected: " + 
+                    clientSocket.getInetAddress().getHostAddress());
                 threadPool.execute(new ClientHandler(clientSocket));
             }
         } catch (IOException e) {
