@@ -279,7 +279,7 @@ public class ClientHandler implements Runnable {
                         categoryName, itemSize, itemColor, itemBrand);
                 sellingItems.addItem(apparel);
                 break;
-                
+
             case 2:
                 categoryName = "Collectible";
                 out.println("Enter name of Collectible: ");
@@ -297,7 +297,7 @@ public class ClientHandler implements Runnable {
                         itemImage, categoryName, itemType, itemCondition);
                 sellingItems.addItem(collectible);
                 break;
-                
+
             case 3:
                 categoryName = "Electronic";
                 out.println("Enter name of Electronic: ");
@@ -315,7 +315,7 @@ public class ClientHandler implements Runnable {
                         categoryName, itemType, itemYear);
                 sellingItems.addItem(electronic);
                 break;
-                
+
             case 4:
                 categoryName = "Home";
                 out.println("Enter name of Home: ");
@@ -331,7 +331,7 @@ public class ClientHandler implements Runnable {
                         categoryName, itemType);
                 sellingItems.addItem(home);
                 break;
-                
+
             case 5:
                 categoryName = "Vehicle";
                 out.println("Enter name of Vehicle: ");
@@ -348,13 +348,13 @@ public class ClientHandler implements Runnable {
                 itemBrand = in.readLine();
 
                 Vehicle vehicle = new Vehicle(
-                        itemName, 
-                        itemCost, 
-                        currentUser, 
+                        itemName,
+                        itemCost,
+                        currentUser,
                         itemImage,
-                        categoryName, 
-                        itemMileage, 
-                        itemYear, 
+                        categoryName,
+                        itemMileage,
+                        itemYear,
                         itemBrand);
                 sellingItems.addItem(vehicle);
                 break;

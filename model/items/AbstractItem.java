@@ -29,7 +29,7 @@ public abstract class AbstractItem implements Item, Serializable {
     protected String image;
     protected String category;
 
-    private final Object LOCK = new Object();
+    private final Object lOCK = new Object();
 
     /**
      * Constructs a new AbstractItem
@@ -50,7 +50,7 @@ public abstract class AbstractItem implements Item, Serializable {
 
     @Override
     public Boolean sellItem(User user) {
-        synchronized (LOCK) {
+        synchronized (lOCK) {
             if (!isAvailable || user.getBalance() < cost) {
                 return false;
             }
@@ -103,7 +103,7 @@ public abstract class AbstractItem implements Item, Serializable {
 
     @Override
     public Boolean deleteItem() {
-        synchronized (LOCK) {
+        synchronized (lOCK) {
             isAvailable = false;
             return true;
         }
@@ -111,14 +111,14 @@ public abstract class AbstractItem implements Item, Serializable {
 
     @Override
     public void markSold() {
-        synchronized (LOCK) {
+        synchronized (lOCK) {
             isAvailable = false;
         }
     }
 
     @Override
     public String toString() {
-        synchronized (LOCK) {
+        synchronized (lOCK) {
             return String.format("%s - $%.2f - Sold by: %s - %s",
                     name, cost, soldBy.getUserName(), isAvailable ? "Available" : "Sold");
         }
@@ -126,42 +126,42 @@ public abstract class AbstractItem implements Item, Serializable {
 
     @Override
     public String getName() { 
-        synchronized (LOCK) { 
+        synchronized (lOCK) {
             return name; 
         }
     }
     
     @Override
     public double getCost() { 
-        synchronized (LOCK) { 
+        synchronized (lOCK) {
             return cost; 
         }
     }
     
     @Override
     public User getSoldBy() { 
-        synchronized (LOCK) { 
+        synchronized (lOCK) {
             return soldBy; 
         }
     }
     
     @Override
     public boolean isAvailable() { 
-        synchronized (LOCK) { 
+        synchronized (lOCK) {
             return isAvailable; 
         }
     }
     
     @Override
     public String getImage() { 
-        synchronized (LOCK) { 
+        synchronized (lOCK) {
             return image; 
         }
     }
     
     @Override
     public String getCategory() { 
-        synchronized (LOCK) { 
+        synchronized (lOCK) {
             return category; 
         }
     }
