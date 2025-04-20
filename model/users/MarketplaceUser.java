@@ -20,14 +20,13 @@ import java.util.Map;
  * @author Youssef Abdelkader
  * @version April 20 2025
  */
-public class MarketplaceUser implements User, Message, Serializable {
-    private static final long SERIAL_VERSION_UID = 1L;
+public class MarketplaceUser implements User, Message, Serializable {private static final long SERIAL_VERSION_UID = 1L;
     private static final String USERS_FILE = "users.txt";
     private static final Map<String, String> USER_CREDENTIALS = new HashMap<>();
     private static final Object STATIC_LOCK = new Object();
-    private final Object LOCK = new Object();
-    private final Map<String, Integer> RATINGS = new HashMap<>();
-    private final Object RATINGS_LOCK = new Object();
+    private final Object lOCK = new Object();
+    private final Map<String, Integer> rATINGS = new HashMap<>();
+    private final Object rATINGSLOCK = new Object();
     private static final Map<String, Object> MESSAGE_FILE_LOCKS = new HashMap<>();
     private static final Object MESSAGE_LOCKS_GUARD = new Object();
     
@@ -38,7 +37,7 @@ public class MarketplaceUser implements User, Message, Serializable {
     private String userName;
 
     static {
-        LOADUSERCREDENTIALS();
+        loadUserCredentials();
     }
 
     /**
@@ -80,7 +79,7 @@ public class MarketplaceUser implements User, Message, Serializable {
      * Loads all user credentials from the persistence file.
      * Synchronized to prevent concurrent access issues.
      */
-    private static synchronized void LOADUSERCREDENTIALS() {
+    private static synchronized void loadUserCredentials() {
         synchronized (STATIC_LOCK) {
             try {
                 File file = new File(USERS_FILE);
@@ -97,8 +96,8 @@ public class MarketplaceUser implements User, Message, Serializable {
                 while ((line = reader.readLine()) != null) {
                     String[] parts = line.split(",");
                     if (parts.length >= 4) {  // username,password,firstName,lastName,balance
-                        // Store entire line containing user data
                         USER_CREDENTIALS.put(parts[0], line);
+                        // store entire line
                     }
                 }
                 reader.close();
@@ -115,7 +114,7 @@ public class MarketplaceUser implements User, Message, Serializable {
      */
     public static synchronized MarketplaceUser loadUser(String inputUserName) {
         synchronized (STATIC_LOCK) {
-            LOADUSERCREDENTIALS();
+            loadUserCredentials();
             if (!USER_CREDENTIALS.containsKey(inputUserName)) return null;
 
             String[] parts = USER_CREDENTIALS.get(inputUserName).split(",");
@@ -134,7 +133,7 @@ public class MarketplaceUser implements User, Message, Serializable {
      */
     public static synchronized boolean verifyCredentials(String inputUserName, String inputPassword) {
         synchronized (STATIC_LOCK) {
-            LOADUSERCREDENTIALS(); // Reload credentials to get latest data
+            loadUserCredentials(); // Reload credentials to get latest data
             return USER_CREDENTIALS.containsKey(inputUserName) &&
                    USER_CREDENTIALS.get(inputUserName).split(",")[1].equals(inputPassword);
         }
@@ -145,7 +144,7 @@ public class MarketplaceUser implements User, Message, Serializable {
      * @param userData Formatted user data string
      */
     private synchronized void saveToFile(String userData) {
-        synchronized (LOCK) {
+        synchronized (lOCK) {
             try {
                 FileWriter fw = new FileWriter(USERS_FILE, true);
                 BufferedWriter bw = new BufferedWriter(fw);
@@ -211,7 +210,7 @@ public class MarketplaceUser implements User, Message, Serializable {
      */
     @Override
     public synchronized ArrayList<String> viewMessages() {
-        synchronized (LOCK) {
+        synchronized (lOCK) {
             ArrayList<String> messages = new ArrayList<>();
             String messageFilePath = "messages/" + this.userName + ".txt";
             File messageFile = new File(messageFilePath);
@@ -271,8 +270,8 @@ public class MarketplaceUser implements User, Message, Serializable {
             return false;
         }
         
-        synchronized (RATINGS_LOCK) {
-            RATINGS.put(fromUser.getUserName(), rating);
+        synchronized (rATINGSLOCK) {
+            rATINGS.put(fromUser.getUserName(), rating);
             saveRatingsToFile();
             return true;
         }
@@ -284,15 +283,15 @@ public class MarketplaceUser implements User, Message, Serializable {
      */
     @Override
     public synchronized double getAverageSellerRating() {
-        synchronized (RATINGS_LOCK) {
-            if (RATINGS.isEmpty()) {
+        synchronized (rATINGSLOCK) {
+            if (rATINGS.isEmpty()) {
                 return 0;
             }
             double sum = 0;
-            for (int rating : RATINGS.values()) {
+            for (int rating : rATINGS.values()) {
                 sum += rating;
             }
-            return sum / RATINGS.size();
+            return sum / rATINGS.size();
         }
     }
 
@@ -302,8 +301,8 @@ public class MarketplaceUser implements User, Message, Serializable {
      */
     @Override
     public synchronized int getNumberOfRatings() {
-        synchronized (RATINGS_LOCK) {
-            return RATINGS.size();
+        synchronized (rATINGSLOCK) {
+            return rATINGS.size();
         }
     }
 
@@ -317,8 +316,8 @@ public class MarketplaceUser implements User, Message, Serializable {
             if (!dir.exists()) dir.mkdirs();
 
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(ratingsFile))) {
-                synchronized (RATINGS_LOCK) {
-                    for (Map.Entry<String, Integer> entry : RATINGS.entrySet()) {
+                synchronized (rATINGSLOCK) {
+                    for (Map.Entry<String, Integer> entry : rATINGS.entrySet()) {
                         writer.write(String.format("%s,%d%n", entry.getKey(), entry.getValue()));
                     }
                 }
@@ -338,11 +337,11 @@ public class MarketplaceUser implements User, Message, Serializable {
 
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
-            synchronized (RATINGS_LOCK) {
+            synchronized (rATINGSLOCK) {
                 while ((line = reader.readLine()) != null) {
                     String[] parts = line.split(",");
                     if (parts.length == 2) {
-                        RATINGS.put(parts[0], Integer.parseInt(parts[1]));
+                        rATINGS.put(parts[0], Integer.parseInt(parts[1]));
                     }
                 }
             }
@@ -360,13 +359,13 @@ public class MarketplaceUser implements User, Message, Serializable {
      * @return true if creation was successful
      */
     @Override
-    public synchronized boolean createNewUser
-    (String newFirstName, String newLastName, 
+    public synchronized boolean createNewUser(
+    String newFirstName, String newLastName,
             String newUserName, String newPassword) {
         synchronized (STATIC_LOCK) {
             if (newFirstName.isEmpty() || newLastName.isEmpty() || 
                 newUserName.isEmpty() || newPassword.isEmpty()) {
-                System.out.println("All fields must be filled.");
+                    System.out.println("All fields must be filled.");
                 return false;
             }
             if (USER_CREDENTIALS.containsKey(newUserName)) {
