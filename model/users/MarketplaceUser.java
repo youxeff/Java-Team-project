@@ -120,7 +120,8 @@ public class MarketplaceUser implements User, Message, Serializable {
             String[] parts = USER_CREDENTIALS.get(inputUserName).split(",");
             if (parts.length < 4) return null;
             double balance = parts.length >= 5 ? Double.parseDouble(parts[4]) : 0.0;
-            return new MarketplaceUser(parts[2], parts[3], parts[0], parts[1], balance, false);
+            return new MarketplaceUser(parts[2], parts[3], parts[0],
+                parts[1], balance, false);
         }
     }
 
@@ -358,7 +359,8 @@ public class MarketplaceUser implements User, Message, Serializable {
      * @return true if creation was successful
      */
     @Override
-    public synchronized boolean createNewUser(String newFirstName, String newLastName, 
+    public synchronized boolean createNewUser
+    (String newFirstName, String newLastName, 
             String newUserName, String newPassword) {
         synchronized (STATIC_LOCK) {
             if (newFirstName.isEmpty() || newLastName.isEmpty() || 
@@ -408,7 +410,7 @@ public class MarketplaceUser implements User, Message, Serializable {
     @Override public synchronized double getBalance() { return balance; }
     @Override public synchronized void setFirstName(String firstName) { this.firstName = firstName; }
     @Override public synchronized void setLastName(String lastName) { this.lastName = lastName; }
-    @Override public synchronized void setUsername(String userName) { this.userName = userName; }
+    @Override public synchronized void setUsername(String newUserName) { this.userName = newUserName; }
     @Override public synchronized void setPassword(String password) { this.password = password; }
     @Override public synchronized void setBalance(double balance) { this.balance = balance; }
 
