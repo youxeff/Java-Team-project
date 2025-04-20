@@ -107,7 +107,8 @@ public class Marketplace implements IMarketplace {
                         String lastName = parts[3];
                         double balance = Double.parseDouble(parts[4]);
 
-                        MarketplaceUser user = new MarketplaceUser(firstName, lastName, userName, password);
+                        MarketplaceUser user = new MarketplaceUser(firstName, lastName, 
+                        userName, password, balance, true);
                         loadedUsers.add(user);
                     }
                 }
@@ -160,15 +161,20 @@ public class Marketplace implements IMarketplace {
                 item.getImage(),
                 item.getCategory());
 
-        if (item instanceof Electronic e) {
+        if (item instanceof Electronic) {
+            Electronic e = (Electronic) item;
             return String.format("%s,%s,%d", base, e.getType(), e.getYear());
-        } else if (item instanceof Apparel a) {
+        } else if (item instanceof Apparel) {
+            Apparel a = (Apparel) item;
             return String.format("%s,%s,%s,%s", base, a.getSize(), a.getColor(), a.getBrand());
-        } else if (item instanceof Home h) {
+        } else if (item instanceof Home) {
+            Home h = (Home) item;
             return String.format("%s,%s", base, h.getType());
-        } else if (item instanceof Vehicle v) {
+        } else if (item instanceof Vehicle) {
+            Vehicle v = (Vehicle) item;
             return String.format("%s,%d,%d,%s", base, v.getMileage(), v.getYear(), v.getBrand());
-        } else if (item instanceof Collectible c) {
+        } else if (item instanceof Collectible) {
+            Collectible c = (Collectible) item;
             return String.format("%s,%s,%s", base, c.getType(), c.getCondition());
         }
         return base;
@@ -222,22 +228,32 @@ public class Marketplace implements IMarketplace {
 
         if (seller == null) return null;
 
+        Item item = null;
         try {
             switch (className) {
                 case "Electronic":
-                    return new Electronic(name, cost, seller, image, category, parts[7], Integer.parseInt(parts[8]));
+                    item = new Electronic(name, cost, seller, image, category, parts[7], Integer.parseInt(parts[8]));
+                    break;
                 case "Apparel":
-                    return new Apparel(name, cost, seller, image, category, parts[7], parts[8], parts[9]);
+                    item = new Apparel(name, cost, seller, image, category, parts[7], parts[8], parts[9]);
+                    break;
                 case "Home":
-                    return new Home(name, cost, seller, image, category, parts[7]);
+                    item = new Home(name, cost, seller, image, category, parts[7]);
+                    break;
                 case "Vehicle":
-                    return new Vehicle(name, cost, seller, image, category,
+                    item = new Vehicle(name, cost, seller, image, category,
                             Integer.parseInt(parts[7]), Integer.parseInt(parts[8]), parts[9]);
+                    break;
                 case "Collectible":
-                    return new Collectible(name, cost, seller, image, category, parts[7], parts[8]);
+                    item = new Collectible(name, cost, seller, image, category, parts[7], parts[8]);
+                    break;
                 default:
                     return null;
             }
+            if (item != null && !isAvailable) {
+                item.markSold();
+            }
+            return item;
         } catch (Exception e) {
             System.err.println("Error parsing item: " + e.getMessage());
             return null;

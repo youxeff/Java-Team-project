@@ -396,8 +396,12 @@ class ClientHandler implements Runnable {
             for (int i = 0; i < categoryItems.size(); i++) {
                 Item item = categoryItems.get(i);
                 if (item.isAvailable()) {
-                    out.println(String.format("[%d] %s - $%.2f (Seller: %s)", i + 1,
-                            item.getName(), item.getCost(), item.getSoldBy().getUserName()));
+                    out.println(String.format(
+                            "[%d] %s - $%.2f (Seller: %s)",
+                            i + 1,
+                            item.getName(),
+                            item.getCost(),
+                            item.getSoldBy().getUserName()));
                 }
             }
 
