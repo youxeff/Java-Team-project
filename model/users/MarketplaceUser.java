@@ -224,6 +224,7 @@ public class MarketplaceUser implements User, Message, Serializable {
         } catch (IOException e) {
             messages.add("Error reading messages: " + e.getMessage());
         }
+        return messages;
     }   
 
     /**
