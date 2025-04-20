@@ -5,7 +5,6 @@ import model.users.User;
  * Represents an apparel item in the marketplace.
  * Extends AbstractItem and implements IApparel interface.
  */
-
 public class Apparel extends AbstractItem implements IApparel {
     private String size;
     private String color;
