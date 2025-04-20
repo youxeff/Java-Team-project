@@ -38,7 +38,7 @@ public class MarketplaceUser implements User, Message, Serializable {
     private String userName;
 
     static {
-        loadUserCredentials();
+        LOADUSERCREDENTIALS();
     }
 
     /**
@@ -80,7 +80,7 @@ public class MarketplaceUser implements User, Message, Serializable {
      * Loads all user credentials from the persistence file.
      * Synchronized to prevent concurrent access issues.
      */
-    private static synchronized void loadUserCredentials() {
+    private static synchronized void LOADUSERCREDENTIALS() {
         synchronized (STATIC_LOCK) {
             try {
                 File file = new File(USERS_FILE);
@@ -97,7 +97,8 @@ public class MarketplaceUser implements User, Message, Serializable {
                 while ((line = reader.readLine()) != null) {
                     String[] parts = line.split(",");
                     if (parts.length >= 4) {  // username,password,firstName,lastName,balance
-                        USER_CREDENTIALS.put(parts[0], line); // store entire line: username,password,firstName,lastName,balance
+                        // Store entire line containing user data
+                        USER_CREDENTIALS.put(parts[0], line);
                     }
                 }
                 reader.close();
@@ -114,7 +115,7 @@ public class MarketplaceUser implements User, Message, Serializable {
      */
     public static synchronized MarketplaceUser loadUser(String inputUserName) {
         synchronized (STATIC_LOCK) {
-            loadUserCredentials();
+            LOADUSERCREDENTIALS();
             if (!USER_CREDENTIALS.containsKey(inputUserName)) return null;
 
             String[] parts = USER_CREDENTIALS.get(inputUserName).split(",");
@@ -133,7 +134,7 @@ public class MarketplaceUser implements User, Message, Serializable {
      */
     public static synchronized boolean verifyCredentials(String inputUserName, String inputPassword) {
         synchronized (STATIC_LOCK) {
-            loadUserCredentials(); // Reload credentials to get latest data
+            LOADUSERCREDENTIALS(); // Reload credentials to get latest data
             return USER_CREDENTIALS.containsKey(inputUserName) &&
                    USER_CREDENTIALS.get(inputUserName).split(",")[1].equals(inputPassword);
         }
@@ -373,8 +374,13 @@ public class MarketplaceUser implements User, Message, Serializable {
                 return false;
             }
 
-            String userData = String.format("%s,%s,%s,%s,%.2f", 
-                newUserName, newPassword, newFirstName, newLastName, balance);
+            String userData = String.format(
+                "%s,%s,%s,%s,%.2f", 
+                newUserName, 
+                newPassword, 
+                newFirstName, 
+                newLastName, 
+                balance);
             saveToFile(userData);
 
             USER_CREDENTIALS.put(newUserName, newPassword);
@@ -428,7 +434,13 @@ public class MarketplaceUser implements User, Message, Serializable {
             System.out.println("Username already exists.");
             return null;
         }
-        MarketplaceUser user = new MarketplaceUser(newFirstName, newLastName, newUserName, newPassword, 0.0, false);
+        MarketplaceUser user = new MarketplaceUser(
+            newFirstName, 
+            newLastName, 
+            newUserName, 
+            newPassword, 
+            0.0, 
+            false);
         user.createNewUser(newFirstName, newLastName, newUserName, newPassword);
         return user;
     }
