@@ -17,6 +17,5 @@ public interface Message {
     /**
      * Displays all messages received by this user.
      */
-    void viewMessages();
     ArrayList<String> viewMessages();
 }
