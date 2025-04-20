@@ -204,7 +204,6 @@ public class MarketplaceUser implements User, Message, Serializable {
     /**
      * Displays all messages received by this user.
      */
-    public synchronized void viewMessages() {
     @Override
     public synchronized ArrayList<String> viewMessages() {
         ArrayList<String> messages = new ArrayList<>();
