@@ -20,7 +20,7 @@ import java.util.Map;
  * @author Youssef Abdelkader
  * @version April 20 2025
  */
-public class MarketplaceUser implements User, Message, Serializable {private static final long SERIAL_VERSION_UID = 1L;
+public class MarketplaceUser implements User, Message, Serializable { private static final long SERIAL_VERSION_UID = 1L;
     private static final String USERS_FILE = "users.txt";
     private static final Map<String, String> USER_CREDENTIALS = new HashMap<>();
     private static final Object STATIC_LOCK = new Object();
@@ -360,12 +360,12 @@ public class MarketplaceUser implements User, Message, Serializable {private sta
      */
     @Override
     public synchronized boolean createNewUser(
-    String newFirstName, String newLastName,
+            String newFirstName, String newLastName,
             String newUserName, String newPassword) {
         synchronized (STATIC_LOCK) {
-            if (newFirstName.isEmpty() || newLastName.isEmpty() || 
-                newUserName.isEmpty() || newPassword.isEmpty()) {
-                    System.out.println("All fields must be filled.");
+            if (newFirstName.isEmpty() || newLastName.isEmpty() ||
+                    newUserName.isEmpty() || newPassword.isEmpty()) {
+                System.out.println("All fields must be filled.");
                 return false;
             }
             if (USER_CREDENTIALS.containsKey(newUserName)) {
