@@ -181,14 +181,14 @@ public class TestCases {
          */
         @Test
         void testUserExists() {
-            MarketplaceUser user = new MarketplaceUser("Isaac", "Yoon", "iyoon", "thisIsAStrongPassword", 0, true);
-            boolean userCreated = user.createNewUser("Isaac", "Yoon", "iyoon", "thisIsAStrongPassword");
+            MarketplaceUser user = new MarketplaceUser("Arjun", "Anilkumar", "arjunA", "thisIsAStrongPassword", 0, true);
+            boolean userCreated = user.createNewUser("Arjun", "Anilkumar", "arjunA", "thisIsAStrongPassword");
             assertTrue(userCreated);
 
-            MarketplaceUser loadedUser = MarketplaceUser.loadUser("iyoon");
+            MarketplaceUser loadedUser = MarketplaceUser.loadUser("arjunA");
             assertFalse(user.userExists("no user"));
 
-            assertTrue(loadedUser.userExists("iyoon"));
+            assertTrue(loadedUser.userExists("arjunA"));
 
             assertFalse(loadedUser.userExists(""));
 
