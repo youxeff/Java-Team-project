@@ -2,12 +2,9 @@ package model.users;
 import java.io.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.io.Serializable;
-import java.io.*;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 public class MarketplaceUser implements User, Serializable, Message {
     private static final long serialVersionUID = 1L;
@@ -127,26 +124,30 @@ public class MarketplaceUser implements User, Serializable, Message {
         }
     }
     
-    public synchronized void viewMessages() {
+    @Override
+    public synchronized ArrayList<String> viewMessages() {
+        ArrayList<String> messages = new ArrayList<>();
         String messageFilePath = "messages/" + this.userName + ".txt";
         File messageFile = new File(messageFilePath);
-    
+
         if (!messageFile.exists()) {
-            System.out.println("No messages yet.");
-            return;
+            return messages;
         }
 
         try {
             BufferedReader reader = new BufferedReader(new FileReader(messageFile));
             String line;
             while ((line = reader.readLine()) != null) {
-                System.out.println(line);
+                messages.add(line);
             }
             reader.close();
         } catch (IOException e) {
-            System.out.println("Error reading messages: " + e.getMessage());
+            messages.add("Error reading messages: " + e.getMessage());
         }
-    }   
+
+        return messages;
+    }
+ 
 
     public static boolean userExists(String recipientUsername) {
         File file = new File("users.txt");
