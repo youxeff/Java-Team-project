@@ -21,35 +21,35 @@ public class Electronic extends AbstractItem implements IElectronic {
      * @param year Manufacturing year of the electronic item
      */
     public Electronic(String name, double cost, User soldBy, String image,
-                      String category, String type, int year) {
+                     String category, String type, int year) {
         super(name, cost, soldBy, image, category);
         this.type = type;
         this.year = year;
     }
 
     @Override
-    public String getType() { 
+    public String getType() {
         synchronized(lock) {
             return type;
         }
     }
     
     @Override
-    public int getYear() { 
+    public int getYear() {
         synchronized(lock) {
             return year;
         }
     }
 
     @Override
-    public void setType(String type) { 
+    public void setType(String type) {
         synchronized(lock) {
             this.type = type;
         }
     }
     
     @Override
-    public void setYear(int year) { 
+    public void setYear(int year) {
         synchronized(lock) {
             this.year = year;
         }
@@ -58,7 +58,7 @@ public class Electronic extends AbstractItem implements IElectronic {
     @Override
     public String toString() {
         synchronized(lock) {
-            return super.toString() + String.format(" - Type: %s - Year: %d", type, year);
+            return super.toString() + String.format(" - Brand: %s - Year: %d", type, year);
         }
     }
 }

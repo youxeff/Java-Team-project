@@ -17,7 +17,7 @@ import model.users.User;
  */
 public class Marketplace implements IMarketplace {
     private ArrayList<User> users;
-    private ArrayList<Item> items;
+    private final ArrayList<Item> items;
     private static final String USERS_FILE = "users.txt";
     private static final String ITEMS_FILE = "items.txt";
     private final Object lock = new Object();
@@ -159,20 +159,15 @@ public class Marketplace implements IMarketplace {
                 item.getImage(),
                 item.getCategory());
 
-        if (item instanceof Electronic) {
-            Electronic e = (Electronic) item;
+        if (item instanceof Electronic e) {
             return String.format("%s,%s,%d", base, e.getType(), e.getYear());
-        } else if (item instanceof Apparel) {
-            Apparel a = (Apparel) item;
+        } else if (item instanceof Apparel a) {
             return String.format("%s,%s,%s,%s", base, a.getSize(), a.getColor(), a.getBrand());
-        } else if (item instanceof Home) {
-            Home h = (Home) item;
+        } else if (item instanceof Home h) {
             return String.format("%s,%s", base, h.getType());
-        } else if (item instanceof Vehicle) {
-            Vehicle v = (Vehicle) item;
+        } else if (item instanceof Vehicle v) {
             return String.format("%s,%d,%d,%s", base, v.getMileage(), v.getYear(), v.getBrand());
-        } else if (item instanceof Collectible) {
-            Collectible c = (Collectible) item;
+        } else if (item instanceof Collectible c) {
             return String.format("%s,%s,%s", base, c.getType(), c.getCondition());
         }
         return base;
