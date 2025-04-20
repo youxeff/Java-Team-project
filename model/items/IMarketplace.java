@@ -6,6 +6,13 @@ import model.users.User;
 /**
  * Represents a marketplace that manages items for sale, sellers, buyers, and user account persistence.
  * Handles transactions, searches, and user data file management.
+ *
+ * @author Youssef Abdelkader
+ * @author Anthony Kim  
+ * @author Caroline Murphy
+ * @author Eric Yen
+ * @author Isaac Yoon
+ * @version April 20 2025
  */
 public interface IMarketplace {
 

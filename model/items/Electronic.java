@@ -4,6 +4,13 @@ import model.users.User;
 /**
  * Represents an electronic item in the marketplace.
  * Extends AbstractItem and implements IElectronic interface.
+ *
+ * @author Youssef Abdelkader
+ * @author Anthony Kim  
+ * @author Caroline Murphy
+ * @author Eric Yen
+ * @author Isaac Yoon
+ * @version April 20 2025
  */
 public class Electronic extends AbstractItem implements IElectronic {
     private String type;

@@ -1,19 +1,20 @@
 package Service;
 import java.io.*;
 import java.util.ArrayList;
-import model.items.Apparel;
-import model.items.Collectible;
-import model.items.Electronic;
-import model.items.Home;
-import model.items.IMarketplace;
-import model.items.Item;
-import model.items.Vehicle;
+import model.items.*;
 import model.users.MarketplaceUser;
 import model.users.User;
 
 /**
  * The Marketplace class implements the IMarketplace interface and serves as the core service
  * for managing users, items, and transactions in the marketplace system.
+ *
+ * @author Youssef Abdelkader
+ * @author Anthony Kim  
+ * @author Caroline Murphy
+ * @author Eric Yen
+ * @author Isaac Yoon
+ * @version April 20 2025
  */
 public class Marketplace implements IMarketplace {
     private ArrayList<User> users;

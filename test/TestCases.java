@@ -19,6 +19,13 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Test suite for the Marketplace system.
  * Contains nested test classes for each major component.
+ *
+ * @author Youssef Abdelkader
+ * @author Anthony Kim  
+ * @author Caroline Murphy
+ * @author Eric Yen
+ * @author Isaac Yoon
+ * @version April 20 2025
  */
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class TestCases {

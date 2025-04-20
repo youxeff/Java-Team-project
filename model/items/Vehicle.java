@@ -4,6 +4,13 @@ import model.users.User;
 /**
  * Represents a vehicle item in the marketplace.
  * Extends AbstractItem and implements IVehicle interface.
+ * 
+ * @author Youssef Abdelkader
+ * @author Anthony Kim  
+ * @author Caroline Murphy
+ * @author Eric Yen
+ * @author Isaac Yoon
+ * @version April 20 2025
  */
 public class Vehicle extends AbstractItem implements IVehicle {
     private int mileage;

@@ -16,6 +16,9 @@ import java.util.Map;
  * 
  * Implements both User and Message interfaces to provide these functionalities.
  * Uses file-based persistence for user data, messages, and ratings.
+ *
+ * @author Youssef Abdelkader
+ * @version April 20 2025
  */
 public class MarketplaceUser implements User, Message, Serializable {
     private static final long serialVersionUID = 1L;
