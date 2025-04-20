@@ -3,21 +3,10 @@ package Network;
 import java.io.*;
 import java.net.*;
 
-/**
- * Client class that handles user connections to the marketplace server.
- * Manages communication between users and the server through a socket connection.
- */
 public class Client {
     private static final String HOST = "localhost";
     private static final int PORT = 12345;
 
-    /**
-     * Main entry point for the client application.
-     * Establishes connection with server and handles I/O streams.
-     * Creates a separate thread for handling server responses.
-     *
-     * @param args command line arguments (not used)
-     */
     public static void main(String[] args) {
         try (Socket socket = new Socket(HOST, PORT);
              BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));

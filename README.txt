@@ -159,47 +159,6 @@ Item Interfaces:
   * getYear()/setYear() - Manages manufacturing year
   * getBrand()/setBrand() - Manages vehicle brand
 
-3.4 NETWORK CLASSES
-
-Server.java
-- Marketplace server implementation
-- Core functionality:
-  * Accepts client connections
-  * Manages thread pool for client handling
-  * Initializes marketplace service
-- Key methods:
-  * startServer() - Starts server and accepts connections
-  * main() - Entry point for server application
-
-Client.java
-- Client-side marketplace interface
-- Core functionality:
-  * Connects to marketplace server
-  * Handles user input/output
-  * Manages server communication
-- Features:
-  * Separate thread for server responses
-  * Clean disconnection handling
-  * Console-based interface
-
-ClientHandler.java
-- Per-client request processor
-- Core functionality:
-  * User authentication
-  * Session management
-  * Transaction processing
-- Key methods:
-  * registerUser() - Handles new user registration
-  * loginUser() - Processes user login
-  * buyOrSell() - Manages marketplace transactions
-  * sendMessage() - Handles user messaging
-  * viewMessages() - Displays user messages
-- User Experience Features:
-  * 'back' option available at all input prompts
-  * Same-line input prompts for better readability
-  * Clear navigation between menus
-  * Consistent input formatting
-
 4. DATA PERSISTENCE IMPLEMENTATION
 ----------------------------------
 
@@ -254,17 +213,3 @@ Purchasing:
 2. Transfer funds
 3. Update item status
 4. Optionally rate seller
-
-5.3 USER INTERFACE IMPROVEMENTS
-
-Navigation:
-1. 'back' option available at every input prompt
-2. Users can return to previous menus at any time
-3. Clear menu hierarchy and navigation paths
-4. Same-line input prompts for better readability
-
-Input Formatting:
-1. Input prompts appear on same line as user input
-2. Consistent formatting across all menus
-3. Clear indication of available options
-4. Input validation with helpful error messages
