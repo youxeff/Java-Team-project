@@ -24,6 +24,8 @@ public class MarketplaceUser implements User, Message, Serializable {
     private final Object lock = new Object();
     private final Map<String, Integer> ratings = new HashMap<>();
     private final Object ratingsLock = new Object();
+    private static final Map<String, Object> messageFileLocks = new HashMap<>();
+    private static final Object messageLocksGuard = new Object();
     
     private String firstName;
     private String lastName;
@@ -150,31 +152,51 @@ public class MarketplaceUser implements User, Message, Serializable {
     }
 
     /**
+     * Gets or creates a lock object for a specific message file
+     * @param username The username whose message file needs locking
+     * @return The lock object for that user's message file
+     */
+    private static Object getMessageFileLock(String username) {
+        synchronized(messageLocksGuard) {
+            return messageFileLocks.computeIfAbsent(username, k -> new Object());
+        }
+    }
+
+    /**
      * Sends a message to another user.
      * @param recipientUsername Username of message recipient
      * @param message Content of the message
      */
-    public synchronized void sendMessageTo(String recipientUsername, String message) {
-        String messageFilePath = "messages/" + recipientUsername + ".txt";
-        File messageFile = new File(messageFilePath);
+    public void sendMessageTo(String recipientUsername, String message) {
+        // Get the lock specific to this recipient's message file
+        Object messageLock = getMessageFileLock(recipientUsername);
+        
+        synchronized(messageLock) {
+            String messageFilePath = "messages/" + recipientUsername + ".txt";
+            File messageFile = new File(messageFilePath);
 
-        try {
-            File dir = new File("messages");
-            if (!dir.exists()) dir.mkdirs();
+            try {
+                File dir = new File("messages");
+                if (!dir.exists()) {
+                    synchronized(messageLocksGuard) {
+                        dir.mkdirs();
+                    }
+                }
 
-            BufferedWriter writer = new BufferedWriter(new FileWriter(messageFile, true));
-            writer.write("FROM: " + this.userName + "\n");
+                try (BufferedWriter writer = new BufferedWriter(new FileWriter(messageFile, true))) {
+                    writer.write("FROM: " + this.userName + "\n");
 
-            LocalDateTime now = LocalDateTime.now();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM d, yyyy: h:mma");
-            String formatted = now.format(formatter);
-            writer.write("DATE: " + formatted + "\n");
-            writer.write(message + "\n");
-            writer.write("-------------------\n");
-            writer.close();
-            System.out.println("Message sent to " + recipientUsername);
-        } catch (IOException e) {
-            System.out.println("Failed to send message: " + e.getMessage());
+                    LocalDateTime now = LocalDateTime.now();
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM d, yyyy: h:mma");
+                    String formatted = now.format(formatter);
+                    writer.write("DATE: " + formatted + "\n");
+                    writer.write(message + "\n");
+                    writer.write("-------------------\n");
+                    System.out.println("Message sent to " + recipientUsername);
+                }
+            } catch (IOException e) {
+                System.out.println("Failed to send message: " + e.getMessage());
+            }
         }
     }
     
