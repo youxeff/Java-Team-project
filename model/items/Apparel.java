@@ -16,7 +16,7 @@ public class Apparel extends AbstractItem implements IApparel {
     private String size;
     private String color;
     private String brand;
-    private final Object lock = new Object();
+    private final Object LOCK = new Object();
 
     /**
      * Constructs a new Apparel item
@@ -39,49 +39,49 @@ public class Apparel extends AbstractItem implements IApparel {
 
     @Override
     public String getSize() {
-        synchronized(lock) {
+        synchronized (LOCK) {
             return size;
         }
     }
     
     @Override
     public String getColor() {
-        synchronized(lock) {
+        synchronized (LOCK) {
             return color;
         }
     }
     
     @Override
     public String getBrand() {
-        synchronized(lock) {
+        synchronized (LOCK) {
             return brand;
         }
     }
 
     @Override
     public void setSize(String size) {
-        synchronized(lock) {
+        synchronized (LOCK) {
             this.size = size;
         }
     }
     
     @Override
     public void setColor(String color) {
-        synchronized(lock) {
+        synchronized (LOCK) {
             this.color = color;
         }
     }
     
     @Override
     public void setBrand(String brand) {
-        synchronized(lock) {
+        synchronized (LOCK) {
             this.brand = brand;
         }
     }
 
     @Override
     public String toString() {
-        synchronized(lock) {
+        synchronized (LOCK) {
             return super.toString() + String.format(" - Size: %s - Color: %s - Brand: %s",
                     size, color, brand);
         }

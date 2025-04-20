@@ -107,8 +107,13 @@ public class Marketplace implements IMarketplace {
                         String lastName = parts[3];
                         double balance = Double.parseDouble(parts[4]);
 
-                        MarketplaceUser user = new MarketplaceUser(firstName, lastName, 
-                        userName, password, balance, true);
+                        MarketplaceUser user = new MarketplaceUser(
+                            firstName, 
+                            lastName, 
+                            userName, 
+                            password, 
+                            balance, 
+                            true);
                         loadedUsers.add(user);
                     }
                 }

@@ -504,7 +504,14 @@ public class Main implements IMain, Runnable {
      */
     public void buyItem() {
         try {
-            System.out.println("Choose a category (or type 'back' to return to menu): \n 1. Apparel\n 2. Collectible\n 3. Electronic\n 4. Home\n 5. Vehicle");
+            System.out.println(
+                "Choose a category (or type 'back' to return to menu):\n" +
+                " 1. Apparel\n" +
+                " 2. Collectible\n" +
+                " 3. Electronic\n" +
+                " 4. Home\n" +
+                " 5. Vehicle"
+            );
             String input = scanner.nextLine();
             
             if (input.equalsIgnoreCase("back")) {
@@ -545,8 +552,13 @@ public class Main implements IMain, Runnable {
             for (int i = 0; i < categoryItems.size(); i++) {
                 Item item = categoryItems.get(i);
                 if (item.isAvailable()) {
-                    System.out.printf("[%d] %s - $%.2f (Seller: %s)%n", i + 1,
-                            item.getName(), item.getCost(), item.getSoldBy().getUserName());
+                    System.out.printf(
+                        "[%d] %s - $%.2f (Seller: %s)\n",  // Line continuation
+                        i + 1,
+                        item.getName(),
+                        item.getCost(),
+                        item.getSoldBy().getUserName()
+                    );
                 }
             }
 
@@ -573,7 +585,10 @@ public class Main implements IMain, Runnable {
 
             boolean success = marketplace.purchaseItem(selectedItem, currentUser);
             if (success) {
-                System.out.println("Purchase successful! Remaining Balance: $" + String.format("%.2f", currentUser.getBalance()));
+                System.out.printf(
+                    "Purchase successful! Remaining Balance: $%.2f%n",
+                    currentUser.getBalance()
+                );
                 promptForSellerRating(selectedItem.getSoldBy());
             } else {
                 System.out.println("Purchase failed.");
