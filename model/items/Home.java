@@ -33,21 +33,21 @@ public class Home extends AbstractItem implements IHome {
 
     @Override
     public String getType() {
-        synchronized(lock) {
+        synchronized (lock) {
             return type;
         }
     }
 
     @Override
     public void setType(String type) {
-        synchronized(lock) {
+        synchronized (lock) {
             this.type = type;
         }
     }
 
     @Override
     public String toString() {
-        synchronized(lock) {
+        synchronized (lock) {
             return super.toString() + String.format(" - Type: %s", type);
         }
     }

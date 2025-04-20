@@ -39,49 +39,49 @@ public class Apparel extends AbstractItem implements IApparel {
 
     @Override
     public String getSize() {
-        synchronized(lock) {
+        synchronized (lock) {
             return size;
         }
     }
     
     @Override
     public String getColor() {
-        synchronized(lock) {
+        synchronized (lock) {
             return color;
         }
     }
     
     @Override
     public String getBrand() {
-        synchronized(lock) {
+        synchronized (lock) {
             return brand;
         }
     }
 
     @Override
     public void setSize(String size) {
-        synchronized(lock) {
+        synchronized (lock) {
             this.size = size;
         }
     }
     
     @Override
     public void setColor(String color) {
-        synchronized(lock) {
+        synchronized (lock) {
             this.color = color;
         }
     }
     
     @Override
     public void setBrand(String brand) {
-        synchronized(lock) {
+        synchronized (lock) {
             this.brand = brand;
         }
     }
 
     @Override
     public String toString() {
-        synchronized(lock) {
+        synchronized (lock) {
             return super.toString() + String.format(" - Size: %s - Color: %s - Brand: %s",
                     size, color, brand);
         }
