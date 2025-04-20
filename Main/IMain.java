@@ -3,6 +3,13 @@ package Main;
 /**
  * Interface defining the core user interaction methods for the Marketplace system.
  * Implemented by the Main class to handle user operations.
+ * 
+ * @author Youssef Abdelkader
+ * @author Anthony Kim  
+ * @author Caroline Murphy
+ * @author Eric Yen
+ * @author Isaac Yoon
+ * @version April 20 2025
  */
 public interface IMain {
 

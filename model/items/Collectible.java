@@ -4,6 +4,13 @@ import model.users.User;
 /**
  * Represents a collectible item in the marketplace.
  * Extends AbstractItem and implements ICollectible interface.
+ *
+ * @author Youssef Abdelkader
+ * @author Anthony Kim  
+ * @author Caroline Murphy
+ * @author Eric Yen
+ * @author Isaac Yoon
+ * @version April 20 2025
  */
 public class Collectible extends AbstractItem implements ICollectible {
     private String type;

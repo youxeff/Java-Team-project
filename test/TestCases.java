@@ -19,6 +19,13 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Test suite for the Marketplace system.
  * Contains nested test classes for each major component.
+ *
+ * @author Youssef Abdelkader
+ * @author Anthony Kim
+ * @author Caroline Murphy
+ * @author Eric Yen
+ * @author Isaac Yoon
+ * @version April 20 2025
  */
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class TestCases {
@@ -105,10 +112,10 @@ public class TestCases {
 
         @Test
         void testViewMessages() throws IOException {
-            
+
             MarketplaceUser user = new MarketplaceUser("Isaac", "Yoon", "iyoon", "thisIsAStrongPassword");
             MarketplaceUser user2 = new MarketplaceUser("Arjun", "Anilkumar", "aanil", "anotherStrongPassword");
-            
+
             user.sendMessageTo("aanil", "Hello, Isaac!");
 
             File messageFile = new File("messages/aanil.txt");
@@ -258,15 +265,16 @@ public class TestCases {
         private AbstractItem testItem;
         private MarketplaceUser seller;
         private MarketplaceUser buyer;
-    
+
         @BeforeEach
         void setUp() {
             seller = new MarketplaceUser("Seller", "Test", "seller123", "thisIsAPassword", 100.0, true);
             buyer = new MarketplaceUser("Buyer", "Test", "buyer123", "password", 50.0, true);
-    
-            testItem = new AbstractItem("Test Item", 30.0, seller, "testImage.png", "Test Category") {};
+
+            testItem = new AbstractItem("Test Item", 30.0, seller, "testImage.png", "Test Category") {
+            };
         }
-    
+
         @Test
         void testSellItemSuccess() {
             boolean result = testItem.sellItem(buyer);
@@ -275,7 +283,7 @@ public class TestCases {
             assertEquals(130.0, seller.getBalance());
             assertFalse(testItem.isAvailable());
         }
-    
+
         @Test
         void testSellItemInsufficientBalance() {
             buyer.setBalance(10.0);
@@ -285,33 +293,33 @@ public class TestCases {
             assertEquals(100.0, seller.getBalance());
             assertTrue(testItem.isAvailable());
         }
-    
+
         @Test
         void testSellItemAlreadySold() {
             testItem.sellItem(buyer);
             boolean result = testItem.sellItem(buyer);
             assertFalse(result);
         }
-    
+
         @Test
         void testDeleteItem() {
             boolean result = testItem.deleteItem();
             assertTrue(result);
             assertFalse(testItem.isAvailable());
         }
-    
+
         @Test
         void testMarkSold() {
             testItem.markSold();
             assertFalse(testItem.isAvailable());
         }
-    
+
         @Test
         void testToString() {
             String expected = "Test Item - $30.00 - Sold by: seller123 - Available";
             assertEquals(expected, testItem.toString());
         }
-    
+
         @Test
         void testGetters() {
             assertEquals("Test Item", testItem.getName());
@@ -509,7 +517,7 @@ public class TestCases {
             user = new MarketplaceUser("Isaac", "Yoon", "iyoon", "thisIsAStrongPassword");
             vehicle = new Vehicle("Tesla Model S", 80000.0, user, "tesla.png", "Vehicles", 238754, 2023, "Tesla");
         }
-        
+
         @Test
         void testGetMileage() {
             assertEquals(238754, vehicle.getMileage());

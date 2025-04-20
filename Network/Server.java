@@ -5,6 +5,17 @@ import java.net.*;
 import java.util.concurrent.*;
 import Service.Marketplace;
 
+/**
+ * Core server implementation for the marketplace system.
+ * Handles client connections with a multithreaded design and shared marketplace instance.
+ *
+ * @author Youssef Abdelkader
+ * @author Anthony Kim  
+ * @author Caroline Murphy
+ * @author Eric Yen
+ * @author Isaac Yoon
+ * @version April 20 2025
+ */
 public class Server {
     private static final int PORT = 12345;
     private ExecutorService threadPool = Executors.newCachedThreadPool();

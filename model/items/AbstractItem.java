@@ -10,6 +10,13 @@ import java.util.List;
 /**
  * Abstract base class for all items in the marketplace.
  * Implements the Item interface and provides common functionality.
+ * 
+ * @author Youssef Abdelkader
+ * @author Anthony Kim  
+ * @author Caroline Murphy
+ * @author Eric Yen
+ * @author Isaac Yoon
+ * @version April 20 2025
  */
 public abstract class AbstractItem implements Item, Serializable {
     private static final long serialVersionUID = 1L;

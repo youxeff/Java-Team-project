@@ -3,6 +3,13 @@ package model.items;
 /**
  * Defines the interface for vehicle items in the marketplace.
  * Specifies vehicle-specific properties and operations.
+ * 
+ * @author Youssef Abdelkader
+ * @author Anthony Kim  
+ * @author Caroline Murphy
+ * @author Eric Yen
+ * @author Isaac Yoon
+ * @version April 20 2025
  */
 public interface IVehicle {
     /**

@@ -11,10 +11,16 @@ import model.users.User;
  * The {@code Main} class serves as the entry point for the Marketplace system.
  * It provides a console-based user interface to register users, login, update balances,
  * view profiles, and buy or sell various items in the marketplace.
- * <p>
+ * 
  * This class implements both the {@code IMain} interface and {@code Runnable} interface
  * to provide the core functionality of the marketplace application.
- * </p>
+ *
+ * @author Youssef Abdelkader
+ * @author Anthony Kim  
+ * @author Caroline Murphy
+ * @author Eric Yen
+ * @author Isaac Yoon
+ * @version April 20 2025
  */
 public class Main implements IMain, Runnable {
     private Scanner scanner = new Scanner(System.in);
@@ -167,7 +173,7 @@ public class Main implements IMain, Runnable {
             System.out.println("5. View Messages");
             System.out.println("6. Logout");
             System.out.print("Choose an option: ");
-
+            
             try {
                 int choice = Integer.parseInt(scanner.nextLine());
                 switch (choice) {
@@ -230,7 +236,7 @@ public class Main implements IMain, Runnable {
      */
     public void updateBalance() {
         try {
-            System.out.println("Current balance: $" + String.format("%.2f", currentUser.getBalance()));
+            System.out.printf("Current balance: $%.2f%n", currentUser.getBalance());
             System.out.print("Enter amount to add (or type 'back' to return to menu): $");
             String input = scanner.nextLine();
             
@@ -311,7 +317,6 @@ public class Main implements IMain, Runnable {
     public void sellItem() {
         try {
             System.out.println("\n=== Add Item for Sale ===");
-
             System.out.println("Choose a category (or type 'back' to return to menu):");
             System.out.println("1. Apparel");
             System.out.println("2. Collectible");
