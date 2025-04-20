@@ -9,6 +9,11 @@ import Service.Marketplace;
 import model.items.*;
 import model.users.MarketplaceUser;
 
+/**
+ * Handles individual client connections to the marketplace server.
+ * Manages user authentication, messaging, and marketplace operations for each client.
+ * Implements Runnable to handle multiple clients concurrently.
+ */
 class ClientHandler implements Runnable {
     private Socket clientSocket;
     private BufferedReader in;
@@ -16,6 +21,13 @@ class ClientHandler implements Runnable {
     private MarketplaceUser currentUser = null;
     private Marketplace marketplace;
 
+    /**
+     * Constructs a new ClientHandler for a connected client.
+     * Initializes I/O streams and marketplace instance.
+     *
+     * @param clientSocket the socket connection to the client
+     * @throws IOException if there's an error setting up the I/O streams
+     */
     public ClientHandler(Socket clientSocket) throws IOException {
         this.clientSocket = clientSocket;
         this.in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
@@ -23,6 +35,10 @@ class ClientHandler implements Runnable {
         this.marketplace = new Marketplace();
     }
 
+    /**
+     * Main client handling loop. Processes client requests and manages user sessions.
+     * Implements the Runnable interface's run method.
+     */
     @Override
     public void run() {
         try {
@@ -67,19 +83,41 @@ class ClientHandler implements Runnable {
         }
     }
 
+    /**
+     * Handles user registration process.
+     * Collects user information and creates new account.
+     *
+     * @throws IOException if there's an error reading client input
+     */
     private void registerUser() throws IOException {
         out.println("\n=== User Registration ===");
-        out.println("Enter First Name: ");
+        out.print("Enter First Name (or 'back' to return): ");
         String firstName = in.readLine();
+        
+        if (firstName.equalsIgnoreCase("back")) {
+            return;
+        }
 
-        out.println("Enter Last Name: ");
+        out.print("Enter Last Name (or 'back' to return): ");
         String lastName = in.readLine();
+        
+        if (lastName.equalsIgnoreCase("back")) {
+            return;
+        }
 
-        out.println("Enter Username: ");
+        out.print("Enter Username (or 'back' to return): ");
         String username = in.readLine();
+        
+        if (username.equalsIgnoreCase("back")) {
+            return;
+        }
 
-        out.println("Enter Password: ");
+        out.print("Enter Password (or 'back' to return): ");
         String password = in.readLine();
+        
+        if (password.equalsIgnoreCase("back")) {
+            return;
+        }
 
         try {
             if (MarketplaceUser.loadUser(username) != null) {
@@ -96,13 +134,27 @@ class ClientHandler implements Runnable {
         }
     }
 
+    /**
+     * Handles user login process.
+     * Verifies credentials and initializes user session.
+     *
+     * @throws IOException if there's an error reading client input
+     */
     private void loginUser() throws IOException {
         out.println("\n=== User Login ===");
-        out.println("Enter Username: ");
+        out.print("Enter Username (or 'back' to return): ");
         String username = in.readLine();
 
-        out.println("Enter Password: ");
+        if (username.equalsIgnoreCase("back")) {
+            return;
+        }
+
+        out.print("Enter Password (or 'back' to return): ");
         String password = in.readLine();
+
+        if (password.equalsIgnoreCase("back")) {
+            return;
+        }
 
         try {
             currentUser = MarketplaceUser.loadUser(username);
@@ -117,6 +169,12 @@ class ClientHandler implements Runnable {
         }
     }
 
+    /**
+     * Displays and handles user menu options after login.
+     * Routes to appropriate functionality based on user choice.
+     *
+     * @throws IOException if there's an error reading client input
+     */
     private void showUserMenu() throws IOException {
         out.println("\n=== User Menu ===");
         out.println("1. View Profile");
@@ -154,6 +212,10 @@ class ClientHandler implements Runnable {
         }
     }
 
+    /**
+     * Displays user profile information.
+     * Shows name, username, and account balance.
+     */
     private void displayUserProfile() {
         out.println("\n=== User Profile ===");
         out.println("First Name: " + currentUser.getFirstName());
@@ -162,9 +224,19 @@ class ClientHandler implements Runnable {
         out.println("Balance: $" + String.format("%.2f", currentUser.getBalance()));
     }
 
+    /**
+     * Updates user's account balance.
+     * Validates and processes balance changes.
+     *
+     * @throws IOException if there's an error updating balance data
+     */
     private void updateBalance() throws IOException {
-        out.println("Enter new balance amount: $");
+        out.print("Enter new balance amount (or 'back' to return): $");
         String balanceInput = in.readLine();
+        
+        if (balanceInput.equalsIgnoreCase("back")) {
+            return;
+        }
         
         try {
             double newBalance = Double.parseDouble(balanceInput);
@@ -198,6 +270,12 @@ class ClientHandler implements Runnable {
         }
     }
 
+    /**
+     * Handles buying and selling menu options.
+     * Routes to appropriate transaction functionality.
+     *
+     * @throws IOException if there's an error processing the transaction
+     */
     private void buyOrSell() throws IOException {
         boolean buyOrSellMenu = true;
         while (buyOrSellMenu) {
@@ -223,19 +301,24 @@ class ClientHandler implements Runnable {
         }
     }
 
+    /**
+     * Handles the process of listing an item for sale.
+     * Collects item details based on category.
+     *
+     * @throws IOException if there's an error creating the listing
+     */
     private void sellItem() throws IOException {
         out.println("\n=== Add Item for Sale ===");
-        out.println("Choose a category:");
-        out.println("1. Apparel");
-        out.println("2. Collectible");
-        out.println("3. Electronic");
-        out.println("4. Home");
-        out.println("5. Vehicle");
-        out.println("Enter category number: ");
+        out.print("Choose a category (or 'back' to return):\n1. Apparel\n2. Collectible\n3. Electronic\n4. Home\n5. Vehicle\nEnter category number: ");
         
+        String input = in.readLine();
+        if (input.equalsIgnoreCase("back")) {
+            return;
+        }
+
         int category;
         try {
-            category = Integer.parseInt(in.readLine());
+            category = Integer.parseInt(input);
         } catch (NumberFormatException e) {
             out.println("Please enter a valid number.");
             return;
@@ -348,10 +431,22 @@ class ClientHandler implements Runnable {
         out.println("Item added successfully!");
     }
 
+    /**
+     * Handles the process of purchasing an item.
+     * Shows available items and processes transaction.
+     *
+     * @throws IOException if there's an error processing the purchase
+     */
     private void buyItem() throws IOException {
         try {
-            out.println("Choose a category: \n 1. Apparel\n 2. Collectible\n 3. Electronic\n 4. Home\n 5. Vehicle");
-            int categoryChoice = Integer.parseInt(in.readLine());
+            out.print("Choose a category (or 'back' to return): \n 1. Apparel\n 2. Collectible\n 3. Electronic\n 4. Home\n 5. Vehicle\nEnter choice: ");
+            String input = in.readLine();
+            
+            if (input.equalsIgnoreCase("back")) {
+                return;
+            }
+            
+            int categoryChoice = Integer.parseInt(input);
 
             String category = "";
             switch (categoryChoice) {
@@ -390,8 +485,14 @@ class ClientHandler implements Runnable {
                 }
             }
 
-            out.println("\nEnter the number of the item to purchase: ");
-            int itemIndex = Integer.parseInt(in.readLine()) - 1;
+            out.print("\nEnter the number of the item to purchase (or 'back' to return): ");
+            input = in.readLine();
+            
+            if (input.equalsIgnoreCase("back")) {
+                return;
+            }
+
+            int itemIndex = Integer.parseInt(input) - 1;
 
             if (itemIndex < 0 || itemIndex >= categoryItems.size()) {
                 out.println("Invalid item number.");
@@ -420,22 +521,40 @@ class ClientHandler implements Runnable {
         }
     }
 
+    /**
+     * Handles sending messages between users.
+     * Validates recipient and delivers message.
+     *
+     * @throws IOException if there's an error sending the message
+     */
     private void sendMessage() throws IOException {
-        out.println("Who do you want to message?");
+        out.print("Who do you want to message? (or 'back' to return): ");
         String recipientUsername = in.readLine();
+        
+        if (recipientUsername.equalsIgnoreCase("back")) {
+            return;
+        }
         
         if (!MarketplaceUser.userExists(recipientUsername)) {
             out.println("User \"" + recipientUsername + "\" does not exist.");
             return;
         }
         
-        out.println("What is your message?");
+        out.print("What is your message? (or 'back' to return): ");
         String message = in.readLine();
+        
+        if (message.equalsIgnoreCase("back")) {
+            return;
+        }
         
         currentUser.sendMessageTo(recipientUsername, message);
         out.println("Message sent successfully!");
     }
 
+    /**
+     * Displays all messages received by the current user.
+     * Shows message content with sender information.
+     */
     private void viewMessages() {
         System.out.println("help");
         ArrayList<String> messages = currentUser.viewMessages();
