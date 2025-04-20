@@ -1,12 +1,8 @@
 package test;
 
-//Imports all of the files neded for the test cases
 import Service.Marketplace;
-
 import model.items.*;
 import model.users.MarketplaceUser;
-
-//imports all of the junit files needed for the test cases
 import model.users.User;
 import org.junit.jupiter.api.*;
 
@@ -20,15 +16,21 @@ import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Test suite for the Marketplace system.
+ * Contains nested test classes for each major component.
+ */
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class TestCases {
-//initializes files for test cases
+    /** File paths used for test data */
     private static final String USERS_FILE = "users.txt";
     private static final String MESSAGES_DIR = "messages";
     private static final String ITEMS_FILE = "items.txt";
 
-
-    //Nested class in order to test the MarketplaceUser class
+    /**
+     * Tests for MarketplaceUser functionality including:
+     * user creation, authentication, messaging, and data persistence.
+     */
     @Nested
     class MarketplaceUserTest {
 
@@ -143,6 +145,10 @@ public class TestCases {
         }
     }
 
+    /**
+     * Tests for Marketplace service functionality including:
+     * user management, item operations, and search features.
+     */
     @Nested
     class MarketplaceTest {
         private static final String USERS_FILE = "users.txt";
@@ -242,6 +248,10 @@ public class TestCases {
         }
     }
 
+    /**
+     * Tests for AbstractItem base class functionality including:
+     * basic item operations and property management.
+     */
     @Nested
     class AbstractItemTest {
 
@@ -313,6 +323,9 @@ public class TestCases {
         }
     }
 
+    /**
+     * Tests for Apparel item type specific functionality.
+     */
     @Nested
     class ApparelTest {
         private Apparel apparel;
@@ -364,6 +377,9 @@ public class TestCases {
         }
     }
 
+    /**
+     * Tests for Collectible item type specific functionality.
+     */
     @Nested
     class CollectibleTest {
         private Collectible collectible;
@@ -404,6 +420,9 @@ public class TestCases {
         }
     }
 
+    /**
+     * Tests for Electronic item type specific functionality.
+     */
     @Nested
     class ElectronicTest {
         private Electronic electronic;
@@ -444,6 +463,9 @@ public class TestCases {
         }
     }
 
+    /**
+     * Tests for Home item type specific functionality.
+     */
     @Nested
     class HomeTest {
         private Home home;
@@ -474,6 +496,9 @@ public class TestCases {
 
     }
 
+    /**
+     * Tests for Vehicle item type specific functionality.
+     */
     @Nested
     class VehicleTest {
         private Vehicle vehicle;

@@ -67,6 +67,17 @@ Marketplace.java
   * Item inventory
   * Transaction processing
   * Search functionality
+- Core methods:
+  * updateUserData() - Updates user information in persistence
+  * initializeUserDataFile() - Creates/verifies data files exist
+  * loadAllUsers() - Loads all users from persistence
+  * addItem() - Adds new item to marketplace
+  * searchSeller() - Finds sellers by name
+  * searchByName() - Finds items by name
+  * searchByCategory() - Finds items by category
+  * authenticateUser() - Verifies user credentials
+  * getAvailableItems() - Lists all unsold items
+  * purchaseItem() - Processes item purchase
 - Updates data to files
 
 3.2 USER MANAGEMENT CLASSES
@@ -86,10 +97,13 @@ MarketplaceUser.java
 
 User.java (Interface)
 - Defines core user operations:
-  * createNewUser()
-  * login()
-  * get/set user attributes
-  * rating management methods
+  * createNewUser() - Creates new user account
+  * login() - Authenticates user credentials
+  * verifyPassword() - Validates user password
+  * get/set methods for user attributes (firstName, lastName, userName, password, balance)
+  * addSellerRating() - Adds rating for seller (1-5)
+  * getAverageSellerRating() - Gets seller's average rating
+  * getNumberOfRatings() - Gets total number of ratings received
 
 Message.java (Interface)
 - Standardizes messaging system:
@@ -117,10 +131,33 @@ Concrete Item Classes:
 - Vehicle.java: Cars/trucks/boats/etc. with mileage/year/model/etc.
 
 Item Interfaces:
-- IApparel/IVehicle/etc: Category-specific contracts
-- Standardize property accessors:
-  * getSize()/setSize() for apparel
-  * getMileage()/setMileage() for vehicles
+- Item.java (Core interface):
+  * sellItem() - Processes sale transaction
+  * deleteItem() - Removes item from marketplace
+  * markSold() - Updates availability status
+  * searchByName()/searchByCategory() - Item search operations
+  * Getters for item properties (name, cost, seller, availability, image, category)
+
+- IApparel.java:
+  * getSize()/setSize() - Manages apparel size
+  * getColor()/setColor() - Manages apparel color
+  * getBrand()/setBrand() - Manages apparel brand
+
+- ICollectible.java:
+  * getType()/setType() - Manages collectible type
+  * getCondition()/setCondition() - Manages collectible condition
+
+- IElectronic.java:
+  * getType()/setType() - Manages electronic type/brand
+  * getYear()/setYear() - Manages manufacturing year
+
+- IHome.java:
+  * getType()/setType() - Manages property type
+
+- IVehicle.java:
+  * getMileage()/setMileage() - Manages vehicle mileage
+  * getYear()/setYear() - Manages manufacturing year
+  * getBrand()/setBrand() - Manages vehicle brand
 
 4. DATA PERSISTENCE IMPLEMENTATION
 ----------------------------------
