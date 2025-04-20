@@ -48,7 +48,7 @@ public class Home extends AbstractItem implements IHome {
     @Override
     public String toString() {
         synchronized(lock) {
-            return super.toString() + String.format(" - Type: %s", type);
+            return String.format(" - Type: %s", type);
         }
     }
 }

@@ -82,7 +82,7 @@ public class Vehicle extends AbstractItem implements IVehicle {
     @Override
     public String toString() {
         synchronized(lock) {
-            return super.toString() + String.format(" - Mileage: %d - Year: %d - Brand: %s",
+            return String.format(" - Mileage: %d - Year: %d - Brand: %s",
                     mileage, year, brand);
         }
     }

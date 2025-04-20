@@ -65,7 +65,7 @@ public class Electronic extends AbstractItem implements IElectronic {
     @Override
     public String toString() {
         synchronized(lock) {
-            return super.toString() + String.format(" - Brand: %s - Year: %d", type, year);
+            return String.format(" - Brand: %s - Year: %d", type, year);
         }
     }
 }
