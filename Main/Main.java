@@ -553,7 +553,7 @@ public class Main implements IMain, Runnable {
                 Item item = categoryItems.get(i);
                 if (item.isAvailable()) {
                     System.out.printf(
-                        "[%d] %s - $%.2f (Seller: %s)\n",  // Line continuation
+                        "[%d] %s - $%.2f (Seller: %s)%n",
                         i + 1,
                         item.getName(),
                         item.getCost(),
