@@ -36,35 +36,35 @@ public class Electronic extends AbstractItem implements IElectronic {
 
     @Override
     public String getType() {
-        synchronized(lock) {
+        synchronized (lock) {
             return type;
         }
     }
     
     @Override
     public int getYear() {
-        synchronized(lock) {
+        synchronized (lock) {
             return year;
         }
     }
 
     @Override
     public void setType(String type) {
-        synchronized(lock) {
+        synchronized (lock) {
             this.type = type;
         }
     }
     
     @Override
     public void setYear(int year) {
-        synchronized(lock) {
+        synchronized (lock) {
             this.year = year;
         }
     }
 
     @Override
     public String toString() {
-        synchronized(lock) {
+        synchronized (lock) {
             return super.toString() + String.format(" - Brand: %s - Year: %d", type, year);
         }
     }

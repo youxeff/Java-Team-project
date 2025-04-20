@@ -36,35 +36,35 @@ public class Collectible extends AbstractItem implements ICollectible {
 
     @Override
     public String getType() {
-        synchronized(lock) {
+        synchronized (lock) {
             return type;
         }
     }
     
     @Override
     public String getCondition() {
-        synchronized(lock) {
+        synchronized (lock) {
             return condition;
         }
     }
 
     @Override
     public void setType(String type) {
-        synchronized(lock) {
+        synchronized (lock) {
             this.type = type;
         }
     }
     
     @Override
     public void setCondition(String condition) {
-        synchronized(lock) {
+        synchronized (lock) {
             this.condition = condition;
         }
     }
 
     @Override
     public String toString() {
-        synchronized(lock) {
+        synchronized (lock) {
             return super.toString() + String.format(" - Type: %s - Condition: %s",
                     type, condition);
         }

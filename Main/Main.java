@@ -585,7 +585,10 @@ public class Main implements IMain, Runnable {
 
             boolean success = marketplace.purchaseItem(selectedItem, currentUser);
             if (success) {
-                System.out.println("Purchase successful! Remaining Balance: $" + String.format("%.2f", currentUser.getBalance()));
+                System.out.printf(
+                    "Purchase successful! Remaining Balance: $%.2f%n",
+                    currentUser.getBalance()
+                );
                 promptForSellerRating(selectedItem.getSoldBy());
             } else {
                 System.out.println("Purchase failed.");
