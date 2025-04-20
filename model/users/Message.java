@@ -1,13 +1,21 @@
 package model.users;
 
+import java.util.ArrayList;
 /**
- * This program creates an Interface for the MarketplaceUser class.
- * This is implemented in the MarketplaceUser class for direct messaging purposes.
+ * Defines the messaging capabilities for marketplace users.
+ * Allows sending messages to other users and viewing received messages.
  */
-
 public interface Message {
     
+    /**
+     * Sends a message to another user.
+     * @param recipientName Username of the message recipient
+     * @param message Content of the message to send
+     */
     void sendMessageTo(String recipientName, String message);
-    void viewMessages();
+    
+    /**
+     * Displays all messages received by this user.
+     */
+    ArrayList<String> viewMessages();
 }
-

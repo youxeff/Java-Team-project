@@ -31,22 +31,52 @@ public class Vehicle extends AbstractItem implements IVehicle {
     }
 
     @Override
-    public synchronized int getMileage() { return mileage; }
+    public int getMileage() {
+        synchronized(lock) {
+            return mileage;
+        }
+    }
+    
     @Override
-    public synchronized int getYear() { return year; }
+    public int getYear() {
+        synchronized(lock) {
+            return year;
+        }
+    }
+    
     @Override
-    public synchronized String getBrand() { return brand; }
+    public String getBrand() {
+        synchronized(lock) {
+            return brand;
+        }
+    }
 
     @Override
-    public synchronized void setMileage(int mileage) { this.mileage = mileage; }
+    public void setMileage(int mileage) {
+        synchronized(lock) {
+            this.mileage = mileage;
+        }
+    }
+    
     @Override
-    public synchronized void setYear(int year) { this.year = year; }
+    public void setYear(int year) {
+        synchronized(lock) {
+            this.year = year;
+        }
+    }
+    
     @Override
-    public synchronized void setBrand(String brand) { this.brand = brand; }
+    public void setBrand(String brand) {
+        synchronized(lock) {
+            this.brand = brand;
+        }
+    }
 
     @Override
-    public synchronized String toString() {
-        return super.toString() + String.format(" - Mileage: %d - Year: %d - Brand: %s",
-                mileage, year, brand);
+    public String toString() {
+        synchronized(lock) {
+            return super.toString() + String.format(" - Mileage: %d - Year: %d - Brand: %s",
+                    mileage, year, brand);
+        }
     }
 }

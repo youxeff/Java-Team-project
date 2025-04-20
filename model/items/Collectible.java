@@ -28,17 +28,38 @@ public class Collectible extends AbstractItem implements ICollectible {
     }
 
     @Override
-    public synchronized String getType() { return type; }
+    public String getType() {
+        synchronized(lock) {
+            return type;
+        }
+    }
+    
     @Override
-    public synchronized String getCondition() { return condition; }
+    public String getCondition() {
+        synchronized(lock) {
+            return condition;
+        }
+    }
 
     @Override
-    public synchronized void setType(String type) { this.type = type; }
+    public void setType(String type) {
+        synchronized(lock) {
+            this.type = type;
+        }
+    }
+    
     @Override
-    public synchronized void setCondition(String condition) { this.condition = condition; }
+    public void setCondition(String condition) {
+        synchronized(lock) {
+            this.condition = condition;
+        }
+    }
 
     @Override
-    public synchronized String toString() {
-        return super.toString() + String.format(" - Type: %s - Condition: %s", type, condition);
+    public String toString() {
+        synchronized(lock) {
+            return super.toString() + String.format(" - Type: %s - Condition: %s",
+                    type, condition);
+        }
     }
 }
