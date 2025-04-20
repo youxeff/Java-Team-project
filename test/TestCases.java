@@ -549,9 +549,8 @@ public class TestCases {
          */
         @Test
         void testToString() {
-            String expected = 
-                "T-Shirt - $20.00 - Sold by: iyoon - Available - " + 
-                "Size: M - Color: Red - Brand: Nike";
+            String expected = "T-Shirt - $20.00 - Sold by: iyoon - " +
+                    "Available - Size: M - Color: Red - Brand: Nike";
             assertEquals(expected, apparel.toString());
         }
     }
@@ -618,9 +617,8 @@ public class TestCases {
          */
         @Test
         void testToString() {
-            String expected = 
-                "Vintage Coin - $150.00 - Sold by: iyoon - Available - " +
-                "Type: Coin - Condition: Mint";
+            String expected = "Vintage Coin - $150.00 - Sold by: iyoon - " +
+                    "Available - Type: Coin - Condition: Mint";
             assertEquals(expected, collectible.toString());
         }
     }
@@ -687,7 +685,8 @@ public class TestCases {
          */
         @Test
         void testToString() {
-            String expected = " - Brand: Apple - Year: 2023";
+            String expected = "Laptop - $800.00 - Sold by: iyoon - " +
+                    "Available - Brand: Apple - Year: 2023";
             assertEquals(expected, electronic.toString());
         }
     }
@@ -735,7 +734,7 @@ public class TestCases {
          */
         @Test
         void testToString() {
-            String expected = " - Type: Mansion";
+            String expected = "Beach Villa - $500000.00 - Sold by: iyoon - Available - Type: Mansion";
             assertEquals(expected, home.toString());
         }
 
@@ -822,7 +821,8 @@ public class TestCases {
          */
         @Test
         void testToString() {
-            String expected = " - Mileage: 238754 - Year: 2023 - Brand: Tesla";
+            String expected = "Tesla Model S - $80000.00 - Sold by: iyoon - " +
+                    "Available - Mileage: 238754 - Year: 2023 - Brand: Tesla";
             assertEquals(expected, vehicle.toString());
         }
     }

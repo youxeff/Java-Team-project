@@ -343,7 +343,7 @@ public class ClientHandler implements Runnable {
                 out.println("Enter mileage of Vehicle: ");
                 int itemMileage = Integer.parseInt(in.readLine());
                 out.println("Enter year of Vehicle: ");
-                int itemYear = Integer.parseInt(in.readLine());
+                itemYear = Integer.parseInt(in.readLine());
                 out.println("Enter brand of Vehicle: ");
                 itemBrand = in.readLine();
 
