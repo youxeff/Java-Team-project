@@ -15,7 +15,7 @@ import model.users.User;
 public class Electronic extends AbstractItem implements IElectronic {
     private String type;
     private int year;
-    private final Object lock = new Object();
+    private final Object LOCK = new Object();
 
     /**
      * Constructs a new Electronic item
@@ -36,35 +36,35 @@ public class Electronic extends AbstractItem implements IElectronic {
 
     @Override
     public String getType() {
-        synchronized (lock) {
+        synchronized (LOCK) {
             return type;
         }
     }
     
     @Override
     public int getYear() {
-        synchronized (lock) {
+        synchronized (LOCK) {
             return year;
         }
     }
 
     @Override
     public void setType(String type) {
-        synchronized (lock) {
+        synchronized (LOCK) {
             this.type = type;
         }
     }
     
     @Override
     public void setYear(int year) {
-        synchronized (lock) {
+        synchronized (LOCK) {
             this.year = year;
         }
     }
 
     @Override
     public String toString() {
-        synchronized (lock) {
+        synchronized (LOCK) {
             return super.toString() + String.format(" - Brand: %s - Year: %d", type, year);
         }
     }

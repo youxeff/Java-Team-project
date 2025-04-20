@@ -423,7 +423,8 @@ class ClientHandler implements Runnable {
             boolean success = marketplace.purchaseItem(selectedItem, currentUser);
             if (success) {
                 currentUser.setBalance(currentUser.getBalance() - selectedItem.getCost());
-                out.println("Purchase successful! Remaining Balance: $" + String.format("%.2f", currentUser.getBalance()));
+                out.println("Purchase successful! Remaining Balance: $" + 
+                String.format("%.2f", currentUser.getBalance()));
             } else {
                 out.println("Purchase failed.");
             }

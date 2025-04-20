@@ -20,7 +20,7 @@ import Service.Marketplace;
  * @version April 20 2025
  */
 public abstract class AbstractItem implements Item, Serializable {
-    private static final long serialVersionUID = 1L;
+    private static final long SERIAL_VERSION_UID = 1L;
 
     protected String name;
     protected double cost;
@@ -29,7 +29,7 @@ public abstract class AbstractItem implements Item, Serializable {
     protected String image;
     protected String category;
 
-    private final Object lock = new Object();
+    private final Object LOCK = new Object();
 
     /**
      * Constructs a new AbstractItem
@@ -50,7 +50,7 @@ public abstract class AbstractItem implements Item, Serializable {
 
     @Override
     public Boolean sellItem(User user) {
-        synchronized (lock) {
+        synchronized (LOCK) {
             if (!isAvailable || user.getBalance() < cost) {
                 return false;
             }
@@ -103,7 +103,7 @@ public abstract class AbstractItem implements Item, Serializable {
 
     @Override
     public Boolean deleteItem() {
-        synchronized (lock) {
+        synchronized (LOCK) {
             isAvailable = false;
             return true;
         }
@@ -111,14 +111,14 @@ public abstract class AbstractItem implements Item, Serializable {
 
     @Override
     public void markSold() {
-        synchronized (lock) {
+        synchronized (LOCK) {
             isAvailable = false;
         }
     }
 
     @Override
     public String toString() {
-        synchronized (lock) {
+        synchronized (LOCK) {
             return String.format("%s - $%.2f - Sold by: %s - %s",
                     name, cost, soldBy.getUserName(), isAvailable ? "Available" : "Sold");
         }
@@ -126,42 +126,42 @@ public abstract class AbstractItem implements Item, Serializable {
 
     @Override
     public String getName() { 
-        synchronized (lock) { 
+        synchronized (LOCK) { 
             return name; 
         }
     }
     
     @Override
     public double getCost() { 
-        synchronized (lock) { 
+        synchronized (LOCK) { 
             return cost; 
         }
     }
     
     @Override
     public User getSoldBy() { 
-        synchronized (lock) { 
+        synchronized (LOCK) { 
             return soldBy; 
         }
     }
     
     @Override
     public boolean isAvailable() { 
-        synchronized (lock) { 
+        synchronized (LOCK) { 
             return isAvailable; 
         }
     }
     
     @Override
     public String getImage() { 
-        synchronized (lock) { 
+        synchronized (LOCK) { 
             return image; 
         }
     }
     
     @Override
     public String getCategory() { 
-        synchronized (lock) { 
+        synchronized (LOCK) { 
             return category; 
         }
     }

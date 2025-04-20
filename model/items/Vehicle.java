@@ -16,7 +16,7 @@ public class Vehicle extends AbstractItem implements IVehicle {
     private int mileage;
     private int year;
     private String brand;
-    private final Object lock = new Object();
+    private final Object LOCK = new Object();
 
     /**
      * Constructs a new Vehicle item
@@ -39,49 +39,49 @@ public class Vehicle extends AbstractItem implements IVehicle {
 
     @Override
     public int getMileage() {
-        synchronized (lock) {
+        synchronized (LOCK) {
             return mileage;
         }
     }
     
     @Override
     public int getYear() {
-        synchronized (lock) {
+        synchronized (LOCK) {
             return year;
         }
     }
     
     @Override
     public String getBrand() {
-        synchronized (lock) {
+        synchronized (LOCK) {
             return brand;
         }
     }
 
     @Override
     public void setMileage(int mileage) {
-        synchronized (lock) {
+        synchronized (LOCK) {
             this.mileage = mileage;
         }
     }
     
     @Override
     public void setYear(int year) {
-        synchronized (lock) {
+        synchronized (LOCK) {
             this.year = year;
         }
     }
     
     @Override
     public void setBrand(String brand) {
-        synchronized (lock) {
+        synchronized (LOCK) {
             this.brand = brand;
         }
     }
 
     @Override
     public String toString() {
-        synchronized (lock) {
+        synchronized (LOCK) {
             return super.toString() + String.format(" - Mileage: %d - Year: %d - Brand: %s",
                     mileage, year, brand);
         }

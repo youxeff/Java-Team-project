@@ -15,7 +15,7 @@ import model.users.User;
 public class Collectible extends AbstractItem implements ICollectible {
     private String type;
     private String condition;
-    private final Object lock = new Object();
+    private final Object LOCK = new Object();
 
     /**
      * Constructs a new Collectible item
@@ -36,35 +36,35 @@ public class Collectible extends AbstractItem implements ICollectible {
 
     @Override
     public String getType() {
-        synchronized (lock) {
+        synchronized (LOCK) {
             return type;
         }
     }
     
     @Override
     public String getCondition() {
-        synchronized (lock) {
+        synchronized (LOCK) {
             return condition;
         }
     }
 
     @Override
     public void setType(String type) {
-        synchronized (lock) {
+        synchronized (LOCK) {
             this.type = type;
         }
     }
     
     @Override
     public void setCondition(String condition) {
-        synchronized (lock) {
+        synchronized (LOCK) {
             this.condition = condition;
         }
     }
 
     @Override
     public String toString() {
-        synchronized (lock) {
+        synchronized (LOCK) {
             return super.toString() + String.format(" - Type: %s - Condition: %s",
                     type, condition);
         }
