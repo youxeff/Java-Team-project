@@ -4,6 +4,13 @@ import model.users.User;
 
 /**
  * Interface defining the common functionality for all items in the marketplace.
+ * 
+ * @version April 20 2025
+ * @author Youssef Abdelkader
+ * @author Anthony Kim  
+ * @author Caroline Murphy
+ * @author Eric Yen
+ * @author Isaac Yoon
  */
 public interface Item {
     /**

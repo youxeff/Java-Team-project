@@ -3,6 +3,13 @@ package model.users;
 /**
  * Defines core user functionality for the marketplace system.
  * Includes account management, authentication, and seller rating capabilities.
+ * 
+ * @author Youssef Abdelkader
+ * @author Anthony Kim  
+ * @author Caroline Murphy
+ * @author Eric Yen
+ * @author Isaac Yoon
+ * @version April 20 2025
  */
 public interface User {
     /**

@@ -4,12 +4,19 @@ import model.users.User;
 /**
  * Represents an apparel item in the marketplace.
  * Extends AbstractItem and implements IApparel interface.
+ *
+ * @author Youssef Abdelkader
+ * @author Anthony Kim  
+ * @author Caroline Murphy
+ * @author Eric Yen
+ * @author Isaac Yoon
+ * @version April 20 2025
  */
 public class Apparel extends AbstractItem implements IApparel {
     private String size;
     private String color;
     private String brand;
-    private final Object lock = new Object();
+    private final Object lOCK = new Object();
 
     /**
      * Constructs a new Apparel item
@@ -32,49 +39,49 @@ public class Apparel extends AbstractItem implements IApparel {
 
     @Override
     public String getSize() {
-        synchronized(lock) {
+        synchronized (lOCK) {
             return size;
         }
     }
     
     @Override
     public String getColor() {
-        synchronized(lock) {
+        synchronized (lOCK) {
             return color;
         }
     }
     
     @Override
     public String getBrand() {
-        synchronized(lock) {
+        synchronized (lOCK) {
             return brand;
         }
     }
 
     @Override
     public void setSize(String size) {
-        synchronized(lock) {
+        synchronized (lOCK) {
             this.size = size;
         }
     }
     
     @Override
     public void setColor(String color) {
-        synchronized(lock) {
+        synchronized (lOCK) {
             this.color = color;
         }
     }
     
     @Override
     public void setBrand(String brand) {
-        synchronized(lock) {
+        synchronized (lOCK) {
             this.brand = brand;
         }
     }
 
     @Override
     public String toString() {
-        synchronized(lock) {
+        synchronized (lOCK) {
             return super.toString() + String.format(" - Size: %s - Color: %s - Brand: %s",
                     size, color, brand);
         }

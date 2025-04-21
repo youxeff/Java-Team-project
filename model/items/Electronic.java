@@ -4,11 +4,18 @@ import model.users.User;
 /**
  * Represents an electronic item in the marketplace.
  * Extends AbstractItem and implements IElectronic interface.
+ *
+ * @author Youssef Abdelkader
+ * @author Anthony Kim  
+ * @author Caroline Murphy
+ * @author Eric Yen
+ * @author Isaac Yoon
+ * @version April 20 2025
  */
 public class Electronic extends AbstractItem implements IElectronic {
     private String type;
     private int year;
-    private final Object lock = new Object();
+    private final Object lOCK = new Object();
 
     /**
      * Constructs a new Electronic item
@@ -29,35 +36,35 @@ public class Electronic extends AbstractItem implements IElectronic {
 
     @Override
     public String getType() {
-        synchronized(lock) {
+        synchronized (lOCK) {
             return type;
         }
     }
     
     @Override
     public int getYear() {
-        synchronized(lock) {
+        synchronized (lOCK) {
             return year;
         }
     }
 
     @Override
     public void setType(String type) {
-        synchronized(lock) {
+        synchronized (lOCK) {
             this.type = type;
         }
     }
     
     @Override
     public void setYear(int year) {
-        synchronized(lock) {
+        synchronized (lOCK) {
             this.year = year;
         }
     }
 
     @Override
     public String toString() {
-        synchronized(lock) {
+        synchronized (lOCK) {
             return super.toString() + String.format(" - Brand: %s - Year: %d", type, year);
         }
     }

@@ -9,7 +9,18 @@ import Service.Marketplace;
 import model.items.*;
 import model.users.MarketplaceUser;
 
-class ClientHandler implements Runnable {
+/**
+ * Per-client connection manager for the marketplace system.
+ * Handles all marketplace functionality, session management, and input validation.
+ * 
+ * @author Youssef Abdelkader
+ * @author Anthony Kim  
+ * @author Caroline Murphy
+ * @author Eric Yen
+ * @author Isaac Yoon
+ * @version April 20 2025
+ */
+public class ClientHandler implements Runnable {
     private Socket clientSocket;
     private BufferedReader in;
     private PrintWriter out;
@@ -35,7 +46,7 @@ class ClientHandler implements Runnable {
                     out.println("1. Register New User");
                     out.println("2. Login");
                     out.println("3. Exit");
-                    out.println("Choose an option: ");
+                    out.print("Choose an option: ");
                     
                     String choice = in.readLine();
                     switch (choice) {
@@ -67,18 +78,18 @@ class ClientHandler implements Runnable {
         }
     }
 
-    private void registerUser() throws IOException {
+    public void registerUser() throws IOException {
         out.println("\n=== User Registration ===");
-        out.println("Enter First Name: ");
+        out.print("Enter First Name: ");
         String firstName = in.readLine();
 
-        out.println("Enter Last Name: ");
+        out.print("Enter Last Name: ");
         String lastName = in.readLine();
 
-        out.println("Enter Username: ");
+        out.print("Enter Username: ");
         String username = in.readLine();
 
-        out.println("Enter Password: ");
+        out.print("Enter Password: ");
         String password = in.readLine();
 
         try {
@@ -96,12 +107,12 @@ class ClientHandler implements Runnable {
         }
     }
 
-    private void loginUser() throws IOException {
+    public void loginUser() throws IOException {
         out.println("\n=== User Login ===");
-        out.println("Enter Username: ");
+        out.print("Enter Username: ");
         String username = in.readLine();
 
-        out.println("Enter Password: ");
+        out.print("Enter Password: ");
         String password = in.readLine();
 
         try {
@@ -125,7 +136,7 @@ class ClientHandler implements Runnable {
         out.println("4. Send a Message");
         out.println("5. View Messages");
         out.println("6. Logout");
-        out.println("Choose an option: ");
+        out.print("Choose an option: ");
 
         String choice = in.readLine();
         System.out.println("what is this why isn't it wokring");
@@ -162,8 +173,8 @@ class ClientHandler implements Runnable {
         out.println("Balance: $" + String.format("%.2f", currentUser.getBalance()));
     }
 
-    private void updateBalance() throws IOException {
-        out.println("Enter new balance amount: $");
+    public void updateBalance() throws IOException {
+        out.print("Enter new balance amount: $");
         String balanceInput = in.readLine();
         
         try {
@@ -204,7 +215,7 @@ class ClientHandler implements Runnable {
             out.println("1. Sell");
             out.println("2. Buy");
             out.println("3. Exit");
-            out.println("Choose an option: ");
+            out.print("Choose an option: ");
             
             String choice = in.readLine();
             switch (choice) {
@@ -231,7 +242,7 @@ class ClientHandler implements Runnable {
         out.println("3. Electronic");
         out.println("4. Home");
         out.println("5. Vehicle");
-        out.println("Enter category number: ");
+        out.print("Enter category number: ");
         
         int category;
         try {
@@ -268,7 +279,7 @@ class ClientHandler implements Runnable {
                         categoryName, itemSize, itemColor, itemBrand);
                 sellingItems.addItem(apparel);
                 break;
-                
+
             case 2:
                 categoryName = "Collectible";
                 out.println("Enter name of Collectible: ");
@@ -286,7 +297,7 @@ class ClientHandler implements Runnable {
                         itemImage, categoryName, itemType, itemCondition);
                 sellingItems.addItem(collectible);
                 break;
-                
+
             case 3:
                 categoryName = "Electronic";
                 out.println("Enter name of Electronic: ");
@@ -304,7 +315,7 @@ class ClientHandler implements Runnable {
                         categoryName, itemType, itemYear);
                 sellingItems.addItem(electronic);
                 break;
-                
+
             case 4:
                 categoryName = "Home";
                 out.println("Enter name of Home: ");
@@ -320,7 +331,7 @@ class ClientHandler implements Runnable {
                         categoryName, itemType);
                 sellingItems.addItem(home);
                 break;
-                
+
             case 5:
                 categoryName = "Vehicle";
                 out.println("Enter name of Vehicle: ");
@@ -336,8 +347,15 @@ class ClientHandler implements Runnable {
                 out.println("Enter brand of Vehicle: ");
                 itemBrand = in.readLine();
 
-                Vehicle vehicle = new Vehicle(itemName, itemCost, currentUser, itemImage,
-                        categoryName, itemMileage, itemYear, itemBrand);
+                Vehicle vehicle = new Vehicle(
+                        itemName,
+                        itemCost,
+                        currentUser,
+                        itemImage,
+                        categoryName,
+                        itemMileage,
+                        itemYear,
+                        itemBrand);
                 sellingItems.addItem(vehicle);
                 break;
                 
@@ -385,8 +403,12 @@ class ClientHandler implements Runnable {
             for (int i = 0; i < categoryItems.size(); i++) {
                 Item item = categoryItems.get(i);
                 if (item.isAvailable()) {
-                    out.println(String.format("[%d] %s - $%.2f (Seller: %s)", i + 1,
-                            item.getName(), item.getCost(), item.getSoldBy().getUserName()));
+                    out.println(String.format(
+                            "[%d] %s - $%.2f (Seller: %s)",
+                            i + 1,
+                            item.getName(),
+                            item.getCost(),
+                            item.getSoldBy().getUserName()));
                 }
             }
 
@@ -408,7 +430,8 @@ class ClientHandler implements Runnable {
             boolean success = marketplace.purchaseItem(selectedItem, currentUser);
             if (success) {
                 currentUser.setBalance(currentUser.getBalance() - selectedItem.getCost());
-                out.println("Purchase successful! Remaining Balance: $" + String.format("%.2f", currentUser.getBalance()));
+                out.println("Purchase successful! Remaining Balance: $" + 
+                        String.format("%.2f", currentUser.getBalance()));
             } else {
                 out.println("Purchase failed.");
             }
@@ -420,8 +443,8 @@ class ClientHandler implements Runnable {
         }
     }
 
-    private void sendMessage() throws IOException {
-        out.println("Who do you want to message?");
+    public void sendMessage() throws IOException {
+        out.print("Who do you want to message? ");
         String recipientUsername = in.readLine();
         
         if (!MarketplaceUser.userExists(recipientUsername)) {
@@ -429,7 +452,7 @@ class ClientHandler implements Runnable {
             return;
         }
         
-        out.println("What is your message?");
+        out.print("What is your message? ");
         String message = in.readLine();
         
         currentUser.sendMessageTo(recipientUsername, message);

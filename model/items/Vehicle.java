@@ -4,12 +4,19 @@ import model.users.User;
 /**
  * Represents a vehicle item in the marketplace.
  * Extends AbstractItem and implements IVehicle interface.
+ * 
+ * @author Youssef Abdelkader
+ * @author Anthony Kim  
+ * @author Caroline Murphy
+ * @author Eric Yen
+ * @author Isaac Yoon
+ * @version April 20 2025
  */
 public class Vehicle extends AbstractItem implements IVehicle {
     private int mileage;
     private int year;
     private String brand;
-    private final Object lock = new Object();
+    private final Object lOCK = new Object();
 
     /**
      * Constructs a new Vehicle item
@@ -32,49 +39,49 @@ public class Vehicle extends AbstractItem implements IVehicle {
 
     @Override
     public int getMileage() {
-        synchronized(lock) {
+        synchronized (lOCK) {
             return mileage;
         }
     }
     
     @Override
     public int getYear() {
-        synchronized(lock) {
+        synchronized (lOCK) {
             return year;
         }
     }
     
     @Override
     public String getBrand() {
-        synchronized(lock) {
+        synchronized (lOCK) {
             return brand;
         }
     }
 
     @Override
     public void setMileage(int mileage) {
-        synchronized(lock) {
+        synchronized (lOCK) {
             this.mileage = mileage;
         }
     }
     
     @Override
     public void setYear(int year) {
-        synchronized(lock) {
+        synchronized (lOCK) {
             this.year = year;
         }
     }
     
     @Override
     public void setBrand(String brand) {
-        synchronized(lock) {
+        synchronized (lOCK) {
             this.brand = brand;
         }
     }
 
     @Override
     public String toString() {
-        synchronized(lock) {
+        synchronized (lOCK) {
             return super.toString() + String.format(" - Mileage: %d - Year: %d - Brand: %s",
                     mileage, year, brand);
         }

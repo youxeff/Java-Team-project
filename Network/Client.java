@@ -3,6 +3,17 @@ package Network;
 import java.io.*;
 import java.net.*;
 
+/**
+ * Client-side interface for marketplace access.
+ * Handles user input and server communication with non-blocking I/O.
+ * 
+ * @author Youssef Abdelkader
+ * @author Anthony Kim  
+ * @author Caroline Murphy
+ * @author Eric Yen
+ * @author Isaac Yoon
+ * @version April 20 2025
+ */
 public class Client {
     private static final String HOST = "localhost";
     private static final int PORT = 12345;

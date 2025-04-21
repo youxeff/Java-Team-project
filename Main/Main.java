@@ -11,10 +11,16 @@ import model.users.User;
  * The {@code Main} class serves as the entry point for the Marketplace system.
  * It provides a console-based user interface to register users, login, update balances,
  * view profiles, and buy or sell various items in the marketplace.
- * <p>
+ * 
  * This class implements both the {@code IMain} interface and {@code Runnable} interface
  * to provide the core functionality of the marketplace application.
- * </p>
+ *
+ * @author Youssef Abdelkader
+ * @author Anthony Kim  
+ * @author Caroline Murphy
+ * @author Eric Yen
+ * @author Isaac Yoon
+ * @version April 20 2025
  */
 public class Main implements IMain, Runnable {
     private Scanner scanner = new Scanner(System.in);
@@ -167,7 +173,7 @@ public class Main implements IMain, Runnable {
             System.out.println("5. View Messages");
             System.out.println("6. Logout");
             System.out.print("Choose an option: ");
-
+            
             try {
                 int choice = Integer.parseInt(scanner.nextLine());
                 switch (choice) {
@@ -230,7 +236,7 @@ public class Main implements IMain, Runnable {
      */
     public void updateBalance() {
         try {
-            System.out.println("Current balance: $" + String.format("%.2f", currentUser.getBalance()));
+            System.out.printf("Current balance: $%.2f%n", currentUser.getBalance());
             System.out.print("Enter amount to add (or type 'back' to return to menu): $");
             String input = scanner.nextLine();
             
@@ -311,7 +317,6 @@ public class Main implements IMain, Runnable {
     public void sellItem() {
         try {
             System.out.println("\n=== Add Item for Sale ===");
-
             System.out.println("Choose a category (or type 'back' to return to menu):");
             System.out.println("1. Apparel");
             System.out.println("2. Collectible");
@@ -499,7 +504,14 @@ public class Main implements IMain, Runnable {
      */
     public void buyItem() {
         try {
-            System.out.println("Choose a category (or type 'back' to return to menu): \n 1. Apparel\n 2. Collectible\n 3. Electronic\n 4. Home\n 5. Vehicle");
+            System.out.println(
+                "Choose a category (or type 'back' to return to menu):\n" +
+                " 1. Apparel\n" +
+                " 2. Collectible\n" +
+                " 3. Electronic\n" +
+                " 4. Home\n" +
+                " 5. Vehicle"
+            );
             String input = scanner.nextLine();
             
             if (input.equalsIgnoreCase("back")) {
@@ -540,8 +552,13 @@ public class Main implements IMain, Runnable {
             for (int i = 0; i < categoryItems.size(); i++) {
                 Item item = categoryItems.get(i);
                 if (item.isAvailable()) {
-                    System.out.printf("[%d] %s - $%.2f (Seller: %s)%n", i + 1,
-                            item.getName(), item.getCost(), item.getSoldBy().getUserName());
+                    System.out.printf(
+                        "[%d] %s - $%.2f (Seller: %s)%n",
+                        i + 1,
+                        item.getName(),
+                        item.getCost(),
+                        item.getSoldBy().getUserName()
+                    );
                 }
             }
 
@@ -568,7 +585,10 @@ public class Main implements IMain, Runnable {
 
             boolean success = marketplace.purchaseItem(selectedItem, currentUser);
             if (success) {
-                System.out.println("Purchase successful! Remaining Balance: $" + String.format("%.2f", currentUser.getBalance()));
+                System.out.printf(
+                    "Purchase successful! Remaining Balance: $%.2f%n",
+                    currentUser.getBalance()
+                );
                 promptForSellerRating(selectedItem.getSoldBy());
             } else {
                 System.out.println("Purchase failed.");

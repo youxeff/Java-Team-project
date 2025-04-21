@@ -4,10 +4,17 @@ import model.users.User;
 /**
  * Represents a home item in the marketplace.
  * Extends AbstractItem and implements IHome interface.
+ *
+ * @author Youssef Abdelkader
+ * @author Anthony Kim  
+ * @author Caroline Murphy
+ * @author Eric Yen
+ * @author Isaac Yoon
+ * @version April 20 2025
  */
 public class Home extends AbstractItem implements IHome {
     private String type;
-    private final Object lock = new Object();
+    private final Object lOCK = new Object();
 
     /**
      * Constructs a new Home item
@@ -26,21 +33,21 @@ public class Home extends AbstractItem implements IHome {
 
     @Override
     public String getType() {
-        synchronized(lock) {
+        synchronized (lOCK) {
             return type;
         }
     }
 
     @Override
     public void setType(String type) {
-        synchronized(lock) {
+        synchronized (lOCK) {
             this.type = type;
         }
     }
 
     @Override
     public String toString() {
-        synchronized(lock) {
+        synchronized (lOCK) {
             return super.toString() + String.format(" - Type: %s", type);
         }
     }
