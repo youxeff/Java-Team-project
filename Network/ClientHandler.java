@@ -9,9 +9,11 @@ import Service.Marketplace;
 import model.items.*;
 import model.users.MarketplaceUser;
 import model.users.User;
+
 /**
  * Per-client connection manager for the marketplace system.
  * Handles all marketplace functionality, session management, and input validation.
+ * Each instance manages a single client connection in its own thread.
  * 
  * @author Youssef Abdelkader
  * @author Anthony Kim  
@@ -21,12 +23,24 @@ import model.users.User;
  * @version April 20 2025
  */
 public class ClientHandler implements Runnable, IClientHandler {
+    /** Socket for the client connection */
     private Socket clientSocket;
+    /** Input stream for receiving client messages */
     private BufferedReader in;
+    /** Output stream for sending messages to client */
     private PrintWriter out;
+    /** Currently logged in user, null if no user is logged in */
     private MarketplaceUser currentUser = null;
+    /** Marketplace instance for handling business logic */
     private Marketplace marketplace;
 
+    /**
+     * Creates a new client handler for a connected client.
+     * Initializes the communication streams and marketplace instance.
+     *
+     * @param clientSocket the socket connection to the client
+     * @throws IOException if there's an error setting up the streams
+     */
     public ClientHandler(Socket clientSocket) throws IOException {
         this.clientSocket = clientSocket;
         this.in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
@@ -34,6 +48,10 @@ public class ClientHandler implements Runnable, IClientHandler {
         this.marketplace = new Marketplace();
     }
 
+    /**
+     * Main processing loop for the client connection.
+     * Handles authentication and routes client requests to appropriate handlers.
+     */
     @Override
     public void run() {
         try {
@@ -77,6 +95,12 @@ public class ClientHandler implements Runnable, IClientHandler {
             }
         }
     }
+
+    /**
+     * {@inheritDoc}
+     * Prompts for and processes user registration information.
+     * Validates input and creates new user account if valid.
+     */
     @Override
     public void registerUser() throws IOException {
         out.println("\n=== User Registration ===");
@@ -106,6 +130,11 @@ public class ClientHandler implements Runnable, IClientHandler {
             out.println("Error during registration: " + e.getMessage());
         }
     }
+
+    /**
+     * {@inheritDoc}
+     * Authenticates user credentials and establishes user session if valid.
+     */
     @Override
     public void loginUser() throws IOException {
         out.println("\n=== User Login ===");
@@ -127,6 +156,11 @@ public class ClientHandler implements Runnable, IClientHandler {
             out.println("Error during login: " + e.getMessage());
         }
     }
+
+    /**
+     * {@inheritDoc}
+     * Displays main menu for logged-in users and processes their choices.
+     */
     @Override
     public void showUserMenu() throws IOException {
         out.println("\n=== User Menu ===");
@@ -164,6 +198,11 @@ public class ClientHandler implements Runnable, IClientHandler {
                 out.println("Invalid option. Please try again.");
         }
     }
+
+    /**
+     * {@inheritDoc}
+     * Sends current user's profile information to the client.
+     */
     @Override
     public void displayUserProfile() {
         out.println("\n=== User Profile ===");
@@ -176,6 +215,12 @@ public class ClientHandler implements Runnable, IClientHandler {
                 currentUser.getNumberOfRatings());
     }
 
+    /**
+     * Updates the user's balance in both memory and persistent storage.
+     * Validates input and ensures proper synchronization of updates.
+     *
+     * @throws IOException if there's an error updating the balance in storage
+     */
     private void updateBalance() throws IOException {
         out.println("Enter new balance amount: $");
         String balanceInput = in.readLine();
@@ -211,6 +256,11 @@ public class ClientHandler implements Runnable, IClientHandler {
             out.println("Error updating balance: " + e.getMessage());
         }
     }
+
+    /**
+     * {@inheritDoc}
+     * Manages the buy/sell menu loop and routes to appropriate handlers.
+     */
     @Override
     public void buyOrSell() throws IOException {
         boolean buyOrSellMenu = true;
@@ -236,6 +286,12 @@ public class ClientHandler implements Runnable, IClientHandler {
             }
         }
     }
+
+    /**
+     * {@inheritDoc}
+     * Handles the complete process of listing a new item for sale.
+     * Includes category selection and item-specific attribute collection.
+     */
     @Override
     public void sellItem() throws IOException {
         out.println("\n=== Add Item for Sale ===");
@@ -361,6 +417,16 @@ public class ClientHandler implements Runnable, IClientHandler {
         }
         out.println("Item added successfully!");
     }
+
+    /**
+     * {@inheritDoc}
+     * Manages the item purchase workflow including:
+     * - Category browsing
+     * - Item selection
+     * - Balance verification
+     * - Purchase transaction
+     * - Optional seller rating
+     */
     @Override
     public void buyItem() throws IOException {
         try {
@@ -434,6 +500,12 @@ public class ClientHandler implements Runnable, IClientHandler {
         }
     }
 
+    /**
+     * Handles the sending of messages between users.
+     * Validates recipient existence and delivers the message.
+     *
+     * @throws IOException if there's an error in message transmission
+     */
     private void sendMessage() throws IOException {
         out.println("Who do you want to message?");
         String recipientUsername = in.readLine();
@@ -449,6 +521,11 @@ public class ClientHandler implements Runnable, IClientHandler {
         currentUser.sendMessageTo(recipientUsername, message);
         out.println("Message sent successfully!");
     }
+
+    /**
+     * {@inheritDoc}
+     * Retrieves and displays all messages for the current user.
+     */
     @Override
     public void viewMessages() {
         ArrayList<String> messages = currentUser.viewMessages();
@@ -464,6 +541,10 @@ public class ClientHandler implements Runnable, IClientHandler {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * Handles the seller rating process after a successful purchase.
+     */
     @Override
     public void promptForSellerRating(User seller) throws IOException {
         out.println("\nWould you like to rate the seller? (Y/N)");
