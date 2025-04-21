@@ -1,6 +1,7 @@
 package Network;
 
 import java.io.IOException;
+import model.users.User;
 
 public interface IClientHandler {
     
@@ -19,5 +20,7 @@ public interface IClientHandler {
         void buyItem() throws IOException;
 
         void viewMessages();
+
+        void promptForSellerRating(User seller) throws IOException;
 
 }
