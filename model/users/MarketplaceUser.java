@@ -239,6 +239,7 @@ public class MarketplaceUser implements User, Message, Serializable { private st
      * @return true if user exists, false otherwise
      */
     public static boolean userExists(String recipientUsername) {
+
         File file = new File("users.txt");
         if (!file.exists()) {
             return false;

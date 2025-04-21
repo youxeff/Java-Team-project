@@ -20,7 +20,7 @@ import model.users.MarketplaceUser;
  * @author Isaac Yoon
  * @version April 20 2025
  */
-class ClientHandler implements Runnable {
+public class ClientHandler implements Runnable {
     private Socket clientSocket;
     private BufferedReader in;
     private PrintWriter out;
@@ -78,7 +78,7 @@ class ClientHandler implements Runnable {
         }
     }
 
-    private void registerUser() throws IOException {
+    public void registerUser() throws IOException {
         out.println("\n=== User Registration ===");
         out.print("Enter First Name: ");
         String firstName = in.readLine();
@@ -107,7 +107,7 @@ class ClientHandler implements Runnable {
         }
     }
 
-    private void loginUser() throws IOException {
+    public void loginUser() throws IOException {
         out.println("\n=== User Login ===");
         out.print("Enter Username: ");
         String username = in.readLine();
@@ -173,7 +173,7 @@ class ClientHandler implements Runnable {
         out.println("Balance: $" + String.format("%.2f", currentUser.getBalance()));
     }
 
-    private void updateBalance() throws IOException {
+    public void updateBalance() throws IOException {
         out.print("Enter new balance amount: $");
         String balanceInput = in.readLine();
         
@@ -443,7 +443,7 @@ class ClientHandler implements Runnable {
         }
     }
 
-    private void sendMessage() throws IOException {
+    public void sendMessage() throws IOException {
         out.print("Who do you want to message? ");
         String recipientUsername = in.readLine();
         
