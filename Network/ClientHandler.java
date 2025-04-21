@@ -8,6 +8,7 @@ import java.util.*;
 import Service.Marketplace;
 import model.items.*;
 import model.users.MarketplaceUser;
+import model.users.User;
 /**
  * Per-client connection manager for the marketplace system.
  * Handles all marketplace functionality, session management, and input validation.
@@ -170,6 +171,9 @@ public class ClientHandler implements Runnable, IClientHandler {
         out.println("Last Name: " + currentUser.getLastName());
         out.println("Username: " + currentUser.getUserName());
         out.println("Balance: $" + String.format("%.2f", currentUser.getBalance()));
+        out.printf("Seller Rating: %.1f (%d ratings)%n",
+                currentUser.getAverageSellerRating(),
+                currentUser.getNumberOfRatings());
     }
 
     private void updateBalance() throws IOException {
@@ -418,6 +422,7 @@ public class ClientHandler implements Runnable, IClientHandler {
             if (success) {
                 currentUser.setBalance(currentUser.getBalance() - selectedItem.getCost());
                 out.println("Purchase successful! Remaining Balance: $" + String.format("%.2f", currentUser.getBalance()));
+                promptForSellerRating(selectedItem.getSoldBy());
             } else {
                 out.println("Purchase failed.");
             }
@@ -456,6 +461,28 @@ public class ClientHandler implements Runnable, IClientHandler {
         out.println("\n=== Your Messages ===");
         for (String message : messages) {
             out.println(message);
+        }
+    }
+
+    @Override
+    public void promptForSellerRating(User seller) throws IOException {
+        out.println("\nWould you like to rate the seller? (Y/N)");
+        String response = in.readLine();
+        if (response.equalsIgnoreCase("Y")) {
+            out.println("Rate the seller from 1-5 (5 being the best):");
+            try {
+                int rating = Integer.parseInt(in.readLine());
+                if (seller.addSellerRating(rating, currentUser)) {
+                    out.println("Rating submitted successfully!");
+                    out.printf("Seller's current rating: %.1f (%d ratings)%n",
+                            seller.getAverageSellerRating(),
+                            seller.getNumberOfRatings());
+                } else {
+                    out.println("Rating must be between 1 and 5.");
+                }
+            } catch (NumberFormatException e) {
+                out.println("Please enter a valid number.");
+            }
         }
     }
 }
