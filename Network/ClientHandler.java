@@ -3,6 +3,7 @@ package Network;
 import java.io.*;
 import java.net.*;
 import java.nio.file.*;
+import java.time.LocalDateTime;
 import java.util.*;
 
 import Service.Marketplace;
@@ -12,11 +13,12 @@ import model.users.User;
 
 /**
  * Per-client connection manager for the marketplace system.
- * Handles all marketplace functionality, session management, and input validation.
+ * Handles all marketplace functionality, session management, and input
+ * validation.
  * Each instance manages a single client connection in its own thread.
  * 
  * @author Youssef Abdelkader
- * @author Anthony Kim  
+ * @author Anthony Kim
  * @author Caroline Murphy
  * @author Eric Yen
  * @author Isaac Yoon
@@ -57,7 +59,7 @@ public class ClientHandler implements Runnable, IClientHandler {
         try {
             out.println("Welcome to the marketplace!");
             boolean running = true;
-            
+
             while (running) {
                 if (currentUser == null) {
                     out.println("\n=== Marketplace System ===");
@@ -65,7 +67,7 @@ public class ClientHandler implements Runnable, IClientHandler {
                     out.println("2. Login");
                     out.println("3. Exit");
                     out.println("Choose an option: ");
-                    
+
                     String choice = in.readLine();
                     switch (choice) {
                         case "1":
@@ -224,7 +226,7 @@ public class ClientHandler implements Runnable, IClientHandler {
     private void updateBalance() throws IOException {
         out.println("Enter new balance amount: $");
         String balanceInput = in.readLine();
-        
+
         try {
             double newBalance = Double.parseDouble(balanceInput);
             currentUser.setBalance(newBalance);
@@ -236,7 +238,8 @@ public class ClientHandler implements Runnable, IClientHandler {
             for (String line : lines) {
                 String[] parts = line.split(",");
                 if (parts.length >= 5 && parts[0].equals(currentUser.getUserName())) {
-                    String updatedLine = String.format("%s,%s,%s,%s,%.2f",
+                    String updatedLine = String.format(
+                            "%s,%s,%s,%s,%.2f",
                             currentUser.getUserName(),
                             currentUser.getPassword(),
                             currentUser.getFirstName(),
@@ -269,7 +272,7 @@ public class ClientHandler implements Runnable, IClientHandler {
             out.println("2. Buy");
             out.println("3. Exit");
             out.println("Choose an option: ");
-            
+
             String choice = in.readLine();
             switch (choice) {
                 case "1":
@@ -301,15 +304,10 @@ public class ClientHandler implements Runnable, IClientHandler {
         out.println("3. Electronic");
         out.println("4. Home");
         out.println("5. Vehicle");
-        out.println("Enter category number: ");
-        
-        int category;
-        try {
-            category = Integer.parseInt(in.readLine());
-        } catch (NumberFormatException e) {
-            out.println("Please enter a valid number.");
+
+        int category = getValidatedInteger("Enter category number (1-5): ", 1, 5);
+        if (category == -1)
             return;
-        }
 
         Marketplace sellingItems = new Marketplace() {
             @Override
@@ -334,11 +332,12 @@ public class ClientHandler implements Runnable, IClientHandler {
                 out.println("Enter brand of Apparel: ");
                 String itemBrand = in.readLine();
 
-                Apparel apparel = new Apparel(itemName, itemCost, currentUser, itemImage,
+                Apparel apparel = new Apparel(
+                        itemName, itemCost, currentUser, itemImage,
                         categoryName, itemSize, itemColor, itemBrand);
                 sellingItems.addItem(apparel);
                 break;
-                
+
             case 2:
                 categoryName = "Collectible";
                 out.println("Enter name of Collectible: ");
@@ -352,11 +351,12 @@ public class ClientHandler implements Runnable, IClientHandler {
                 out.println("Enter condition of Collectible: ");
                 String itemCondition = in.readLine();
 
-                Collectible collectible = new Collectible(itemName, itemCost, currentUser,
+                Collectible collectible = new Collectible(
+                        itemName, itemCost, currentUser,
                         itemImage, categoryName, itemType, itemCondition);
                 sellingItems.addItem(collectible);
                 break;
-                
+
             case 3:
                 categoryName = "Electronic";
                 out.println("Enter name of Electronic: ");
@@ -367,14 +367,19 @@ public class ClientHandler implements Runnable, IClientHandler {
                 itemImage = in.readLine();
                 out.println("Enter type of Electronic: ");
                 itemType = in.readLine();
-                out.println("Enter year of Electronic: ");
-                int itemYear = Integer.parseInt(in.readLine());
+                int itemYear = getValidatedInteger(
+                        "Enter year of Electronic (1900-" + LocalDateTime.now().getYear() + "): ",
+                        1900,
+                        LocalDateTime.now().getYear());
+                if (itemYear == -1)
+                    return;
 
-                Electronic electronic = new Electronic(itemName, itemCost, currentUser, itemImage,
+                Electronic electronic = new Electronic(
+                        itemName, itemCost, currentUser, itemImage,
                         categoryName, itemType, itemYear);
                 sellingItems.addItem(electronic);
                 break;
-                
+
             case 4:
                 categoryName = "Home";
                 out.println("Enter name of Home: ");
@@ -386,11 +391,12 @@ public class ClientHandler implements Runnable, IClientHandler {
                 out.println("Enter type of Home: ");
                 itemType = in.readLine();
 
-                Home home = new Home(itemName, itemCost, currentUser, itemImage,
+                Home home = new Home(
+                        itemName, itemCost, currentUser, itemImage,
                         categoryName, itemType);
                 sellingItems.addItem(home);
                 break;
-                
+
             case 5:
                 categoryName = "Vehicle";
                 out.println("Enter name of Vehicle: ");
@@ -399,18 +405,25 @@ public class ClientHandler implements Runnable, IClientHandler {
                 itemCost = Double.parseDouble(in.readLine());
                 out.println("Enter image of Vehicle: ");
                 itemImage = in.readLine();
-                out.println("Enter mileage of Vehicle: ");
-                int itemMileage = Integer.parseInt(in.readLine());
-                out.println("Enter year of Vehicle: ");
-                itemYear = Integer.parseInt(in.readLine());
+                int itemMileage = getValidatedInteger("Enter mileage of Vehicle (0-1000000): ", 0, 1000000);
+                if (itemMileage == -1)
+                    return;
+
+                itemYear = getValidatedInteger(
+                        "Enter year of Vehicle (1900-" + LocalDateTime.now().getYear() + "): ",
+                        1900,
+                        LocalDateTime.now().getYear());
+                if (itemYear == -1)
+                    return;
                 out.println("Enter brand of Vehicle: ");
                 itemBrand = in.readLine();
 
-                Vehicle vehicle = new Vehicle(itemName, itemCost, currentUser, itemImage,
+                Vehicle vehicle = new Vehicle(
+                        itemName, itemCost, currentUser, itemImage,
                         categoryName, itemMileage, itemYear, itemBrand);
                 sellingItems.addItem(vehicle);
                 break;
-                
+
             default:
                 out.println("Invalid category.");
                 return;
@@ -429,82 +442,75 @@ public class ClientHandler implements Runnable, IClientHandler {
      */
     @Override
     public void buyItem() throws IOException {
-        try {
-            out.println("Choose a category: \n 1. Apparel\n 2. Collectible\n 3. Electronic\n 4. Home\n 5. Vehicle");
-            int categoryChoice = Integer.parseInt(in.readLine());
+        out.println("Choose a category:");
+        out.println(" 1. Apparel");
+        out.println(" 2. Collectible");
+        out.println(" 3. Electronic");
+        out.println(" 4. Home");
+        out.println(" 5. Vehicle");
 
-            String category = "";
-            switch (categoryChoice) {
-                case 1:
-                    category = "Apparel";
-                    break;
-                case 2:
-                    category = "Collectible";
-                    break;
-                case 3:
-                    category = "Electronic";
-                    break;
-                case 4:
-                    category = "Home";
-                    break;
-                case 5:
-                    category = "Vehicle";
-                    break;
-                default:
-                    out.println("Invalid category.");
-                    return;
-            }
-            ArrayList<Item> categoryItems = marketplace.searchByCategory(category);
-            if (categoryItems.isEmpty()) {
-                out.println("No items found in this category.");
+        int categoryChoice = getValidatedInteger("Enter category number (1-5): ", 1, 5);
+        if (categoryChoice == -1)
+            return;
+
+        String category = "";
+        switch (categoryChoice) {
+            case 1:
+                category = "Apparel";
+                break;
+            case 2:
+                category = "Collectible";
+                break;
+            case 3:
+                category = "Electronic";
+                break;
+            case 4:
+                category = "Home";
+                break;
+            case 5:
+                category = "Vehicle";
+                break;
+            default:
+                out.println("Invalid category.");
                 return;
-            }
+        }
+        ArrayList<Item> categoryItems = marketplace.searchByCategory(category);
+        if (categoryItems.isEmpty()) {
+            out.println("No items found in this category.");
+            return;
+        }
 
-            out.println("\nAvailable Items:");
-            for (int i = 0; i < categoryItems.size(); i++) {
-                Item item = categoryItems.get(i);
-                if (item.isAvailable()) {
-                    out.println(String.format("[%d] %s - $%.2f (Seller: %s)", i + 1,
-                            item.getName(), item.getCost(), item.getSoldBy().getUserName()));
-                }
+        out.println("\nAvailable Items:");
+        for (int i = 0; i < categoryItems.size(); i++) {
+            Item item = categoryItems.get(i);
+            if (item.isAvailable()) {
+                out.println(String.format(
+                        "[%d] %s - $%.2f (Seller: %s)",
+                        i + 1, item.getName(), item.getCost(), item.getSoldBy().getUserName()));
             }
+        }
 
-            int itemIndex = -1;
-            while (true) {
-                out.println("\nEnter the number of the item to purchase: ");
-                String input = in.readLine();
-                try {
-                    itemIndex = Integer.parseInt(input) - 1;
-                    break;
-                } catch (NumberFormatException e) {
-                    out.println("Invalid input. Please enter a number.");
-                }
-            }
-            if (itemIndex < 0 || itemIndex >= categoryItems.size()) {
-                out.println("Invalid item number.");
-                return;
-            }
+        int itemIndex = getValidatedInteger(
+                "\nEnter the number of the item to purchase: ",
+                1,
+                categoryItems.size()) - 1;
+        if (itemIndex == -2)
+            return; // -2 because we subtracted 1 from -1
 
-            Item selectedItem = categoryItems.get(itemIndex);
+        Item selectedItem = categoryItems.get(itemIndex);
 
-            if (selectedItem.getCost() > currentUser.getBalance()) {
-                out.println("Insufficient balance to complete the purchase.");
-                return;
-            }
+        if (selectedItem.getCost() > currentUser.getBalance()) {
+            out.println("Insufficient balance to complete the purchase.");
+            return;
+        }
 
-            boolean success = marketplace.purchaseItem(selectedItem, currentUser);
-            if (success) {
-                currentUser.setBalance(currentUser.getBalance() - selectedItem.getCost());
-                out.println("Purchase successful! Remaining Balance: $" + String.format("%.2f", currentUser.getBalance()));
-                promptForSellerRating(selectedItem.getSoldBy());
-            } else {
-                out.println("Purchase failed.");
-            }
-
-        } catch (NumberFormatException e) {
-            out.println("Please enter a valid number.");
-        } catch (Exception e) {
-            out.println("Error during purchase: " + e.getMessage());
+        boolean success = marketplace.purchaseItem(selectedItem, currentUser);
+        if (success) {
+            currentUser.setBalance(currentUser.getBalance() - selectedItem.getCost());
+            out.println("Purchase successful! Remaining Balance: $" + String.format("%.2f", currentUser.getBalance()));
+            promptForSellerRating(selectedItem.getSoldBy());
+        } else {
+            out.println("Purchase failed.");
         }
     }
 
@@ -517,15 +523,15 @@ public class ClientHandler implements Runnable, IClientHandler {
     private void sendMessage() throws IOException {
         out.println("Who do you want to message?");
         String recipientUsername = in.readLine();
-        
+
         if (!MarketplaceUser.userExists(recipientUsername)) {
             out.println("User \"" + recipientUsername + "\" does not exist.");
             return;
         }
-        
+
         out.println("What is your message?");
         String message = in.readLine();
-        
+
         currentUser.sendMessageTo(recipientUsername, message);
         out.println("Message sent successfully!");
     }
@@ -537,12 +543,12 @@ public class ClientHandler implements Runnable, IClientHandler {
     @Override
     public void viewMessages() {
         ArrayList<String> messages = currentUser.viewMessages();
-        
+
         if (messages.isEmpty()) {
             out.println("You have no messages.");
             return;
         }
-        
+
         out.println("\n=== Your Messages ===");
         for (String message : messages) {
             out.println(message);
@@ -558,16 +564,44 @@ public class ClientHandler implements Runnable, IClientHandler {
         out.println("\nWould you like to rate the seller? (Y/N)");
         String response = in.readLine();
         if (response.equalsIgnoreCase("Y")) {
-            out.println("Rate the seller from 1-5 (5 being the best):");
+            int rating = getValidatedInteger("Rate the seller (1-5, 5 being the best): ", 1, 5);
+            if (rating == -1)
+                return;
+
+            if (seller.addSellerRating(rating, currentUser)) {
+                out.println("Rating submitted successfully!");
+                out.printf("Seller's current rating: %.1f (%d ratings)%n",
+                        seller.getAverageSellerRating(),
+                        seller.getNumberOfRatings());
+            }
+        }
+    }
+
+    /**
+     * Validates and parses an integer input with retry logic.
+     * Keeps prompting until valid input is received or user cancels.
+     *
+     * @param prompt The prompt to display to the user
+     * @param min    Minimum allowed value (inclusive)
+     * @param max    Maximum allowed value (inclusive)
+     * @return The validated integer, or -1 if user cancels
+     * @throws IOException if there's an error reading input
+     */
+    private int getValidatedInteger(String prompt, int min, int max) throws IOException {
+        while (true) {
+            out.println(prompt);
+            String input = in.readLine();
+
+            if (input.equalsIgnoreCase("back")) {
+                return -1;
+            }
+
             try {
-                int rating = Integer.parseInt(in.readLine());
-                if (seller.addSellerRating(rating, currentUser)) {
-                    out.println("Rating submitted successfully!");
-                    out.printf("Seller's current rating: %.1f (%d ratings)%n",
-                            seller.getAverageSellerRating(),
-                            seller.getNumberOfRatings());
+                int value = Integer.parseInt(input);
+                if (value >= min && value <= max) {
+                    return value;
                 } else {
-                    out.println("Rating must be between 1 and 5.");
+                    out.println("Please enter a number between " + min + " and " + max + ".");
                 }
             } catch (NumberFormatException e) {
                 out.println("Please enter a valid number.");
