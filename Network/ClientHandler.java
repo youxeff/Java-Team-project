@@ -469,9 +469,17 @@ public class ClientHandler implements Runnable, IClientHandler {
                 }
             }
 
-            out.println("\nEnter the number of the item to purchase: ");
-            int itemIndex = Integer.parseInt(in.readLine()) - 1;
-
+            int itemIndex = -1;
+            while (true) {
+                out.println("\nEnter the number of the item to purchase: ");
+                String input = in.readLine();
+                try {
+                    itemIndex = Integer.parseInt(input) - 1;
+                    break;
+                } catch (NumberFormatException e) {
+                    out.println("Invalid input. Please enter a number.");
+                }
+            }
             if (itemIndex < 0 || itemIndex >= categoryItems.size()) {
                 out.println("Invalid item number.");
                 return;
