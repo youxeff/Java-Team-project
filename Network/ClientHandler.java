@@ -297,138 +297,154 @@ public class ClientHandler implements Runnable, IClientHandler {
      */
     @Override
     public void sellItem() throws IOException {
-        out.println("\n=== Add Item for Sale ===");
-        out.println("Choose a category:");
-        out.println("1. Apparel");
-        out.println("2. Collectible");
-        out.println("3. Electronic");
-        out.println("4. Home");
-        out.println("5. Vehicle");
-
-        int category = getValidatedInteger("Enter category number (1-5): ", 1, 5);
-        if (category == -1)
-            return;
-
-        Marketplace sellingItems = new Marketplace() {
-            @Override
-            public synchronized ArrayList<model.users.User> loadAllUsers() {
-                return new ArrayList<>();
+        JFrame frame = new JFrame("List New Item");
+        frame.setSize(500, 600);
+        frame.setLayout(new BorderLayout());
+    
+        // Common fields panel
+        JPanel commonPanel = new JPanel(new GridLayout(3, 2));
+        JTextField nameField = new JTextField();
+        JTextField priceField = new JTextField();
+        JComboBox<String> categoryCombo = new JComboBox<>(
+            new String[]{"Apparel", "Collectible", "Electronic", "Home", "Vehicle"});
+    
+        commonPanel.add(new JLabel("Item Name:"));
+        commonPanel.add(nameField);
+        commonPanel.add(new JLabel("Price:"));
+        commonPanel.add(priceField);
+        commonPanel.add(new JLabel("Category:"));
+        commonPanel.add(categoryCombo);
+    
+        // Category panels
+        JPanel cardPanel = new JPanel(new CardLayout());
+        
+        // Apparel
+        JPanel apparelPanel = new JPanel(new GridLayout(3, 2));
+        JTextField sizeField = new JTextField();
+        JTextField colorField = new JTextField();
+        JTextField brandField = new JTextField();
+        apparelPanel.add(new JLabel("Size:"));
+        apparelPanel.add(sizeField);
+        apparelPanel.add(new JLabel("Color:"));
+        apparelPanel.add(colorField);
+        apparelPanel.add(new JLabel("Brand:"));
+        apparelPanel.add(brandField);
+        
+        // Collectible
+        JPanel collectiblePanel = new JPanel(new GridLayout(2, 2));
+        JTextField cTypeField = new JTextField();
+        JTextField conditionField = new JTextField();
+        collectiblePanel.add(new JLabel("Type:"));
+        collectiblePanel.add(cTypeField);
+        collectiblePanel.add(new JLabel("Condition:"));
+        collectiblePanel.add(conditionField);
+        
+        // Electronic
+        JPanel electronicPanel = new JPanel(new GridLayout(2, 2));
+        JTextField eTypeField = new JTextField();
+        JSpinner yearSpinner = new JSpinner(
+            new SpinnerNumberModel(2023, 1900, LocalDateTime.now().getYear(), 1));
+        electronicPanel.add(new JLabel("Type:"));
+        electronicPanel.add(eTypeField);
+        electronicPanel.add(new JLabel("Year:"));
+        electronicPanel.add(yearSpinner);
+        
+        // Home
+        JPanel homePanel = new JPanel(new GridLayout(1, 2));
+        JTextField hTypeField = new JTextField();
+        homePanel.add(new JLabel("Type:"));
+        homePanel.add(hTypeField);
+        
+        // Vehicle
+        JPanel vehiclePanel = new JPanel(new GridLayout(3, 2));
+        JSpinner mileageSpinner = new JSpinner(
+            new SpinnerNumberModel(0, 0, 1000000, 1000));
+        JSpinner vYearSpinner = new JSpinner(
+            new SpinnerNumberModel(2023, 1900, LocalDateTime.now().getYear(), 1));
+        JTextField vBrandField = new JTextField();
+        vehiclePanel.add(new JLabel("Mileage:"));
+        vehiclePanel.add(mileageSpinner);
+        vehiclePanel.add(new JLabel("Year:"));
+        vehiclePanel.add(vYearSpinner);
+        vehiclePanel.add(new JLabel("Brand:"));
+        vehiclePanel.add(vBrandField);
+        
+        // Add all panels to card layout
+        cardPanel.add(apparelPanel, "Apparel");
+        cardPanel.add(collectiblePanel, "Collectible");
+        cardPanel.add(electronicPanel, "Electronic");
+        cardPanel.add(homePanel, "Home");
+        cardPanel.add(vehiclePanel, "Vehicle");
+    
+        // Show appropriate panel whenever category changes
+        categoryCombo.addActionListener(e -> {
+            CardLayout cl = (CardLayout)(cardPanel.getLayout());
+            cl.show(cardPanel, (String)categoryCombo.getSelectedItem());
+        });
+    
+        // Submit button
+        JButton submitButton = new JButton("List Item");
+        submitButton.addActionListener(e -> {
+            try {
+                String name = nameField.getText();
+                if (name.isEmpty()) {
+                    JOptionPane.showMessageDialog(frame, "Please enter an item name", 
+                        "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                
+                double price = Double.parseDouble(priceField.getText());
+                if (price <= 0) {
+                    JOptionPane.showMessageDialog(frame, "Price must be greater than 0", 
+                        "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                
+                String category = (String)categoryCombo.getSelectedItem();
+                String imagePath = ""; // Empty since we removed image functionality
+    
+                Item newItem;
+                switch(category) {
+                    case "Apparel":
+                        newItem = new Apparel(name, price, currentUser, imagePath, category, 
+                            sizeField.getText(), colorField.getText(), brandField.getText());
+                        break;
+                    case "Collectible":
+                        newItem = new Collectible(name, price, currentUser, imagePath, category,
+                            cTypeField.getText(), conditionField.getText());
+                        break;
+                    case "Electronic":
+                        newItem = new Electronic(name, price, currentUser, imagePath, category,
+                            eTypeField.getText(), (int)yearSpinner.getValue());
+                        break;
+                    case "Home":
+                        newItem = new Home(name, price, currentUser, imagePath, category,
+                            hTypeField.getText());
+                        break;
+                    case "Vehicle":
+                        newItem = new Vehicle(name, price, currentUser, imagePath, category,
+                            (int)mileageSpinner.getValue(), (int)vYearSpinner.getValue(), 
+                            vBrandField.getText());
+                        break;
+                    default:
+                        JOptionPane.showMessageDialog(frame, "Invalid category", 
+                            "Error", JOptionPane.ERROR_MESSAGE);
+                        return;
+                }
+    
+                marketplace.addItem(newItem);
+                JOptionPane.showMessageDialog(frame, "Item listed successfully!");
+                frame.dispose();
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(frame, "Please enter a valid price", 
+                    "Error", JOptionPane.ERROR_MESSAGE);
             }
-        };
-
-        switch (category) {
-            case 1:
-                String categoryName = "Apparel";
-                out.println("Enter name of Apparel: ");
-                String itemName = in.readLine();
-                out.println("Enter cost of Apparel: ");
-                double itemCost = Double.parseDouble(in.readLine());
-                out.println("Enter image of Apparel: ");
-                String itemImage = in.readLine();
-                out.println("Enter size of Apparel: ");
-                String itemSize = in.readLine();
-                out.println("Enter color of Apparel: ");
-                String itemColor = in.readLine();
-                out.println("Enter brand of Apparel: ");
-                String itemBrand = in.readLine();
-
-                Apparel apparel = new Apparel(
-                        itemName, itemCost, currentUser, itemImage,
-                        categoryName, itemSize, itemColor, itemBrand);
-                sellingItems.addItem(apparel);
-                break;
-
-            case 2:
-                categoryName = "Collectible";
-                out.println("Enter name of Collectible: ");
-                itemName = in.readLine();
-                out.println("Enter cost of Collectible: ");
-                itemCost = Double.parseDouble(in.readLine());
-                out.println("Enter image of Collectible: ");
-                itemImage = in.readLine();
-                out.println("Enter type of Collectible: ");
-                String itemType = in.readLine();
-                out.println("Enter condition of Collectible: ");
-                String itemCondition = in.readLine();
-
-                Collectible collectible = new Collectible(
-                        itemName, itemCost, currentUser,
-                        itemImage, categoryName, itemType, itemCondition);
-                sellingItems.addItem(collectible);
-                break;
-
-            case 3:
-                categoryName = "Electronic";
-                out.println("Enter name of Electronic: ");
-                itemName = in.readLine();
-                out.println("Enter cost of Electronic: ");
-                itemCost = Double.parseDouble(in.readLine());
-                out.println("Enter image of Electronic: ");
-                itemImage = in.readLine();
-                out.println("Enter type of Electronic: ");
-                itemType = in.readLine();
-                int itemYear = getValidatedInteger(
-                        "Enter year of Electronic (1900-" + LocalDateTime.now().getYear() + "): ",
-                        1900,
-                        LocalDateTime.now().getYear());
-                if (itemYear == -1)
-                    return;
-
-                Electronic electronic = new Electronic(
-                        itemName, itemCost, currentUser, itemImage,
-                        categoryName, itemType, itemYear);
-                sellingItems.addItem(electronic);
-                break;
-
-            case 4:
-                categoryName = "Home";
-                out.println("Enter name of Home: ");
-                itemName = in.readLine();
-                out.println("Enter cost of Home: ");
-                itemCost = Double.parseDouble(in.readLine());
-                out.println("Enter image of Home: ");
-                itemImage = in.readLine();
-                out.println("Enter type of Home: ");
-                itemType = in.readLine();
-
-                Home home = new Home(
-                        itemName, itemCost, currentUser, itemImage,
-                        categoryName, itemType);
-                sellingItems.addItem(home);
-                break;
-
-            case 5:
-                categoryName = "Vehicle";
-                out.println("Enter name of Vehicle: ");
-                itemName = in.readLine();
-                out.println("Enter cost of Vehicle: ");
-                itemCost = Double.parseDouble(in.readLine());
-                out.println("Enter image of Vehicle: ");
-                itemImage = in.readLine();
-                int itemMileage = getValidatedInteger("Enter mileage of Vehicle (0-1000000): ", 0, 1000000);
-                if (itemMileage == -1)
-                    return;
-
-                itemYear = getValidatedInteger(
-                        "Enter year of Vehicle (1900-" + LocalDateTime.now().getYear() + "): ",
-                        1900,
-                        LocalDateTime.now().getYear());
-                if (itemYear == -1)
-                    return;
-                out.println("Enter brand of Vehicle: ");
-                itemBrand = in.readLine();
-
-                Vehicle vehicle = new Vehicle(
-                        itemName, itemCost, currentUser, itemImage,
-                        categoryName, itemMileage, itemYear, itemBrand);
-                sellingItems.addItem(vehicle);
-                break;
-
-            default:
-                out.println("Invalid category.");
-                return;
-        }
-        out.println("Item added successfully!");
+        });
+    
+        frame.add(commonPanel, BorderLayout.NORTH);
+        frame.add(cardPanel, BorderLayout.CENTER);
+        frame.add(submitButton, BorderLayout.SOUTH);
+        frame.setVisible(true);
     }
 
     /**
