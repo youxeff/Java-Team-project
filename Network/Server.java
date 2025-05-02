@@ -5,23 +5,49 @@ import java.net.*;
 import java.util.concurrent.*;
 import Service.Marketplace;
 
+/**
+ * Server implementation for the marketplace system.
+ * Handles multiple client connections concurrently using a thread pool.
+ * 
+ * @version April 20 2025
+ */
 public class Server implements IServer {
+    /** The port number on which the server listens for connections */
     private static final int PORT = 12345;
+    /** Thread pool for handling multiple client connections */
     private ExecutorService threadPool = Executors.newCachedThreadPool();
+    /** The marketplace instance shared across all client connections */
     private Marketplace marketplace;
+    /** Flag indicating whether the server is currently running */
     private boolean running = true;
+    /** The server socket that accepts client connections */
     private ServerSocket serverSocket;
 
+    /**
+     * Main entry point for the server application.
+     * Creates and starts a new server instance.
+     *
+     * @param args command line arguments (not used)
+     */
     public static void main(String[] args) {
         IServer server = new Server();
         server.startServer();
     }
 
+    /**
+     * Constructs a new Server instance.
+     * Initializes the marketplace that will be shared across all clients.
+     */
     public Server() {
         this.marketplace = new Marketplace();
         System.out.println("Marketplace initialized");
     }
 
+    /**
+     * {@inheritDoc}
+     * Creates a server socket and begins accepting client connections.
+     * Each client connection is handled by a new ClientHandler in the thread pool.
+     */
     @Override
     public void startServer() {
         try {
@@ -42,6 +68,10 @@ public class Server implements IServer {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * Cleanly shuts down the server, closing all connections and the thread pool.
+     */
     @Override
     public void stopServer() {
         running = false;
