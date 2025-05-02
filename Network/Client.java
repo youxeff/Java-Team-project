@@ -6,6 +6,7 @@ import java.net.*;
 /**
  * Client-side interface for marketplace access.
  * Handles user input and server communication with non-blocking I/O.
+ * Manages persistent connection with server and provides clean disconnection.
  * 
  * @author Youssef Abdelkader
  * @author Anthony Kim  
@@ -14,17 +15,28 @@ import java.net.*;
  * @author Isaac Yoon
  * @version April 20 2025
  */
-
- public class Client implements IClient {
+public class Client implements IClient {
+    /** Server hostname */
     private static final String HOST = "localhost";
+    /** Server port number */
     private static final int PORT = 12345;
 
+    /** Socket connection to server */
     private Socket socket;
+    /** Input stream for server messages */
     private BufferedReader in;
+    /** Output stream for sending messages to server */
     private PrintWriter out;
+    /** Input stream for user input */
     private BufferedReader userInput;
+    /** Thread for handling server responses */
     private Thread serverResponseThread;
 
+    /**
+     * {@inheritDoc}
+     * Establishes connection to server and initializes communication streams.
+     * Creates and starts a separate thread for handling server responses.
+     */
     @Override
     public void start() {
         try {
@@ -62,6 +74,13 @@ import java.net.*;
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * Sends a message to the server if connection is active.
+     * Messages are automatically flushed to ensure immediate transmission.
+     *
+     * @param input the message to send to the server
+     */
     @Override
     public void send(String input) {
         if (out != null) {
@@ -69,6 +88,11 @@ import java.net.*;
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * Performs graceful shutdown of client connection.
+     * Closes all streams and the socket connection, interrupts response thread.
+     */
     @Override
     public void disconnect() {
         try {
@@ -82,6 +106,12 @@ import java.net.*;
         }
     }
 
+    /**
+     * Main entry point for the client application.
+     * Creates and starts a new client instance.
+     *
+     * @param args command line arguments (not used)
+     */
     public static void main(String[] args) {
         IClient client = new Client();
         client.start();
