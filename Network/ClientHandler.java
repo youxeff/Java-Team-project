@@ -8,7 +8,8 @@ import java.util.*;
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
-
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import Service.Marketplace;
 import model.items.*;
 import model.users.MarketplaceUser;
@@ -39,6 +40,36 @@ public class ClientHandler implements Runnable, IClientHandler {
     /** Marketplace instance for handling business logic */
     private Marketplace marketplace;
 
+
+    // Main GUI components
+    private JFrame mainFrame;
+    private JPanel mainPanel;
+    private JPanel sidebarPanel;
+    private JPanel contentPanel;
+    private CardLayout cardLayout;
+    
+    // User info components
+    private JLabel usernameLabel;
+    private JLabel balanceLabel;
+    private JLabel ratingLabel;
+    
+    // Profile panel components
+    private JPanel profilePanel;
+    private JLabel firstNameLabel;
+    private JLabel lastNameLabel;
+    private JLabel profileUsernameLabel;
+    private JLabel profileBalanceLabel;
+    private JLabel sellerRatingLabel;
+    private JLabel numRatingsLabel;
+    private JTextField newBalanceField;
+    private JButton updateBalanceButton;
+    
+    // Transaction history panel components
+    private JPanel transactionHistoryPanel;
+    private JTable purchasesTable;
+    private JTable salesTable;
+    private DefaultListModel<String> purchasesListModel;
+    private DefaultListModel<String> salesListModel;
     /**
      * Creates a new client handler for a connected client.
      * Initializes the communication streams and marketplace instance.
@@ -87,7 +118,17 @@ public class ClientHandler implements Runnable, IClientHandler {
                             out.println("Invalid option. Please try again.");
                     }
                 } else {
-                    showUserMenu();
+                    // showUserMenu();
+                    SwingUtilities.invokeLater(() -> createAndShowGUI());
+                    
+                    // Wait for GUI to close
+                    while (currentUser != null) {
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
             }
         } catch (IOException e) {
@@ -101,6 +142,427 @@ public class ClientHandler implements Runnable, IClientHandler {
         }
     }
 
+    private void createAndShowGUI() {
+        mainFrame = new JFrame("Marketplace System");
+        mainFrame.setSize(900, 600);
+        mainFrame.setMinimumSize(new Dimension(800, 500));
+        mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        mainFrame.setLocationRelativeTo(null);
+        
+        mainPanel = new JPanel(new BorderLayout());
+        
+        // Create sidebar for navigation
+        createSidebar();
+        
+        // Create content panel with card layout
+        cardLayout = new CardLayout();
+        contentPanel = new JPanel(cardLayout);
+        
+        // Create content panels
+        createProfilePanel();
+        createTransactionHistoryPanel();
+        
+        contentPanel.add(profilePanel, "PROFILE");
+        contentPanel.add(createBuyPanel(), "BUY");
+        contentPanel.add(createSellPanel(), "SELL");
+        contentPanel.add(transactionHistoryPanel, "HISTORY");
+        
+        // Add components to main panel
+        mainPanel.add(sidebarPanel, BorderLayout.WEST);
+        mainPanel.add(contentPanel, BorderLayout.CENTER);
+        
+        mainFrame.add(mainPanel);
+        
+        mainFrame.setVisible(true);
+    }
+
+    private void createSidebar() {
+        sidebarPanel = new JPanel();
+        sidebarPanel.setLayout(new BoxLayout(sidebarPanel, BoxLayout.Y_AXIS));
+        sidebarPanel.setBackground(new Color(50, 50, 50));
+        sidebarPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+        sidebarPanel.setPreferredSize(new Dimension(200, 0));
+        
+        // User info section at top
+        JPanel userInfoPanel = new JPanel();
+        userInfoPanel.setLayout(new BoxLayout(userInfoPanel, BoxLayout.Y_AXIS));
+        userInfoPanel.setBackground(new Color(70, 70, 70));
+        userInfoPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        userInfoPanel.setMaximumSize(new Dimension(200, 100));
+        userInfoPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        
+        // Create user info labels
+        usernameLabel = new JLabel("User: " + currentUser.getUserName());
+        balanceLabel = new JLabel(String.format("Balance: $%.2f", currentUser.getBalance()));
+        ratingLabel = new JLabel(String.format("Rating: %.1f (%d)", currentUser.getAverageSellerRating(), currentUser.getNumberOfRatings()));
+        
+        usernameLabel.setForeground(Color.WHITE);
+        balanceLabel.setForeground(Color.WHITE);
+        ratingLabel.setForeground(Color.WHITE);
+        
+        userInfoPanel.add(usernameLabel);
+        userInfoPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+        userInfoPanel.add(balanceLabel);
+        userInfoPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+        userInfoPanel.add(ratingLabel);
+        
+        // Add user info panel to sidebar
+        sidebarPanel.add(userInfoPanel);
+        sidebarPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+        
+        // Navigation buttons
+        JButton profileButton = createMenuButton("Profile", "PROFILE");
+        JButton buyButton = createMenuButton("Buy Items", "BUY");
+        JButton sellButton = createMenuButton("Sell Items", "SELL");
+        JButton historyButton = createMenuButton("Transaction History", "HISTORY");
+        JButton messagesButton = createMenuButton("Messages", "MESSAGES");
+        JButton logoutButton = createMenuButton("Logout", "LOGOUT");
+        
+        // Add navigation buttons to sidebar
+        sidebarPanel.add(profileButton);
+        sidebarPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        sidebarPanel.add(buyButton);
+        sidebarPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        sidebarPanel.add(sellButton);
+        sidebarPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        sidebarPanel.add(historyButton);
+        sidebarPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        sidebarPanel.add(messagesButton);
+        sidebarPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        
+        // Push logout to bottom
+        sidebarPanel.add(Box.createVerticalGlue());
+        sidebarPanel.add(logoutButton);
+    }
+
+    private JButton createMenuButton(String text, String action) {
+        JButton button = new JButton(text);
+        button.setActionCommand(action);
+        button.setBackground(new Color(80, 80, 80));
+        button.setForeground(Color.WHITE);
+        button.setBorderPainted(false);
+        button.setFocusPainted(false);
+        button.setAlignmentX(Component.LEFT_ALIGNMENT);
+        button.setMaximumSize(new Dimension(200, 40));
+        
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String cmd = e.getActionCommand();
+                
+                if ("LOGOUT".equals(cmd)) {
+                    currentUser = null;
+                    mainFrame.dispose();
+                } else if (contentPanel.getComponentCount() > 0) {
+                    cardLayout.show(contentPanel, cmd);
+                }
+            }
+        });
+        
+        return button;
+    }
+
+    private void createProfilePanel() {
+        profilePanel = new JPanel();
+        profilePanel.setLayout(new BorderLayout());
+        
+        JPanel titlePanel = new JPanel();
+        titlePanel.setBackground(new Color(240, 240, 240));
+        titlePanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        
+        JLabel titleLabel = new JLabel("User Profile");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        titlePanel.add(titleLabel);
+        
+        // Profile info panel
+        JPanel infoPanel = new JPanel();
+        infoPanel.setLayout(new GridLayout(6, 2, 10, 10));
+        infoPanel.setBorder(BorderFactory.createEmptyBorder(20, 40, 20, 40));
+        
+        // Profile info labels
+        JLabel firstNameTitle = new JLabel("First Name:");
+        firstNameLabel = new JLabel(currentUser.getFirstName());
+        
+        JLabel lastNameTitle = new JLabel("Last Name:");
+        lastNameLabel = new JLabel(currentUser.getLastName());
+        
+        JLabel usernameTitle = new JLabel("Username:");
+        profileUsernameLabel = new JLabel(currentUser.getUserName());
+        
+        JLabel balanceTitle = new JLabel("Current Balance:");
+        profileBalanceLabel = new JLabel(String.format("$%.2f", currentUser.getBalance()));
+        
+        JLabel ratingTitle = new JLabel("Seller Rating:");
+        sellerRatingLabel = new JLabel(String.format("%.1f", currentUser.getAverageSellerRating()));
+        
+        JLabel ratingsCountTitle = new JLabel("Number of Ratings:");
+        numRatingsLabel = new JLabel(String.valueOf(currentUser.getNumberOfRatings()));
+        
+        infoPanel.add(firstNameTitle);
+        infoPanel.add(firstNameLabel);
+        infoPanel.add(lastNameTitle);
+        infoPanel.add(lastNameLabel);
+        infoPanel.add(usernameTitle);
+        infoPanel.add(profileUsernameLabel);
+        infoPanel.add(balanceTitle);
+        infoPanel.add(profileBalanceLabel);
+        infoPanel.add(ratingTitle);
+        infoPanel.add(sellerRatingLabel);
+        infoPanel.add(ratingsCountTitle);
+        infoPanel.add(numRatingsLabel);
+        
+        // Create balance update panel
+        JPanel updateBalancePanel = new JPanel();
+        updateBalancePanel.setBorder(BorderFactory.createTitledBorder("Update Balance"));
+        updateBalancePanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+        
+        JLabel newBalanceLabel = new JLabel("New Balance: $");
+        newBalanceField = new JTextField(10);
+        updateBalanceButton = new JButton("Update");
+        
+        updateBalanceButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    double newBalance = Double.parseDouble(newBalanceField.getText());
+                    updateBalanceGUI(newBalance);
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(mainFrame, 
+                        "Please enter a valid number.",
+                        "Invalid Input", 
+                        JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+        
+        updateBalancePanel.add(newBalanceLabel);
+        updateBalancePanel.add(newBalanceField);
+        updateBalancePanel.add(updateBalanceButton);
+        
+        profilePanel.add(titlePanel, BorderLayout.NORTH);
+        profilePanel.add(infoPanel, BorderLayout.CENTER);
+        profilePanel.add(updateBalancePanel, BorderLayout.SOUTH);
+    }
+
+    private JPanel createBuyPanel() {
+        JPanel buyPanel = new JPanel(new BorderLayout());
+        
+        // Create title panel
+        JPanel titlePanel = new JPanel();
+        titlePanel.setBackground(new Color(240, 240, 240));
+        titlePanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        
+        JLabel titleLabel = new JLabel("Buy Items");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        titlePanel.add(titleLabel);
+        
+        // Create content panel with category selection
+        JPanel contentPanel = new JPanel();
+        contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
+        contentPanel.setBorder(BorderFactory.createEmptyBorder(20, 40, 20, 40));
+        
+        JLabel instructionsLabel = new JLabel("Browse items by category");
+        instructionsLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        instructionsLabel.setFont(new Font("Arial", Font.PLAIN, 16));
+        
+        // Create category buttons
+        String[] categories = {"Apparel", "Collectible", "Electronic", "Home", "Vehicle"};
+        JPanel categoryButtonsPanel = new JPanel(new GridLayout(5, 1, 0, 10));
+        categoryButtonsPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        categoryButtonsPanel.setMaximumSize(new Dimension(300, 250));
+        
+        for (String category : categories) {
+            JButton categoryButton = new JButton(category);
+            categoryButton.setFont(new Font("Arial", Font.BOLD, 14));
+            
+            categoryButton.addActionListener(e -> {
+                try {
+                    buyItem();
+                } catch (IOException ex) {
+                    JOptionPane.showMessageDialog(mainFrame, 
+                        "Error browsing items: " + ex.getMessage(),
+                        "Error", 
+                        JOptionPane.ERROR_MESSAGE);
+                }
+            });
+            
+            categoryButtonsPanel.add(categoryButton);
+        }
+        
+        // Add components to content panel
+        contentPanel.add(instructionsLabel);
+        contentPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+        contentPanel.add(categoryButtonsPanel);
+        
+        // Add panels to main buy panel
+        buyPanel.add(titlePanel, BorderLayout.NORTH);
+        buyPanel.add(contentPanel, BorderLayout.CENTER);
+        
+        return buyPanel;
+    }
+
+    private JPanel createSellPanel() {
+        JPanel sellPanel = new JPanel(new BorderLayout());
+        
+        JPanel titlePanel = new JPanel();
+        titlePanel.setBackground(new Color(240, 240, 240));
+        titlePanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        
+        JLabel titleLabel = new JLabel("Sell Items");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        titlePanel.add(titleLabel);
+        
+        JPanel contentPanel = new JPanel();
+        contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
+        contentPanel.setBorder(BorderFactory.createEmptyBorder(20, 40, 20, 40));
+        
+        JLabel instructionsLabel = new JLabel("List a new item for sale in the marketplace");
+        instructionsLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        instructionsLabel.setFont(new Font("Arial", Font.PLAIN, 16));
+        
+        // Create the sell item button
+        JButton sellItemButton = new JButton("List New Item");
+        sellItemButton.setAlignmentX(Component.LEFT_ALIGNMENT);
+        sellItemButton.setMaximumSize(new Dimension(200, 40));
+        sellItemButton.setFont(new Font("Arial", Font.BOLD, 14));
+        
+        sellItemButton.addActionListener(e -> {
+            try {
+                sellItem();
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(mainFrame, 
+                    "Error listing item: " + ex.getMessage(),
+                    "Error", 
+                    JOptionPane.ERROR_MESSAGE);
+            }
+        });
+        
+        // Add your items list
+        JLabel yourItemsLabel = new JLabel("Your Listed Items");
+        yourItemsLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        yourItemsLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        yourItemsLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 10, 0));
+        
+        // Temp listed items
+        String[] columns = {"Item", "Category", "Price", "Status"};
+        Object[][] data = {
+            {"Sample Item 1", "Electronics", "$1500", "Available"},
+            {"Sample Item 2", "Apparel", "$45", "Available"},
+            {"Sample Item 3", "Home", "$1209999", "Sold"}
+        };
+        
+        JTable itemsTable = new JTable(data, columns);
+        JScrollPane scrollPane = new JScrollPane(itemsTable);
+        scrollPane.setAlignmentX(Component.LEFT_ALIGNMENT);
+        scrollPane.setPreferredSize(new Dimension(400, 200));
+        
+        contentPanel.add(instructionsLabel);
+        contentPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+        contentPanel.add(sellItemButton);
+        contentPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+        contentPanel.add(yourItemsLabel);
+        contentPanel.add(scrollPane);
+        
+        sellPanel.add(titlePanel, BorderLayout.NORTH);
+        sellPanel.add(contentPanel, BorderLayout.CENTER);
+        
+        return sellPanel;
+    }
+
+    private void createTransactionHistoryPanel() {
+        transactionHistoryPanel = new JPanel(new BorderLayout());
+        
+        JPanel titlePanel = new JPanel();
+        titlePanel.setBackground(new Color(240, 240, 240));
+        titlePanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        
+        JLabel titleLabel = new JLabel("Transaction History");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        titlePanel.add(titleLabel);
+        
+        // Create tabbed pane for purchases and sales
+        JTabbedPane tabbedPane = new JTabbedPane();
+        
+        JPanel purchasesPanel = new JPanel(new BorderLayout());
+        purchasesPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        
+        // Temporary purchases table
+        String[] purchaseColumns = {"Date", "Item", "Category", "Seller", "Price"};
+        Object[][] purchaseData = {
+            {"01/05/2025", "mango", "Electronics", "user123", "$99.99"},
+            {"01/01/1776", "arizona green tea honey ginseng flavor", "Apparel", "e", "$45.00"}
+        };
+        purchasesTable = new JTable(purchaseData, purchaseColumns);
+        JScrollPane purchasesScrollPane = new JScrollPane(purchasesTable);
+        purchasesPanel.add(purchasesScrollPane, BorderLayout.CENTER);
+        
+        JPanel salesPanel = new JPanel(new BorderLayout());
+        salesPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        
+        // Temporary sales table
+        String[] salesColumns = {"Date", "Item", "Category", "Buyer", "Price"};
+        Object[][] salesData = {
+            {"05/02/2025", "Sample Item 3", "Home", "joebob", "$120.50"},
+            {"100/100/2025", "Sample Item 4", "Collectible", "waaaaaa", "$350.00"}
+        };
+        salesTable = new JTable(salesData, salesColumns);
+        JScrollPane salesScrollPane = new JScrollPane(salesTable);
+        salesPanel.add(salesScrollPane, BorderLayout.CENTER);
+        
+        // Add tabs to tabbed pane
+        tabbedPane.addTab("Purchases", purchasesPanel);
+        tabbedPane.addTab("Sales", salesPanel);
+        
+        transactionHistoryPanel.add(titlePanel, BorderLayout.NORTH);
+        transactionHistoryPanel.add(tabbedPane, BorderLayout.CENTER);
+    }
+    
+    private void updateBalanceGUI(double newBalance) {
+        try {
+            currentUser.setBalance(newBalance);
+            
+            // Update balance in file
+            File file = new File("users.txt");
+            List<String> lines = Files.readAllLines(file.toPath());
+            List<String> updatedLines = new ArrayList<>();
+
+            for (String line : lines) {
+                String[] parts = line.split(",");
+                if (parts.length >= 5 && parts[0].equals(currentUser.getUserName())) {
+                    String updatedLine = String.format(
+                            "%s,%s,%s,%s,%.2f",
+                            currentUser.getUserName(),
+                            currentUser.getPassword(),
+                            currentUser.getFirstName(),
+                            currentUser.getLastName(),
+                            newBalance);
+                    updatedLines.add(updatedLine);
+                } else {
+                    updatedLines.add(line);
+                }
+            }
+
+            Files.write(file.toPath(), updatedLines);
+            
+            balanceLabel.setText(String.format("Balance: $%.2f", newBalance));
+            profileBalanceLabel.setText(String.format("$%.2f", newBalance));
+            
+            // Clear input field
+            newBalanceField.setText("");
+            
+            // Show success message
+            JOptionPane.showMessageDialog(mainFrame, 
+                "Balance updated successfully!",
+                "Success", 
+                JOptionPane.INFORMATION_MESSAGE);
+                
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(mainFrame, 
+                "Error updating balance: " + e.getMessage(),
+                "Error", 
+                JOptionPane.ERROR_MESSAGE);
+        }
+    }
     /**
      * {@inheritDoc}
      * Prompts for and processes user registration information.
