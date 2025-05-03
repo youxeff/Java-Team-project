@@ -28,7 +28,7 @@ import model.users.User;
  * @author Isaac Yoon
  * @version April 20 2025
  */
-public class ClientHandler implements Runnable, IClientHandler {
+public class ClientHandler extends JComponent implements Runnable, IClientHandler {
     /** Socket for the client connection */
     private Socket clientSocket;
     /** Input stream for receiving client messages */
@@ -70,6 +70,34 @@ public class ClientHandler implements Runnable, IClientHandler {
     private JTable salesTable;
     private DefaultListModel<String> purchasesListModel;
     private DefaultListModel<String> salesListModel;
+
+    // GUI Components for Authentication
+    private JPanel cards;
+    private CardLayout authCardLayout;
+    private JFrame authFrame;
+
+    private JTextField regFirstNameField;
+    private JTextField regLastNameField;
+    private JTextField regUsernameField;
+    private JPasswordField regPasswordField;
+
+    private JTextField loginUsernameField;
+    private JPasswordField loginPasswordField;
+
+    // Message GUI components
+    private JFrame messageComposeFrame;
+    private JTextField recipientField;
+    private JTextArea messageArea;
+    private JPanel messageInboxPanel;
+    private DefaultListModel<String> messageListModel;
+    private JList<String> messageList;
+    private JTextArea messageViewArea;
+    
+    // Rating GUI components
+    private JDialog ratingDialog;
+    private JComboBox<Integer> ratingComboBox;
+    private User sellerToRate;
+
     /**
      * Creates a new client handler for a connected client.
      * Initializes the communication streams and marketplace instance.
@@ -91,38 +119,28 @@ public class ClientHandler implements Runnable, IClientHandler {
     @Override
     public void run() {
         try {
-            out.println("Welcome to the marketplace!");
             boolean running = true;
-
             while (running) {
                 if (currentUser == null) {
-                    out.println("\n=== Marketplace System ===");
-                    out.println("1. Register New User");
-                    out.println("2. Login");
-                    out.println("3. Exit");
-                    out.println("Choose an option: ");
-
-                    String choice = in.readLine();
-                    switch (choice) {
-                        case "1":
-                            registerUser();
-                            break;
-                        case "2":
-                            loginUser();
-                            break;
-                        case "3":
-                            running = false;
-                            out.println("Goodbye!");
-                            break;
-                        default:
-                            out.println("Invalid option. Please try again.");
+                    SwingUtilities.invokeLater(() -> createAuthGUI());
+                    
+                    // Wait for auth GUI to complete
+                    while (currentUser == null && authFrame != null && authFrame.isVisible()) {
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    
+                    if (currentUser == null && (authFrame == null || !authFrame.isVisible())) {
+                        running = false;
                     }
                 } else {
-                    // showUserMenu();
                     SwingUtilities.invokeLater(() -> createAndShowGUI());
                     
-                    // Wait for GUI to close
-                    while (currentUser != null) {
+                    // Wait for main GUI to close
+                    while (currentUser != null && mainFrame != null && mainFrame.isVisible()) {
                         try {
                             Thread.sleep(100);
                         } catch (InterruptedException e) {
@@ -131,14 +149,154 @@ public class ClientHandler implements Runnable, IClientHandler {
                     }
                 }
             }
-        } catch (IOException e) {
-            System.err.println("Client error: " + e.getMessage());
         } finally {
             try {
                 clientSocket.close();
             } catch (IOException e) {
                 System.err.println("Failed to close socket: " + e.getMessage());
             }
+        }
+    }
+
+    public void createAuthGUI() {
+        authFrame = new JFrame("Marketplace Authentication");
+        authFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        authFrame.setSize(600, 400);
+
+        authCardLayout = new CardLayout();
+        cards = new JPanel(authCardLayout);
+
+        cards.add(welcomePanel(), "Welcome");
+        cards.add(loginPanel(), "Login");
+        cards.add(registerPanel(), "Register");
+
+        authFrame.add(cards, BorderLayout.CENTER);
+        authFrame.setVisible(true);
+    }
+
+    private JPanel welcomePanel() {
+        JPanel welcomePanel = new JPanel(new BorderLayout());
+
+        JButton loginButton = new JButton("Login");
+        JButton registerButton = new JButton("Register New User");
+        JButton exitButton = new JButton("Exit");
+
+        loginButton.addActionListener(e -> authCardLayout.show(cards, "Login"));
+        registerButton.addActionListener(e -> authCardLayout.show(cards, "Register"));
+        exitButton.addActionListener(e -> authFrame.dispose());
+
+        JPanel centerButtons = new JPanel(new GridLayout(3, 1, 10, 10));
+        centerButtons.add(loginButton);
+        centerButtons.add(registerButton);
+        centerButtons.add(exitButton);
+
+        welcomePanel.add(centerButtons, BorderLayout.CENTER);
+        return welcomePanel;
+    }
+
+    private JPanel registerPanel() {
+        JPanel registerPanel = new JPanel(new BorderLayout());
+        JPanel registerGrid = new JPanel(new GridLayout(5, 2, 5, 5));
+
+        regFirstNameField = new JTextField(10);
+        regLastNameField = new JTextField(10);
+        regUsernameField = new JTextField(10);
+        regPasswordField = new JPasswordField(10);
+
+        registerGrid.add(new JLabel("First Name:"));
+        registerGrid.add(regFirstNameField);
+        registerGrid.add(new JLabel("Last Name:"));
+        registerGrid.add(regLastNameField);
+        registerGrid.add(new JLabel("Username:"));
+        registerGrid.add(regUsernameField);
+        registerGrid.add(new JLabel("Password:"));
+        registerGrid.add(regPasswordField);
+
+        JButton registerBtn = new JButton("Register");
+        JButton backBtn = new JButton("Back");
+
+        registerBtn.addActionListener(e -> register());
+        backBtn.addActionListener(e -> authCardLayout.show(cards, "Welcome"));
+
+        registerGrid.add(registerBtn);
+        registerGrid.add(backBtn);
+
+        registerPanel.add(registerGrid, BorderLayout.CENTER);
+        return registerPanel;
+    }
+
+    private JPanel loginPanel() {
+        JPanel loginPanel = new JPanel(new BorderLayout());
+        JPanel loginGrid = new JPanel(new GridLayout(3, 2, 5, 5));
+
+        loginUsernameField = new JTextField(10);
+        loginPasswordField = new JPasswordField(10);
+
+        loginGrid.add(new JLabel("Username:"));
+        loginGrid.add(loginUsernameField);
+        loginGrid.add(new JLabel("Password:"));
+        loginGrid.add(loginPasswordField);
+
+        JButton loginBtn = new JButton("Login");
+        JButton backBtn = new JButton("Back");
+
+        loginBtn.addActionListener(e -> login());
+        backBtn.addActionListener(e -> authCardLayout.show(cards, "Welcome"));
+
+        loginGrid.add(loginBtn);
+        loginGrid.add(backBtn);
+
+        loginPanel.add(loginGrid, BorderLayout.CENTER);
+        return loginPanel;
+    }
+
+    private void register() {
+        String first = regFirstNameField.getText();
+        String last = regLastNameField.getText();
+        String username = regUsernameField.getText();
+        String password = new String(regPasswordField.getPassword());
+
+        if (first.isEmpty() || last.isEmpty() || username.isEmpty() || password.isEmpty()) {
+            JOptionPane.showMessageDialog(authFrame, "All fields are required.");
+            return;
+        }
+
+        try {
+            if (MarketplaceUser.loadUser(username) != null) {
+                JOptionPane.showMessageDialog(authFrame, "Username already exists.");
+                return;
+            }
+
+            MarketplaceUser newUser = new MarketplaceUser(first, last, username, password);
+            marketplace.updateUserData(newUser);
+            JOptionPane.showMessageDialog(authFrame, "Registration successful! Please log in.");
+            authCardLayout.show(cards, "Login");
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(authFrame, "Error during registration: " + e.getMessage());
+        }
+    }
+
+    private void login() {
+        String username = loginUsernameField.getText();
+        String password = new String(loginPasswordField.getPassword());
+
+        if (username.isEmpty() || password.isEmpty()) {
+            JOptionPane.showMessageDialog(authFrame, "Please enter both username and password.");
+            return;
+        }
+
+        try {
+            MarketplaceUser user = MarketplaceUser.loadUser(username);
+            if (user != null && user.verifyPassword(password)) {
+                currentUser = user;
+                JOptionPane.showMessageDialog(authFrame, "Login successful! Welcome " + currentUser.getFirstName());
+                authFrame.dispose();
+                SwingUtilities.invokeLater(() -> createAndShowGUI());
+            } else {
+                JOptionPane.showMessageDialog(authFrame, "Invalid username or password.");
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(authFrame, "Error during login: " + e.getMessage());
         }
     }
 
@@ -160,11 +318,13 @@ public class ClientHandler implements Runnable, IClientHandler {
         
         // Create content panels
         createProfilePanel();
+        createMessageInboxPanel();
         createTransactionHistoryPanel();
         
         contentPanel.add(profilePanel, "PROFILE");
         contentPanel.add(createBuyPanel(), "BUY");
         contentPanel.add(createSellPanel(), "SELL");
+        contentPanel.add(messageInboxPanel, "MESSAGES");
         contentPanel.add(transactionHistoryPanel, "HISTORY");
         
         // Add components to main panel
@@ -1042,20 +1202,7 @@ public class ClientHandler implements Runnable, IClientHandler {
      */
     @Override
     public void promptForSellerRating(User seller) throws IOException {
-        out.println("\nWould you like to rate the seller? (Y/N)");
-        String response = in.readLine();
-        if (response.equalsIgnoreCase("Y")) {
-            int rating = getValidatedInteger("Rate the seller (1-5, 5 being the best): ", 1, 5);
-            if (rating == -1)
-                return;
-
-            if (seller.addSellerRating(rating, currentUser)) {
-                out.println("Rating submitted successfully!");
-                out.printf("Seller's current rating: %.1f (%d ratings)%n",
-                        seller.getAverageSellerRating(),
-                        seller.getNumberOfRatings());
-            }
-        }
+        SwingUtilities.invokeLater(() -> showRatingDialog(seller));
     }
 
     /**
@@ -1087,6 +1234,224 @@ public class ClientHandler implements Runnable, IClientHandler {
             } catch (NumberFormatException e) {
                 out.println("Please enter a valid number.");
             }
+        }
+    }
+
+    private void createMessageComposeWindow() {
+        messageComposeFrame = new JFrame("Compose Message");
+        messageComposeFrame.setSize(400, 300);
+        messageComposeFrame.setLayout(new BorderLayout());
+        
+        JPanel inputPanel = new JPanel(new GridLayout(2, 2, 5, 5));
+        inputPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        
+        recipientField = new JTextField();
+        messageArea = new JTextArea();
+        messageArea.setLineWrap(true);
+        messageArea.setWrapStyleWord(true);
+        
+        inputPanel.add(new JLabel("To:"));
+        inputPanel.add(recipientField);
+        
+        JScrollPane scrollPane = new JScrollPane(messageArea);
+        
+        JButton sendButton = new JButton("Send");
+        sendButton.addActionListener(e -> {
+            String recipient = recipientField.getText();
+            String message = messageArea.getText();
+            
+            if (recipient.isEmpty() || message.isEmpty()) {
+                JOptionPane.showMessageDialog(messageComposeFrame, 
+                    "Please fill in all fields", 
+                    "Error", 
+                    JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
+            if (!MarketplaceUser.userExists(recipient)) {
+                JOptionPane.showMessageDialog(messageComposeFrame,
+                    "User '" + recipient + "' does not exist",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
+            currentUser.sendMessageTo(recipient, message);
+            JOptionPane.showMessageDialog(messageComposeFrame,
+                "Message sent successfully!",
+                "Success",
+                JOptionPane.INFORMATION_MESSAGE);
+            
+            messageComposeFrame.dispose();
+        });
+        
+        messageComposeFrame.add(inputPanel, BorderLayout.NORTH);
+        messageComposeFrame.add(scrollPane, BorderLayout.CENTER);
+        messageComposeFrame.add(sendButton, BorderLayout.SOUTH);
+        
+        messageComposeFrame.setLocationRelativeTo(null);
+        messageComposeFrame.setVisible(true);
+    }
+    
+    private void createMessageInboxPanel() {
+        messageInboxPanel = new JPanel(new BorderLayout());
+        messageInboxPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        
+        // Message list on the left
+        messageListModel = new DefaultListModel<>();
+        messageList = new JList<>(messageListModel);
+        messageList.setCellRenderer(new MessageCellRenderer());
+        messageList.setPreferredSize(new Dimension(200, 0));
+        
+        // Message view on the right
+        messageViewArea = new JTextArea();
+        messageViewArea.setEditable(false);
+        messageViewArea.setLineWrap(true);
+        messageViewArea.setWrapStyleWord(true);
+        
+        // Split pane to divide list and view
+        JSplitPane splitPane = new JSplitPane(
+            JSplitPane.HORIZONTAL_SPLIT,
+            new JScrollPane(messageList),
+            new JScrollPane(messageViewArea)
+        );
+        splitPane.setDividerLocation(200);
+        
+        // Compose button at the top
+        JButton composeButton = new JButton("Compose New Message");
+        composeButton.addActionListener(e -> createMessageComposeWindow());
+        
+        // Add components to panel
+        messageInboxPanel.add(composeButton, BorderLayout.NORTH);
+        messageInboxPanel.add(splitPane, BorderLayout.CENTER);
+        
+        // Load messages
+        refreshMessages();
+        
+        // Add selection listener
+        messageList.addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                int index = messageList.getSelectedIndex();
+                if (index != -1) {
+                    String message = messageList.getModel().getElementAt(index);
+                    messageViewArea.setText(message);
+                }
+            }
+        });
+        
+        // Add to content panel
+        contentPanel.add(messageInboxPanel, "MESSAGES");
+    }
+    
+    private void refreshMessages() {
+        messageListModel.clear();
+        ArrayList<String> messages = currentUser.viewMessages();
+        
+        if (messages.isEmpty()) {
+            messageListModel.addElement("No messages");
+            messageViewArea.setText("");
+        } else {
+            for (String message : messages) {
+                messageListModel.addElement(message);
+            }
+        }
+    }
+    
+    private void showRatingDialog(User seller) {
+        sellerToRate = seller;
+        ratingDialog = new JDialog(mainFrame, "Rate Seller", true);
+        ratingDialog.setSize(300, 150);
+        ratingDialog.setLayout(new BorderLayout());
+        
+        JPanel ratingPanel = new JPanel(new FlowLayout());
+        
+        // Rating combo box with stars
+        Integer[] ratings = {1, 2, 3, 4, 5};
+        ratingComboBox = new JComboBox<>(ratings);
+        ratingComboBox.setRenderer(new StarRatingRenderer());
+        
+        JButton submitButton = new JButton("Submit Rating");
+        submitButton.addActionListener(e -> submitRating());
+        
+        ratingPanel.add(new JLabel("Rating: "));
+        ratingPanel.add(ratingComboBox);
+        
+        ratingDialog.add(ratingPanel, BorderLayout.CENTER);
+        ratingDialog.add(submitButton, BorderLayout.SOUTH);
+        
+        ratingDialog.setLocationRelativeTo(mainFrame);
+        ratingDialog.setVisible(true);
+    }
+    
+    private void submitRating() {
+        int rating = (Integer) ratingComboBox.getSelectedItem();
+        if (sellerToRate.addSellerRating(rating, currentUser)) {
+            JOptionPane.showMessageDialog(ratingDialog,
+                "Rating submitted successfully!\n" +
+                String.format("Seller's current rating: %.1f (%d ratings)",
+                    sellerToRate.getAverageSellerRating(),
+                    sellerToRate.getNumberOfRatings()),
+                "Success",
+                JOptionPane.INFORMATION_MESSAGE);
+            ratingDialog.dispose();
+        } else {
+            JOptionPane.showMessageDialog(ratingDialog,
+                "Failed to submit rating",
+                "Error",
+                JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+    // Custom renderer for messages in the list
+    private class MessageCellRenderer extends DefaultListCellRenderer {
+        @Override
+        public Component getListCellRendererComponent(
+                JList<?> list, Object value, int index,
+                boolean isSelected, boolean cellHasFocus) {
+            
+            JLabel label = (JLabel) super.getListCellRendererComponent(
+                list, value, index, isSelected, cellHasFocus);
+            
+            String message = value.toString();
+            if (!message.equals("No messages")) {
+                String[] lines = message.split("\n");
+                if (lines.length >= 2) {
+                    String sender = lines[0].replace("FROM: ", "");
+                    String date = lines[1].replace("DATE: ", "");
+                    String preview = lines.length > 2 ? lines[2] : "";
+                    if (preview.length() > 30) {
+                        preview = preview.substring(0, 27) + "...";
+                    }
+                    label.setText(String.format("<html><b>%s</b><br/>%s<br/>%s</html>",
+                        sender, date, preview));
+                }
+            }
+            
+            return label;
+        }
+    }
+    
+    // Custom renderer for star ratings
+    private class StarRatingRenderer extends DefaultListCellRenderer {
+        @Override
+        public Component getListCellRendererComponent(
+                JList<?> list, Object value, int index,
+                boolean isSelected, boolean cellHasFocus) {
+            
+            JLabel label = (JLabel) super.getListCellRendererComponent(
+                list, value, index, isSelected, cellHasFocus);
+            
+            int rating = (Integer) value;
+            StringBuilder stars = new StringBuilder();
+            for (int i = 0; i < rating; i++) {
+                stars.append("★");
+            }
+            for (int i = rating; i < 5; i++) {
+                stars.append("☆");
+            }
+            
+            label.setText(stars.toString());
+            return label;
         }
     }
 }
