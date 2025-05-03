@@ -1,6 +1,5 @@
 package test;
 
-import Main.Main;
 import Service.Marketplace;
 import model.items.*;
 import model.users.MarketplaceUser;

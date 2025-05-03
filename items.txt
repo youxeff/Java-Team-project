@@ -1,1 +1,2 @@
-Apparel,happ,200.00,test,true,djjs,Apparel,adk,add,sak
+Apparel,happ,200.00,test,false,djjs,Apparel,adk,add,sak
+Electronic,Computer,200.00,yoon252,false,,Electronic,Apple,2021

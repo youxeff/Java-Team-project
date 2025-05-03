@@ -20,7 +20,7 @@ import model.users.User;
  * Handles all marketplace functionality, session management, and input
  * validation.
  * Each instance manages a single client connection in its own thread.
- * 
+ *
  * @author Youssef Abdelkader
  * @author Anthony Kim
  * @author Caroline Murphy
@@ -47,12 +47,12 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
     private JPanel sidebarPanel;
     private JPanel contentPanel;
     private CardLayout cardLayout;
-    
+
     // User info components
     private JLabel usernameLabel;
     private JLabel balanceLabel;
     private JLabel ratingLabel;
-    
+
     // Profile panel components
     private JPanel profilePanel;
     private JLabel firstNameLabel;
@@ -63,7 +63,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
     private JLabel numRatingsLabel;
     private JTextField newBalanceField;
     private JButton updateBalanceButton;
-    
+
     // Transaction history panel components
     private JPanel transactionHistoryPanel;
     private JTable purchasesTable;
@@ -92,7 +92,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
     private DefaultListModel<String> messageListModel;
     private JList<String> messageList;
     private JTextArea messageViewArea;
-    
+
     // Rating GUI components
     private JDialog ratingDialog;
     private JComboBox<Integer> ratingComboBox;
@@ -123,7 +123,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
             while (running) {
                 if (currentUser == null) {
                     SwingUtilities.invokeLater(() -> createAuthGUI());
-                    
+
                     // Wait for auth GUI to complete
                     while (currentUser == null && authFrame != null && authFrame.isVisible()) {
                         try {
@@ -132,13 +132,13 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
                             e.printStackTrace();
                         }
                     }
-                    
+
                     if (currentUser == null && (authFrame == null || !authFrame.isVisible())) {
                         running = false;
                     }
                 } else {
                     SwingUtilities.invokeLater(() -> createAndShowGUI());
-                    
+
                     // Wait for main GUI to close
                     while (currentUser != null && mainFrame != null && mainFrame.isVisible()) {
                         try {
@@ -306,33 +306,33 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         mainFrame.setMinimumSize(new Dimension(800, 500));
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainFrame.setLocationRelativeTo(null);
-        
+
         mainPanel = new JPanel(new BorderLayout());
-        
+
         // Create sidebar for navigation
         createSidebar();
-        
+
         // Create content panel with card layout
         cardLayout = new CardLayout();
         contentPanel = new JPanel(cardLayout);
-        
+
         // Create content panels
         createProfilePanel();
         createMessageInboxPanel();
         createTransactionHistoryPanel();
-        
+
         contentPanel.add(profilePanel, "PROFILE");
         contentPanel.add(createBuyPanel(), "BUY");
         contentPanel.add(createSellPanel(), "SELL");
         contentPanel.add(messageInboxPanel, "MESSAGES");
         contentPanel.add(transactionHistoryPanel, "HISTORY");
-        
+
         // Add components to main panel
         mainPanel.add(sidebarPanel, BorderLayout.WEST);
         mainPanel.add(contentPanel, BorderLayout.CENTER);
-        
+
         mainFrame.add(mainPanel);
-        
+
         mainFrame.setVisible(true);
     }
 
@@ -342,7 +342,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         sidebarPanel.setBackground(new Color(50, 50, 50));
         sidebarPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
         sidebarPanel.setPreferredSize(new Dimension(200, 0));
-        
+
         // User info section at top
         JPanel userInfoPanel = new JPanel();
         userInfoPanel.setLayout(new BoxLayout(userInfoPanel, BoxLayout.Y_AXIS));
@@ -350,26 +350,26 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         userInfoPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         userInfoPanel.setMaximumSize(new Dimension(200, 100));
         userInfoPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        
+
         // Create user info labels
         usernameLabel = new JLabel("User: " + currentUser.getUserName());
         balanceLabel = new JLabel(String.format("Balance: $%.2f", currentUser.getBalance()));
         ratingLabel = new JLabel(String.format("Rating: %.1f (%d)", currentUser.getAverageSellerRating(), currentUser.getNumberOfRatings()));
-        
+
         usernameLabel.setForeground(Color.WHITE);
         balanceLabel.setForeground(Color.WHITE);
         ratingLabel.setForeground(Color.WHITE);
-        
+
         userInfoPanel.add(usernameLabel);
         userInfoPanel.add(Box.createRigidArea(new Dimension(0, 5)));
         userInfoPanel.add(balanceLabel);
         userInfoPanel.add(Box.createRigidArea(new Dimension(0, 5)));
         userInfoPanel.add(ratingLabel);
-        
+
         // Add user info panel to sidebar
         sidebarPanel.add(userInfoPanel);
         sidebarPanel.add(Box.createRigidArea(new Dimension(0, 20)));
-        
+
         // Navigation buttons
         JButton profileButton = createMenuButton("Profile", "PROFILE");
         JButton buyButton = createMenuButton("Buy Items", "BUY");
@@ -377,7 +377,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         JButton historyButton = createMenuButton("Transaction History", "HISTORY");
         JButton messagesButton = createMenuButton("Messages", "MESSAGES");
         JButton logoutButton = createMenuButton("Logout", "LOGOUT");
-        
+
         // Add navigation buttons to sidebar
         sidebarPanel.add(profileButton);
         sidebarPanel.add(Box.createRigidArea(new Dimension(0, 10)));
@@ -389,7 +389,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         sidebarPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         sidebarPanel.add(messagesButton);
         sidebarPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-        
+
         // Push logout to bottom
         sidebarPanel.add(Box.createVerticalGlue());
         sidebarPanel.add(logoutButton);
@@ -404,12 +404,12 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         button.setFocusPainted(false);
         button.setAlignmentX(Component.LEFT_ALIGNMENT);
         button.setMaximumSize(new Dimension(200, 40));
-        
+
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String cmd = e.getActionCommand();
-                
+
                 if ("LOGOUT".equals(cmd)) {
                     currentUser = null;
                     mainFrame.dispose();
@@ -418,46 +418,46 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
                 }
             }
         });
-        
+
         return button;
     }
 
     private void createProfilePanel() {
         profilePanel = new JPanel();
         profilePanel.setLayout(new BorderLayout());
-        
+
         JPanel titlePanel = new JPanel();
         titlePanel.setBackground(new Color(240, 240, 240));
         titlePanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        
+
         JLabel titleLabel = new JLabel("User Profile");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
         titlePanel.add(titleLabel);
-        
+
         // Profile info panel
         JPanel infoPanel = new JPanel();
         infoPanel.setLayout(new GridLayout(6, 2, 10, 10));
         infoPanel.setBorder(BorderFactory.createEmptyBorder(20, 40, 20, 40));
-        
+
         // Profile info labels
         JLabel firstNameTitle = new JLabel("First Name:");
         firstNameLabel = new JLabel(currentUser.getFirstName());
-        
+
         JLabel lastNameTitle = new JLabel("Last Name:");
         lastNameLabel = new JLabel(currentUser.getLastName());
-        
+
         JLabel usernameTitle = new JLabel("Username:");
         profileUsernameLabel = new JLabel(currentUser.getUserName());
-        
+
         JLabel balanceTitle = new JLabel("Current Balance:");
         profileBalanceLabel = new JLabel(String.format("$%.2f", currentUser.getBalance()));
-        
+
         JLabel ratingTitle = new JLabel("Seller Rating:");
         sellerRatingLabel = new JLabel(String.format("%.1f", currentUser.getAverageSellerRating()));
-        
+
         JLabel ratingsCountTitle = new JLabel("Number of Ratings:");
         numRatingsLabel = new JLabel(String.valueOf(currentUser.getNumberOfRatings()));
-        
+
         infoPanel.add(firstNameTitle);
         infoPanel.add(firstNameLabel);
         infoPanel.add(lastNameTitle);
@@ -470,16 +470,16 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         infoPanel.add(sellerRatingLabel);
         infoPanel.add(ratingsCountTitle);
         infoPanel.add(numRatingsLabel);
-        
+
         // Create balance update panel
         JPanel updateBalancePanel = new JPanel();
         updateBalancePanel.setBorder(BorderFactory.createTitledBorder("Update Balance"));
         updateBalancePanel.setLayout(new FlowLayout(FlowLayout.LEFT));
-        
+
         JLabel newBalanceLabel = new JLabel("New Balance: $");
         newBalanceField = new JTextField(10);
         updateBalanceButton = new JButton("Update");
-        
+
         updateBalanceButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -487,18 +487,18 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
                     double newBalance = Double.parseDouble(newBalanceField.getText());
                     updateBalanceGUI(newBalance);
                 } catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(mainFrame, 
-                        "Please enter a valid number.",
-                        "Invalid Input", 
-                        JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(mainFrame,
+                            "Please enter a valid number.",
+                            "Invalid Input",
+                            JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
-        
+
         updateBalancePanel.add(newBalanceLabel);
         updateBalancePanel.add(newBalanceField);
         updateBalancePanel.add(updateBalanceButton);
-        
+
         profilePanel.add(titlePanel, BorderLayout.NORTH);
         profilePanel.add(infoPanel, BorderLayout.CENTER);
         profilePanel.add(updateBalancePanel, BorderLayout.SOUTH);
@@ -506,181 +506,375 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
 
     private JPanel createBuyPanel() {
         JPanel buyPanel = new JPanel(new BorderLayout());
-        
+
         // Create title panel
         JPanel titlePanel = new JPanel();
         titlePanel.setBackground(new Color(240, 240, 240));
         titlePanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        
+
         JLabel titleLabel = new JLabel("Buy Items");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
         titlePanel.add(titleLabel);
-        
-        // Create content panel with category selection
-        JPanel contentPanel = new JPanel();
-        contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
-        contentPanel.setBorder(BorderFactory.createEmptyBorder(20, 40, 20, 40));
-        
-        JLabel instructionsLabel = new JLabel("Browse items by category");
-        instructionsLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        instructionsLabel.setFont(new Font("Arial", Font.PLAIN, 16));
-        
-        // Create category buttons
-        String[] categories = {"Apparel", "Collectible", "Electronic", "Home", "Vehicle"};
-        JPanel categoryButtonsPanel = new JPanel(new GridLayout(5, 1, 0, 10));
-        categoryButtonsPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        categoryButtonsPanel.setMaximumSize(new Dimension(300, 250));
-        
-        for (String category : categories) {
-            JButton categoryButton = new JButton(category);
-            categoryButton.setFont(new Font("Arial", Font.BOLD, 14));
-            
-            categoryButton.addActionListener(e -> {
+
+        // Search and filter panel
+        JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
+
+        // Category filter dropdown
+        String[] categories = {"All Categories", "Apparel", "Collectible", "Electronic", "Home", "Vehicle"};
+        JComboBox<String> categoryFilter = new JComboBox<>(categories);
+
+        // Search bar
+        JTextField searchField = new JTextField(20);
+        JButton searchButton = new JButton("Search");
+
+        searchPanel.add(new JLabel("Category:"));
+        searchPanel.add(categoryFilter);
+        searchPanel.add(new JLabel("Search:"));
+        searchPanel.add(searchField);
+        searchPanel.add(searchButton);
+
+        buyPanel.add(searchPanel, BorderLayout.NORTH);
+
+        // Items grid view
+        JPanel itemsPanel = new JPanel(new GridLayout(0, 3, 10, 10));
+        itemsPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        // Display all items initially
+        displayItems(marketplace.getAvailableItems(), itemsPanel);
+
+        JScrollPane scrollPane = new JScrollPane(itemsPanel);
+        buyPanel.add(scrollPane, BorderLayout.CENTER);
+
+        // Add action listeners
+        searchButton.addActionListener(e -> {
+            String searchTerm = searchField.getText().toLowerCase();
+            String selectedCategory = (String)categoryFilter.getSelectedItem();
+
+            List<Item> filteredItems = new ArrayList<>();
+            List<Item> itemsToSearch = selectedCategory.equals("All Categories") ?
+                    marketplace.getAvailableItems() : marketplace.searchByCategory(selectedCategory);
+
+            for (Item item : itemsToSearch) {
+                if (item.getName().toLowerCase().contains(searchTerm)) {
+                    filteredItems.add(item);
+                }
+            }
+
+            itemsPanel.removeAll();
+            if (filteredItems.isEmpty()) {
+                JLabel noItemsLabel = new JLabel("No items found in this category");
+                noItemsLabel.setHorizontalAlignment(JLabel.CENTER);
+                noItemsLabel.setFont(new Font("Arial", Font.BOLD, 16));
+                itemsPanel.add(noItemsLabel);
+            } else {
+                displayItems(filteredItems, itemsPanel);
+            }
+            itemsPanel.revalidate();
+            itemsPanel.repaint();
+        });
+
+        categoryFilter.addActionListener(e -> {
+            String selectedCategory = (String)categoryFilter.getSelectedItem();
+            itemsPanel.removeAll();
+            List<Item> itemsToShow = selectedCategory.equals("All Categories") ?
+                    marketplace.getAvailableItems() : marketplace.searchByCategory(selectedCategory);
+            displayItems(itemsToShow, itemsPanel);
+            itemsPanel.revalidate();
+            itemsPanel.repaint();
+        });
+
+        return buyPanel;
+    }
+
+    private void displayItems(List<Item> items, JPanel itemsPanel) {
+        itemsPanel.removeAll();
+
+        if (items.isEmpty()) {
+            JLabel noItemsLabel = new JLabel("No items found in this category");
+            noItemsLabel.setHorizontalAlignment(JLabel.CENTER);
+            noItemsLabel.setFont(new Font("Arial", Font.BOLD, 16));
+            itemsPanel.add(noItemsLabel);
+            return;
+        }
+
+        for (Item item : items) {
+            if (!item.isAvailable()) continue;
+
+            JPanel itemCard = new JPanel(new BorderLayout());
+            itemCard.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+            itemCard.setPreferredSize(new Dimension(250, 350));
+
+            // Item image
+//            JLabel imageLabel = new JLabel(new ImageIcon(item.getImagePath()));
+//            imageLabel.setPreferredSize(new Dimension(250, 150));
+//            imageLabel.setHorizontalAlignment(JLabel.CENTER);
+
+            // Item details
+            JPanel detailsPanel = new JPanel();
+            detailsPanel.setLayout(new BoxLayout(detailsPanel, BoxLayout.Y_AXIS));
+            detailsPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+            JLabel nameLabel = new JLabel(item.getName());
+            nameLabel.setFont(new Font("Arial", Font.BOLD, 14));
+
+            JLabel priceLabel = new JLabel(String.format("$%.2f", item.getCost()));
+            priceLabel.setFont(new Font("Arial", Font.BOLD, 16));
+            priceLabel.setForeground(Color.RED);
+
+            JLabel sellerLabel = new JLabel("Seller: " + item.getSoldBy().getUserName());
+
+            // Buttons panel
+            JPanel buttonsPanel = new JPanel(new GridLayout(1, 2, 5, 0));
+
+            JButton detailsButton = new JButton("Details");
+            detailsButton.addActionListener(e -> showItemDetail(item));
+
+            JButton buyButton = new JButton("Buy");
+            buyButton.addActionListener(e -> {
                 try {
-                    buyItem();
+                    attemptPurchase(item);
                 } catch (IOException ex) {
-                    JOptionPane.showMessageDialog(mainFrame, 
-                        "Error browsing items: " + ex.getMessage(),
-                        "Error", 
-                        JOptionPane.ERROR_MESSAGE);
+                    throw new RuntimeException(ex);
                 }
             });
-            
-            categoryButtonsPanel.add(categoryButton);
+
+            buttonsPanel.add(detailsButton);
+            buttonsPanel.add(buyButton);
+
+            // Add components to details panel
+            detailsPanel.add(nameLabel);
+            detailsPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+            detailsPanel.add(priceLabel);
+            detailsPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+            detailsPanel.add(sellerLabel);
+            detailsPanel.add(Box.createVerticalGlue());
+            detailsPanel.add(buttonsPanel);
+
+            //itemCard.add(imageLabel, BorderLayout.NORTH);
+            itemCard.add(detailsPanel, BorderLayout.CENTER);
+
+            itemsPanel.add(itemCard);
         }
-        
-        // Add components to content panel
-        contentPanel.add(instructionsLabel);
-        contentPanel.add(Box.createRigidArea(new Dimension(0, 20)));
-        contentPanel.add(categoryButtonsPanel);
-        
-        // Add panels to main buy panel
-        buyPanel.add(titlePanel, BorderLayout.NORTH);
-        buyPanel.add(contentPanel, BorderLayout.CENTER);
-        
-        return buyPanel;
+    }
+
+    private void showItemDetail(Item item) {
+        JDialog detailDialog = new JDialog(mainFrame, "Item Details", true);
+        detailDialog.setSize(600, 500);
+        detailDialog.setLocationRelativeTo(mainFrame);
+
+        JPanel detailPanel = new JPanel(new BorderLayout(10, 10));
+        detailPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        // Large image
+//        JLabel largeImage = new JLabel(new ImageIcon(item.getImagePath()));
+//        largeImage.setHorizontalAlignment(JLabel.CENTER);
+//        detailPanel.add(largeImage, BorderLayout.NORTH);
+
+        // Details panel
+        JPanel infoPanel = new JPanel();
+        infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
+
+        JLabel nameLabel = new JLabel(item.getName());
+        nameLabel.setFont(new Font("Arial", Font.BOLD, 20));
+
+        JLabel priceLabel = new JLabel(String.format("Price: $%.2f", item.getCost()));
+        priceLabel.setFont(new Font("Arial", Font.BOLD, 16));
+
+        JLabel sellerLabel = new JLabel("Sold by: " + item.getSoldBy().getUserName());
+        sellerLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+
+        JTextArea description = new JTextArea(item.toString());
+        description.setLineWrap(true);
+        description.setWrapStyleWord(true);
+        description.setEditable(false);
+        description.setBackground(null);
+        description.setFont(new Font("Arial", Font.PLAIN, 14));
+
+        // Purchase button
+        JButton purchaseButton = new JButton("Purchase");
+        purchaseButton.addActionListener(e -> {
+            detailDialog.dispose();
+            try {
+                attemptPurchase(item);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+
+        // Add components
+        infoPanel.add(nameLabel);
+        infoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        infoPanel.add(priceLabel);
+        infoPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+        infoPanel.add(sellerLabel);
+        infoPanel.add(Box.createRigidArea(new Dimension(0, 15)));
+        infoPanel.add(description);
+        infoPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+        infoPanel.add(purchaseButton);
+
+        detailPanel.add(infoPanel, BorderLayout.CENTER);
+        detailDialog.add(detailPanel);
+        detailDialog.setVisible(true);
+    }
+
+    private void attemptPurchase(Item item) throws IOException {
+        if (currentUser.getBalance() < item.getCost()) {
+            JOptionPane.showMessageDialog(mainFrame,
+                    "Insufficient balance for this purchase",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        int confirm = JOptionPane.showConfirmDialog(mainFrame,
+                String.format("Confirm purchase of %s for $%.2f?", item.getName(), item.getCost()),
+                "Confirm Purchase",
+                JOptionPane.YES_NO_OPTION);
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            boolean success = marketplace.purchaseItem(item, currentUser);
+
+            if (success) {
+                currentUser.setBalance(currentUser.getBalance() - item.getCost());
+                balanceLabel.setText(String.format("Current Balance: $%.2f", currentUser.getBalance()));
+                profileBalanceLabel.setText(String.format("$%.2f", currentUser.getBalance()));
+
+                JOptionPane.showMessageDialog(mainFrame,
+                        "Purchase successful! Thank you for your order.",
+                        "Success",
+                        JOptionPane.INFORMATION_MESSAGE);
+
+                // Prompt to rate seller
+                promptForSellerRating(item.getSoldBy());
+            } else {
+                JOptionPane.showMessageDialog(mainFrame,
+                        "Purchase failed. Please try again later.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }
 
     private JPanel createSellPanel() {
         JPanel sellPanel = new JPanel(new BorderLayout());
-        
+
         JPanel titlePanel = new JPanel();
         titlePanel.setBackground(new Color(240, 240, 240));
         titlePanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        
+
         JLabel titleLabel = new JLabel("Sell Items");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
         titlePanel.add(titleLabel);
-        
+
         JPanel contentPanel = new JPanel();
         contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
         contentPanel.setBorder(BorderFactory.createEmptyBorder(20, 40, 20, 40));
-        
+
         JLabel instructionsLabel = new JLabel("List a new item for sale in the marketplace");
         instructionsLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         instructionsLabel.setFont(new Font("Arial", Font.PLAIN, 16));
-        
+
         // Create the sell item button
         JButton sellItemButton = new JButton("List New Item");
         sellItemButton.setAlignmentX(Component.LEFT_ALIGNMENT);
         sellItemButton.setMaximumSize(new Dimension(200, 40));
         sellItemButton.setFont(new Font("Arial", Font.BOLD, 14));
-        
+
         sellItemButton.addActionListener(e -> {
             try {
                 sellItem();
             } catch (IOException ex) {
-                JOptionPane.showMessageDialog(mainFrame, 
-                    "Error listing item: " + ex.getMessage(),
-                    "Error", 
-                    JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(mainFrame,
+                        "Error listing item: " + ex.getMessage(),
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
             }
         });
-        
+
         // Add your items list
         JLabel yourItemsLabel = new JLabel("Your Listed Items");
         yourItemsLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         yourItemsLabel.setFont(new Font("Arial", Font.BOLD, 16));
         yourItemsLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 10, 0));
-        
+
         // Temp listed items
         String[] columns = {"Item", "Category", "Price", "Status"};
         Object[][] data = {
-            {"Sample Item 1", "Electronics", "$1500", "Available"},
-            {"Sample Item 2", "Apparel", "$45", "Available"},
-            {"Sample Item 3", "Home", "$1209999", "Sold"}
+                {"Sample Item 1", "Electronics", "$1500", "Available"},
+                {"Sample Item 2", "Apparel", "$45", "Available"},
+                {"Sample Item 3", "Home", "$1209999", "Sold"}
         };
-        
+
         JTable itemsTable = new JTable(data, columns);
         JScrollPane scrollPane = new JScrollPane(itemsTable);
         scrollPane.setAlignmentX(Component.LEFT_ALIGNMENT);
         scrollPane.setPreferredSize(new Dimension(400, 200));
-        
+
         contentPanel.add(instructionsLabel);
         contentPanel.add(Box.createRigidArea(new Dimension(0, 20)));
         contentPanel.add(sellItemButton);
         contentPanel.add(Box.createRigidArea(new Dimension(0, 20)));
         contentPanel.add(yourItemsLabel);
         contentPanel.add(scrollPane);
-        
+
         sellPanel.add(titlePanel, BorderLayout.NORTH);
         sellPanel.add(contentPanel, BorderLayout.CENTER);
-        
+
         return sellPanel;
     }
 
     private void createTransactionHistoryPanel() {
         transactionHistoryPanel = new JPanel(new BorderLayout());
-        
+
         JPanel titlePanel = new JPanel();
         titlePanel.setBackground(new Color(240, 240, 240));
         titlePanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        
+
         JLabel titleLabel = new JLabel("Transaction History");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
         titlePanel.add(titleLabel);
-        
+
         // Create tabbed pane for purchases and sales
         JTabbedPane tabbedPane = new JTabbedPane();
-        
+
         JPanel purchasesPanel = new JPanel(new BorderLayout());
         purchasesPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        
+
         // Temporary purchases table
         String[] purchaseColumns = {"Date", "Item", "Category", "Seller", "Price"};
         Object[][] purchaseData = {
-            {"01/05/2025", "mango", "Electronics", "user123", "$99.99"},
-            {"01/01/1776", "arizona green tea honey ginseng flavor", "Apparel", "e", "$45.00"}
+                {"01/05/2025", "mango", "Electronics", "user123", "$99.99"},
+                {"01/01/1776", "arizona green tea honey ginseng flavor", "Apparel", "e", "$45.00"}
         };
         purchasesTable = new JTable(purchaseData, purchaseColumns);
         JScrollPane purchasesScrollPane = new JScrollPane(purchasesTable);
         purchasesPanel.add(purchasesScrollPane, BorderLayout.CENTER);
-        
+
         JPanel salesPanel = new JPanel(new BorderLayout());
         salesPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        
+
         // Temporary sales table
         String[] salesColumns = {"Date", "Item", "Category", "Buyer", "Price"};
         Object[][] salesData = {
-            {"05/02/2025", "Sample Item 3", "Home", "joebob", "$120.50"},
-            {"100/100/2025", "Sample Item 4", "Collectible", "waaaaaa", "$350.00"}
+                {"05/02/2025", "Sample Item 3", "Home", "joebob", "$120.50"},
+                {"100/100/2025", "Sample Item 4", "Collectible", "waaaaaa", "$350.00"}
         };
         salesTable = new JTable(salesData, salesColumns);
         JScrollPane salesScrollPane = new JScrollPane(salesTable);
         salesPanel.add(salesScrollPane, BorderLayout.CENTER);
-        
+
         // Add tabs to tabbed pane
         tabbedPane.addTab("Purchases", purchasesPanel);
         tabbedPane.addTab("Sales", salesPanel);
-        
+
         transactionHistoryPanel.add(titlePanel, BorderLayout.NORTH);
         transactionHistoryPanel.add(tabbedPane, BorderLayout.CENTER);
     }
-    
+
     private void updateBalanceGUI(double newBalance) {
         try {
             currentUser.setBalance(newBalance);
-            
+
             // Update balance in file
             File file = new File("users.txt");
             List<String> lines = Files.readAllLines(file.toPath());
@@ -703,24 +897,24 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
             }
 
             Files.write(file.toPath(), updatedLines);
-            
+
             balanceLabel.setText(String.format("Balance: $%.2f", newBalance));
             profileBalanceLabel.setText(String.format("$%.2f", newBalance));
-            
+
             // Clear input field
             newBalanceField.setText("");
-            
+
             // Show success message
-            JOptionPane.showMessageDialog(mainFrame, 
-                "Balance updated successfully!",
-                "Success", 
-                JOptionPane.INFORMATION_MESSAGE);
-                
+            JOptionPane.showMessageDialog(mainFrame,
+                    "Balance updated successfully!",
+                    "Success",
+                    JOptionPane.INFORMATION_MESSAGE);
+
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(mainFrame, 
-                "Error updating balance: " + e.getMessage(),
-                "Error", 
-                JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(mainFrame,
+                    "Error updating balance: " + e.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
     /**
@@ -925,24 +1119,24 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         JFrame frame = new JFrame("List New Item");
         frame.setSize(500, 600);
         frame.setLayout(new BorderLayout());
-    
+
         // Common fields panel
         JPanel commonPanel = new JPanel(new GridLayout(3, 2));
         JTextField nameField = new JTextField();
         JTextField priceField = new JTextField();
         JComboBox<String> categoryCombo = new JComboBox<>(
-            new String[]{"Apparel", "Collectible", "Electronic", "Home", "Vehicle"});
-    
+                new String[]{"Apparel", "Collectible", "Electronic", "Home", "Vehicle"});
+
         commonPanel.add(new JLabel("Item Name:"));
         commonPanel.add(nameField);
         commonPanel.add(new JLabel("Price:"));
         commonPanel.add(priceField);
         commonPanel.add(new JLabel("Category:"));
         commonPanel.add(categoryCombo);
-    
+
         // Category panels
         JPanel cardPanel = new JPanel(new CardLayout());
-        
+
         // Apparel
         JPanel apparelPanel = new JPanel(new GridLayout(3, 2));
         JTextField sizeField = new JTextField();
@@ -954,7 +1148,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         apparelPanel.add(colorField);
         apparelPanel.add(new JLabel("Brand:"));
         apparelPanel.add(brandField);
-        
+
         // Collectible
         JPanel collectiblePanel = new JPanel(new GridLayout(2, 2));
         JTextField cTypeField = new JTextField();
@@ -963,29 +1157,29 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         collectiblePanel.add(cTypeField);
         collectiblePanel.add(new JLabel("Condition:"));
         collectiblePanel.add(conditionField);
-        
+
         // Electronic
         JPanel electronicPanel = new JPanel(new GridLayout(2, 2));
         JTextField eTypeField = new JTextField();
         JSpinner yearSpinner = new JSpinner(
-            new SpinnerNumberModel(2023, 1900, LocalDateTime.now().getYear(), 1));
+                new SpinnerNumberModel(2023, 1900, LocalDateTime.now().getYear(), 1));
         electronicPanel.add(new JLabel("Type:"));
         electronicPanel.add(eTypeField);
         electronicPanel.add(new JLabel("Year:"));
         electronicPanel.add(yearSpinner);
-        
+
         // Home
         JPanel homePanel = new JPanel(new GridLayout(1, 2));
         JTextField hTypeField = new JTextField();
         homePanel.add(new JLabel("Type:"));
         homePanel.add(hTypeField);
-        
+
         // Vehicle
         JPanel vehiclePanel = new JPanel(new GridLayout(3, 2));
         JSpinner mileageSpinner = new JSpinner(
-            new SpinnerNumberModel(0, 0, 1000000, 1000));
+                new SpinnerNumberModel(0, 0, 1000000, 1000));
         JSpinner vYearSpinner = new JSpinner(
-            new SpinnerNumberModel(2023, 1900, LocalDateTime.now().getYear(), 1));
+                new SpinnerNumberModel(2023, 1900, LocalDateTime.now().getYear(), 1));
         JTextField vBrandField = new JTextField();
         vehiclePanel.add(new JLabel("Mileage:"));
         vehiclePanel.add(mileageSpinner);
@@ -993,79 +1187,79 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         vehiclePanel.add(vYearSpinner);
         vehiclePanel.add(new JLabel("Brand:"));
         vehiclePanel.add(vBrandField);
-        
+
         // Add all panels to card layout
         cardPanel.add(apparelPanel, "Apparel");
         cardPanel.add(collectiblePanel, "Collectible");
         cardPanel.add(electronicPanel, "Electronic");
         cardPanel.add(homePanel, "Home");
         cardPanel.add(vehiclePanel, "Vehicle");
-    
+
         // Show appropriate panel whenever category changes
         categoryCombo.addActionListener(e -> {
             CardLayout cl = (CardLayout)(cardPanel.getLayout());
             cl.show(cardPanel, (String)categoryCombo.getSelectedItem());
         });
-    
+
         // Submit button
         JButton submitButton = new JButton("List Item");
         submitButton.addActionListener(e -> {
             try {
                 String name = nameField.getText();
                 if (name.isEmpty()) {
-                    JOptionPane.showMessageDialog(frame, "Please enter an item name", 
-                        "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(frame, "Please enter an item name",
+                            "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-                
+
                 double price = Double.parseDouble(priceField.getText());
                 if (price <= 0) {
-                    JOptionPane.showMessageDialog(frame, "Price must be greater than 0", 
-                        "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(frame, "Price must be greater than 0",
+                            "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-                
+
                 String category = (String)categoryCombo.getSelectedItem();
                 String imagePath = ""; // Empty since we removed image functionality
-    
+
                 Item newItem;
                 switch(category) {
                     case "Apparel":
-                        newItem = new Apparel(name, price, currentUser, imagePath, category, 
-                            sizeField.getText(), colorField.getText(), brandField.getText());
+                        newItem = new Apparel(name, price, currentUser, imagePath, category,
+                                sizeField.getText(), colorField.getText(), brandField.getText());
                         break;
                     case "Collectible":
                         newItem = new Collectible(name, price, currentUser, imagePath, category,
-                            cTypeField.getText(), conditionField.getText());
+                                cTypeField.getText(), conditionField.getText());
                         break;
                     case "Electronic":
                         newItem = new Electronic(name, price, currentUser, imagePath, category,
-                            eTypeField.getText(), (int)yearSpinner.getValue());
+                                eTypeField.getText(), (int)yearSpinner.getValue());
                         break;
                     case "Home":
                         newItem = new Home(name, price, currentUser, imagePath, category,
-                            hTypeField.getText());
+                                hTypeField.getText());
                         break;
                     case "Vehicle":
                         newItem = new Vehicle(name, price, currentUser, imagePath, category,
-                            (int)mileageSpinner.getValue(), (int)vYearSpinner.getValue(), 
-                            vBrandField.getText());
+                                (int)mileageSpinner.getValue(), (int)vYearSpinner.getValue(),
+                                vBrandField.getText());
                         break;
                     default:
-                        JOptionPane.showMessageDialog(frame, "Invalid category", 
-                            "Error", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(frame, "Invalid category",
+                                "Error", JOptionPane.ERROR_MESSAGE);
                         return;
                 }
-    
+
                 marketplace.addItem(newItem);
                 JOptionPane.showMessageDialog(frame, "Item listed successfully!");
                 frame.dispose();
             } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(frame, "Please enter a valid price", 
-                    "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(frame, "Please enter a valid price",
+                        "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
-    
+
         frame.add(commonPanel, BorderLayout.NORTH);
         frame.add(cardPanel, BorderLayout.CENTER);
         frame.add(submitButton, BorderLayout.SOUTH);
@@ -1241,93 +1435,93 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         messageComposeFrame = new JFrame("Compose Message");
         messageComposeFrame.setSize(400, 300);
         messageComposeFrame.setLayout(new BorderLayout());
-        
+
         JPanel inputPanel = new JPanel(new GridLayout(2, 2, 5, 5));
         inputPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        
+
         recipientField = new JTextField();
         messageArea = new JTextArea();
         messageArea.setLineWrap(true);
         messageArea.setWrapStyleWord(true);
-        
+
         inputPanel.add(new JLabel("To:"));
         inputPanel.add(recipientField);
-        
+
         JScrollPane scrollPane = new JScrollPane(messageArea);
-        
+
         JButton sendButton = new JButton("Send");
         sendButton.addActionListener(e -> {
             String recipient = recipientField.getText();
             String message = messageArea.getText();
-            
+
             if (recipient.isEmpty() || message.isEmpty()) {
-                JOptionPane.showMessageDialog(messageComposeFrame, 
-                    "Please fill in all fields", 
-                    "Error", 
-                    JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(messageComposeFrame,
+                        "Please fill in all fields",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            
+
             if (!MarketplaceUser.userExists(recipient)) {
                 JOptionPane.showMessageDialog(messageComposeFrame,
-                    "User '" + recipient + "' does not exist",
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE);
+                        "User '" + recipient + "' does not exist",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            
+
             currentUser.sendMessageTo(recipient, message);
             JOptionPane.showMessageDialog(messageComposeFrame,
-                "Message sent successfully!",
-                "Success",
-                JOptionPane.INFORMATION_MESSAGE);
-            
+                    "Message sent successfully!",
+                    "Success",
+                    JOptionPane.INFORMATION_MESSAGE);
+
             messageComposeFrame.dispose();
         });
-        
+
         messageComposeFrame.add(inputPanel, BorderLayout.NORTH);
         messageComposeFrame.add(scrollPane, BorderLayout.CENTER);
         messageComposeFrame.add(sendButton, BorderLayout.SOUTH);
-        
+
         messageComposeFrame.setLocationRelativeTo(null);
         messageComposeFrame.setVisible(true);
     }
-    
+
     private void createMessageInboxPanel() {
         messageInboxPanel = new JPanel(new BorderLayout());
         messageInboxPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        
+
         // Message list on the left
         messageListModel = new DefaultListModel<>();
         messageList = new JList<>(messageListModel);
         messageList.setCellRenderer(new MessageCellRenderer());
         messageList.setPreferredSize(new Dimension(200, 0));
-        
+
         // Message view on the right
         messageViewArea = new JTextArea();
         messageViewArea.setEditable(false);
         messageViewArea.setLineWrap(true);
         messageViewArea.setWrapStyleWord(true);
-        
+
         // Split pane to divide list and view
         JSplitPane splitPane = new JSplitPane(
-            JSplitPane.HORIZONTAL_SPLIT,
-            new JScrollPane(messageList),
-            new JScrollPane(messageViewArea)
+                JSplitPane.HORIZONTAL_SPLIT,
+                new JScrollPane(messageList),
+                new JScrollPane(messageViewArea)
         );
         splitPane.setDividerLocation(200);
-        
+
         // Compose button at the top
         JButton composeButton = new JButton("Compose New Message");
         composeButton.addActionListener(e -> createMessageComposeWindow());
-        
+
         // Add components to panel
         messageInboxPanel.add(composeButton, BorderLayout.NORTH);
         messageInboxPanel.add(splitPane, BorderLayout.CENTER);
-        
+
         // Load messages
         refreshMessages();
-        
+
         // Add selection listener
         messageList.addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
@@ -1338,15 +1532,15 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
                 }
             }
         });
-        
+
         // Add to content panel
         contentPanel.add(messageInboxPanel, "MESSAGES");
     }
-    
+
     private void refreshMessages() {
         messageListModel.clear();
         ArrayList<String> messages = currentUser.viewMessages();
-        
+
         if (messages.isEmpty()) {
             messageListModel.addElement("No messages");
             messageViewArea.setText("");
@@ -1356,62 +1550,62 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
             }
         }
     }
-    
+
     private void showRatingDialog(User seller) {
         sellerToRate = seller;
         ratingDialog = new JDialog(mainFrame, "Rate Seller", true);
         ratingDialog.setSize(300, 150);
         ratingDialog.setLayout(new BorderLayout());
-        
+
         JPanel ratingPanel = new JPanel(new FlowLayout());
-        
+
         // Rating combo box with stars
         Integer[] ratings = {1, 2, 3, 4, 5};
         ratingComboBox = new JComboBox<>(ratings);
         ratingComboBox.setRenderer(new StarRatingRenderer());
-        
+
         JButton submitButton = new JButton("Submit Rating");
         submitButton.addActionListener(e -> submitRating());
-        
+
         ratingPanel.add(new JLabel("Rating: "));
         ratingPanel.add(ratingComboBox);
-        
+
         ratingDialog.add(ratingPanel, BorderLayout.CENTER);
         ratingDialog.add(submitButton, BorderLayout.SOUTH);
-        
+
         ratingDialog.setLocationRelativeTo(mainFrame);
         ratingDialog.setVisible(true);
     }
-    
+
     private void submitRating() {
         int rating = (Integer) ratingComboBox.getSelectedItem();
         if (sellerToRate.addSellerRating(rating, currentUser)) {
             JOptionPane.showMessageDialog(ratingDialog,
-                "Rating submitted successfully!\n" +
-                String.format("Seller's current rating: %.1f (%d ratings)",
-                    sellerToRate.getAverageSellerRating(),
-                    sellerToRate.getNumberOfRatings()),
-                "Success",
-                JOptionPane.INFORMATION_MESSAGE);
+                    "Rating submitted successfully!\n" +
+                            String.format("Seller's current rating: %.1f (%d ratings)",
+                                    sellerToRate.getAverageSellerRating(),
+                                    sellerToRate.getNumberOfRatings()),
+                    "Success",
+                    JOptionPane.INFORMATION_MESSAGE);
             ratingDialog.dispose();
         } else {
             JOptionPane.showMessageDialog(ratingDialog,
-                "Failed to submit rating",
-                "Error",
-                JOptionPane.ERROR_MESSAGE);
+                    "Failed to submit rating",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
-    
+
     // Custom renderer for messages in the list
     private class MessageCellRenderer extends DefaultListCellRenderer {
         @Override
         public Component getListCellRendererComponent(
                 JList<?> list, Object value, int index,
                 boolean isSelected, boolean cellHasFocus) {
-            
+
             JLabel label = (JLabel) super.getListCellRendererComponent(
-                list, value, index, isSelected, cellHasFocus);
-            
+                    list, value, index, isSelected, cellHasFocus);
+
             String message = value.toString();
             if (!message.equals("No messages")) {
                 String[] lines = message.split("\n");
@@ -1423,24 +1617,24 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
                         preview = preview.substring(0, 27) + "...";
                     }
                     label.setText(String.format("<html><b>%s</b><br/>%s<br/>%s</html>",
-                        sender, date, preview));
+                            sender, date, preview));
                 }
             }
-            
+
             return label;
         }
     }
-    
+
     // Custom renderer for star ratings
     private class StarRatingRenderer extends DefaultListCellRenderer {
         @Override
         public Component getListCellRendererComponent(
                 JList<?> list, Object value, int index,
                 boolean isSelected, boolean cellHasFocus) {
-            
+
             JLabel label = (JLabel) super.getListCellRendererComponent(
-                list, value, index, isSelected, cellHasFocus);
-            
+                    list, value, index, isSelected, cellHasFocus);
+
             int rating = (Integer) value;
             StringBuilder stars = new StringBuilder();
             for (int i = 0; i < rating; i++) {
@@ -1449,7 +1643,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
             for (int i = rating; i < 5; i++) {
                 stars.append("☆");
             }
-            
+
             label.setText(stars.toString());
             return label;
         }
