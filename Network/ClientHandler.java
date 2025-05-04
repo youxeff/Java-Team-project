@@ -682,14 +682,14 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         return buyPanel;
     }
 
-    private void displayItems(List<Item> items, JPanel itemsPanel) {
-        itemsPanel.removeAll();
+    private void displayItems(List<Item> items, JPanel targetItemsPanel) {
+        targetItemsPanel.removeAll();
 
         if (items.isEmpty()) {
             JLabel noItemsLabel = new JLabel("No items found in this category");
             noItemsLabel.setHorizontalAlignment(JLabel.CENTER);
             noItemsLabel.setFont(new Font("Arial", Font.BOLD, 16));
-            itemsPanel.add(noItemsLabel);
+            targetItemsPanel.add(noItemsLabel);
             return;
         }
 
@@ -749,7 +749,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
             //itemCard.add(imageLabel, BorderLayout.NORTH);
             itemCard.add(detailsPanel, BorderLayout.CENTER);
 
-            itemsPanel.add(itemCard);
+            targetItemsPanel.add(itemCard);
         }
     }
 
@@ -1607,82 +1607,10 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
     @Override
     public void promptForSellerRating(User seller) {
         SwingUtilities.invokeLater(() -> {
-            JDialog ratingDialog = new JDialog(mainFrame, "Rate Seller", true);
-            ratingDialog.setSize(350, 200);
-            ratingDialog.setLayout(new BorderLayout());
-
-            JPanel ratingPanel = new JPanel();
-            ratingPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-            ratingPanel.setLayout(new BoxLayout(ratingPanel, BoxLayout.Y_AXIS));
-
-            // Display current rating info 
-            JLabel currentRatingLabel = new JLabel(
-                    String.format("Current rating: %.1f (%d ratings)",
-                            seller.getAverageSellerRating(),
-                            seller.getNumberOfRatings()));
-            currentRatingLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-            // Rating selection
-            JPanel starsPanel = new JPanel();
-            starsPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-            starsPanel.add(new JLabel("Your rating: "));
-
-            Integer[] ratings = {1, 2, 3, 4, 5};
-            JComboBox<Integer> ratingCombo = new JComboBox<>(ratings);
-            ratingCombo.setRenderer(new StarRatingRenderer());
-            starsPanel.add(ratingCombo);
-
-            // Submit button
-            JButton submitButton = new JButton("Submit Rating");
-            submitButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-            submitButton.addActionListener(e -> {
-                int newRating = (Integer) ratingCombo.getSelectedItem();
-
-                // Add the new rating to the seller's ratings
-                seller.addSellerRating(newRating, currentUser);
-
-                // Update the seller's file
-                try {
-                    marketplace.updateUserData(seller);
-
-                    // Update UI in real-time if the seller and buyer are the same user
-                    if (seller.getUserName().equals(currentUser.getUserName())) {
-                        ratingLabel.setText(String.format("Rating: %.1f (%d)",
-                                currentUser.getAverageSellerRating(),
-                                currentUser.getNumberOfRatings()));
-                    }
-                    
-                    if (sellerToRate != null && sellerToRate.getUserName().equals(currentUser.getUserName())) {
-                        sellerRatingLabel.setText(String.format("%.1f", seller.getAverageSellerRating()));
-                        numRatingsLabel.setText(String.valueOf(seller.getNumberOfRatings()));
-                    }
-
-                    JOptionPane.showMessageDialog(ratingDialog,
-                            "Thank you for your rating!\n" +
-                                    String.format("Seller's new rating: %.1f (%d ratings)",
-                                            seller.getAverageSellerRating(),
-                                            seller.getNumberOfRatings()),
-                            "Success",
-                            JOptionPane.INFORMATION_MESSAGE);
-
-                    ratingDialog.dispose();
-                } catch (IOException ex) {
-                    JOptionPane.showMessageDialog(ratingDialog,
-                            "Failed to save rating: " + ex.getMessage(),
-                            "Error",
-                            JOptionPane.ERROR_MESSAGE);
-                }
-            });
-
-            ratingPanel.add(currentRatingLabel);
-            ratingPanel.add(Box.createRigidArea(new Dimension(0, 20)));
-            ratingPanel.add(starsPanel);
-            ratingPanel.add(Box.createRigidArea(new Dimension(0, 20)));
-            ratingPanel.add(submitButton);
-
-            ratingDialog.add(ratingPanel, BorderLayout.CENTER);
-            ratingDialog.setLocationRelativeTo(mainFrame);
-            ratingDialog.setVisible(true);
+            JDialog sellerRatingDialog = new JDialog(mainFrame, "Rate Seller", true);
+            sellerRatingDialog.setSize(300, 200);
+            sellerRatingDialog.setLocationRelativeTo(mainFrame);
+            showRatingDialog(seller);
         });
     }
 

@@ -8,7 +8,12 @@ import Service.Marketplace;
 /**
  * Server implementation for the marketplace system.
  * Handles multiple client connections concurrently using a thread pool.
- * 
+ * @author Youssef Abdelkader
+ * @author Anthony Kim 
+ * @author Caroline Murphy
+ * @author Eric Yen
+ * @author Isaac Yoon
+ *
  * @version April 20 2025
  */
 public class Server implements IServer {
