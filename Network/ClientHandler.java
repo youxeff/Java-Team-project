@@ -6,6 +6,7 @@ import java.nio.file.*;
 import java.time.LocalDateTime;
 import java.util.*;
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.List;
 import java.awt.event.ActionEvent;
@@ -68,8 +69,8 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
     private JPanel transactionHistoryPanel;
     private JTable purchasesTable;
     private JTable salesTable;
-    private DefaultListModel<String> purchasesListModel;
-    private DefaultListModel<String> salesListModel;
+    private DefaultTableModel purchasesTableModel;
+    private DefaultTableModel salesTableModel;
 
     // GUI Components for Authentication
     private JPanel cards;
@@ -413,6 +414,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
                 if ("LOGOUT".equals(cmd)) {
                     currentUser = null;
                     mainFrame.dispose();
+                    SwingUtilities.invokeLater(() -> createAuthGUI());
                 } else if (contentPanel.getComponentCount() > 0) {
                     cardLayout.show(contentPanel, cmd);
                 }
@@ -746,6 +748,9 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
 
                 // Prompt to rate seller
                 promptForSellerRating(item.getSoldBy());
+
+                // Update transaction history
+                updateTransactionHistory(item, currentUser);
             } else {
                 JOptionPane.showMessageDialog(mainFrame,
                         "Purchase failed. Please try again later.",
@@ -840,26 +845,19 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         JPanel purchasesPanel = new JPanel(new BorderLayout());
         purchasesPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // Temporary purchases table
+        // Create table models for dynamic updates
         String[] purchaseColumns = {"Date", "Item", "Category", "Seller", "Price"};
-        Object[][] purchaseData = {
-                {"01/05/2025", "mango", "Electronics", "user123", "$99.99"},
-                {"01/01/1776", "arizona green tea honey ginseng flavor", "Apparel", "e", "$45.00"}
-        };
-        purchasesTable = new JTable(purchaseData, purchaseColumns);
+        purchasesTableModel = new DefaultTableModel(purchaseColumns, 0);
+        purchasesTable = new JTable(purchasesTableModel);
         JScrollPane purchasesScrollPane = new JScrollPane(purchasesTable);
         purchasesPanel.add(purchasesScrollPane, BorderLayout.CENTER);
 
         JPanel salesPanel = new JPanel(new BorderLayout());
         salesPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // Temporary sales table
         String[] salesColumns = {"Date", "Item", "Category", "Buyer", "Price"};
-        Object[][] salesData = {
-                {"05/02/2025", "Sample Item 3", "Home", "joebob", "$120.50"},
-                {"100/100/2025", "Sample Item 4", "Collectible", "waaaaaa", "$350.00"}
-        };
-        salesTable = new JTable(salesData, salesColumns);
+        salesTableModel = new DefaultTableModel(salesColumns, 0);
+        salesTable = new JTable(salesTableModel);
         JScrollPane salesScrollPane = new JScrollPane(salesTable);
         salesPanel.add(salesScrollPane, BorderLayout.CENTER);
 
@@ -869,6 +867,33 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
 
         transactionHistoryPanel.add(titlePanel, BorderLayout.NORTH);
         transactionHistoryPanel.add(tabbedPane, BorderLayout.CENTER);
+    }
+
+    private void updateTransactionHistory(Item item, User buyer) {
+        // Get current date
+        String date = java.time.LocalDate.now().toString();
+        
+        if (buyer.getUserName().equals(currentUser.getUserName())) {
+            // Add to purchases table
+            purchasesTableModel.addRow(new Object[]{
+                date,
+                item.getName(),
+                item.getCategory(),
+                item.getSoldBy().getUserName(),
+                String.format("$%.2f", item.getCost())
+            });
+        }
+        
+        if (item.getSoldBy().getUserName().equals(currentUser.getUserName())) {
+            // Add to sales table
+            salesTableModel.addRow(new Object[]{
+                date,
+                item.getName(),
+                item.getCategory(),
+                buyer.getUserName(),
+                String.format("$%.2f", item.getCost())
+            });
+        }
     }
 
     private void updateBalanceGUI(double newBalance) {
