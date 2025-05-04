@@ -12,6 +12,7 @@ import java.awt.*;
 import java.util.List;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 import Service.Marketplace;
 import model.items.*;
 import model.users.MarketplaceUser;
@@ -31,15 +32,25 @@ import model.users.User;
  * @version April 20 2025
  */
 public class ClientHandler extends JComponent implements Runnable, IClientHandler {
-    /** Socket for the client connection */
+    /**
+     * Socket for the client connection
+     */
     private Socket clientSocket;
-    /** Input stream for receiving client messages */
+    /**
+     * Input stream for receiving client messages
+     */
     private BufferedReader in;
-    /** Output stream for sending messages to client */
+    /**
+     * Output stream for sending messages to client
+     */
     private PrintWriter out;
-    /** Currently logged in user, null if no user is logged in */
+    /**
+     * Currently logged in user, null if no user is logged in
+     */
     private MarketplaceUser currentUser = null;
-    /** Marketplace instance for handling business logic */
+    /**
+     * Marketplace instance for handling business logic
+     */
     private Marketplace marketplace;
 
 
@@ -231,7 +242,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         button.setBorder(BorderFactory.createEmptyBorder(15, 25, 15, 25));
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
         button.setOpaque(true);
-        
+
         return button;
     }
 
@@ -362,22 +373,22 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
                 // Add to purchases table if current user is buyer
                 if (buyerUsername.equals(currentUser.getUserName())) {
                     purchasesTableModel.addRow(new Object[]{
-                        date,
-                        itemName,
-                        category,
-                        sellerUsername,
-                        price
+                            date,
+                            itemName,
+                            category,
+                            sellerUsername,
+                            price
                     });
                 }
 
                 // Add to sales table if current user is seller
                 if (sellerUsername.equals(currentUser.getUserName())) {
                     salesTableModel.addRow(new Object[]{
-                        date,
-                        itemName,
-                        category,
-                        buyerUsername,
-                        price
+                            date,
+                            itemName,
+                            category,
+                            buyerUsername,
+                            price
                     });
                 }
             }
@@ -633,7 +644,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         // Add action listeners
         searchButton.addActionListener(e -> {
             String searchTerm = searchField.getText().toLowerCase();
-            String selectedCategory = (String)categoryFilter.getSelectedItem();
+            String selectedCategory = (String) categoryFilter.getSelectedItem();
 
             List<Item> filteredItems = new ArrayList<>();
             List<Item> itemsToSearch = selectedCategory.equals("All Categories") ?
@@ -659,7 +670,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         });
 
         categoryFilter.addActionListener(e -> {
-            String selectedCategory = (String)categoryFilter.getSelectedItem();
+            String selectedCategory = (String) categoryFilter.getSelectedItem();
             itemsPanel.removeAll();
             List<Item> itemsToShow = selectedCategory.equals("All Categories") ?
                     marketplace.getAvailableItems() : marketplace.searchByCategory(selectedCategory);
@@ -873,7 +884,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         refreshButton.setAlignmentX(Component.LEFT_ALIGNMENT);
         refreshButton.setMaximumSize(new Dimension(200, 40));
         refreshButton.setFont(new Font("Arial", Font.BOLD, 14));
-    
+
 
         // Button panel for List New Item and Refresh buttons
         JPanel buttonPanel = new JPanel();
@@ -906,18 +917,18 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         String[] columns = {"Item", "Category", "Price", "Status"};
         DefaultTableModel tableModel = new DefaultTableModel(columns, 0);
         itemsTable = new JTable(tableModel);
-        
+
         // Initial population of table with user's items
         List<Item> userItems = marketplace.getAvailableItems().stream()
                 .filter(item -> item.getSoldBy().getUserName().equals(currentUser.getUserName()))
                 .collect(Collectors.toList());
-                
+
         for (Item item : userItems) {
             tableModel.addRow(new Object[]{
-                item.getName(),
-                item.getCategory(),
-                String.format("$%.2f", item.getCost()),
-                item.isAvailable() ? "Available" : "Sold"
+                    item.getName(),
+                    item.getCategory(),
+                    String.format("$%.2f", item.getCost()),
+                    item.isAvailable() ? "Available" : "Sold"
             });
         }
 
@@ -981,26 +992,26 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
 
     private void updateTransactionHistory(Item item, User buyer) {
         String date = java.time.LocalDate.now().toString();
-        
+
         if (buyer.getUserName().equals(currentUser.getUserName())) {
             // Add to purchases table
             purchasesTableModel.addRow(new Object[]{
-                date,
-                item.getName(),
-                item.getCategory(),
-                item.getSoldBy().getUserName(),
-                String.format("$%.2f", item.getCost())
+                    date,
+                    item.getName(),
+                    item.getCategory(),
+                    item.getSoldBy().getUserName(),
+                    String.format("$%.2f", item.getCost())
             });
         }
-        
+
         if (item.getSoldBy().getUserName().equals(currentUser.getUserName())) {
             // Add to sales table
             salesTableModel.addRow(new Object[]{
-                date,
-                item.getName(),
-                item.getCategory(),
-                buyer.getUserName(),
-                String.format("$%.2f", item.getCost())
+                    date,
+                    item.getName(),
+                    item.getCategory(),
+                    buyer.getUserName(),
+                    String.format("$%.2f", item.getCost())
             });
         }
     }
@@ -1012,13 +1023,13 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         List<Item> userItems = marketplace.getAvailableItems().stream()
                 .filter(item -> item.getSoldBy().getUserName().equals(currentUser.getUserName()))
                 .collect(Collectors.toList());
-                
+
         for (Item item : userItems) {
             tableModel.addRow(new Object[]{
-                item.getName(),
-                item.getCategory(),
-                String.format("$%.2f", item.getCost()),
-                item.isAvailable() ? "Available" : "Sold"
+                    item.getName(),
+                    item.getCategory(),
+                    String.format("$%.2f", item.getCost()),
+                    item.isAvailable() ? "Available" : "Sold"
             });
         }
 
@@ -1077,6 +1088,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
                     JOptionPane.ERROR_MESSAGE);
         }
     }
+
     /**
      * {@inheritDoc}
      * Prompts for and processes user registration information.
@@ -1287,7 +1299,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         JTextField priceField = new JTextField();
         JComboBox<String> categoryCombo = new JComboBox<>(
                 new String[]{"Apparel", "Collectible", "Electronic", "Home", "Vehicle"});
-        
+
         nameField.setFont(new Font("Arial", Font.PLAIN, 14));
         priceField.setFont(new Font("Arial", Font.PLAIN, 14));
         categoryCombo.setFont(new Font("Arial", Font.PLAIN, 14));
@@ -1309,7 +1321,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         JComboBox<String> sizeCombo = new JComboBox<>(sizes);
         JTextField colorField = new JTextField();
         JTextField brandField = new JTextField();
-        
+
         sizeCombo.setFont(new Font("Arial", Font.PLAIN, 14));
         colorField.setFont(new Font("Arial", Font.PLAIN, 14));
         brandField.setFont(new Font("Arial", Font.PLAIN, 14));
@@ -1325,7 +1337,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         JPanel collectiblePanel = new JPanel(new GridLayout(2, 2, 10, 10));
         JTextField cTypeField = new JTextField();
         JTextField conditionField = new JTextField();
-        
+
         cTypeField.setFont(new Font("Arial", Font.PLAIN, 14));
         conditionField.setFont(new Font("Arial", Font.PLAIN, 14));
 
@@ -1339,7 +1351,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         JTextField eTypeField = new JTextField();
         JSpinner yearSpinner = new JSpinner(
                 new SpinnerNumberModel(2023, 1900, LocalDateTime.now().getYear(), 1));
-        
+
         eTypeField.setFont(new Font("Arial", Font.PLAIN, 14));
         yearSpinner.setFont(new Font("Arial", Font.PLAIN, 14));
 
@@ -1352,7 +1364,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         JPanel homePanel = new JPanel(new GridLayout(1, 2, 10, 10));
         JTextField hTypeField = new JTextField();
         hTypeField.setFont(new Font("Arial", Font.PLAIN, 14));
-        
+
         homePanel.add(new JLabel("Type:"));
         homePanel.add(hTypeField);
 
@@ -1363,7 +1375,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         JSpinner vYearSpinner = new JSpinner(
                 new SpinnerNumberModel(2023, 1900, LocalDateTime.now().getYear(), 1));
         JTextField vBrandField = new JTextField();
-        
+
         mileageSpinner.setFont(new Font("Arial", Font.PLAIN, 14));
         vYearSpinner.setFont(new Font("Arial", Font.PLAIN, 14));
         vBrandField.setFont(new Font("Arial", Font.PLAIN, 14));
@@ -1384,8 +1396,8 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
 
         // Show appropriate panel whenever category changes
         categoryCombo.addActionListener(e -> {
-            CardLayout cl = (CardLayout)(cardPanel.getLayout());
-            cl.show(cardPanel, (String)categoryCombo.getSelectedItem());
+            CardLayout cl = (CardLayout) (cardPanel.getLayout());
+            cl.show(cardPanel, (String) categoryCombo.getSelectedItem());
         });
 
         // Submit button
@@ -1395,7 +1407,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         submitButton.setForeground(Color.GREEN);
         submitButton.setFocusPainted(false);
         submitButton.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
-        
+
         submitButton.addActionListener(e -> {
             try {
                 String name = nameField.getText();
@@ -1412,14 +1424,14 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
                     return;
                 }
 
-                String category = (String)categoryCombo.getSelectedItem();
+                String category = (String) categoryCombo.getSelectedItem();
                 String imagePath = ""; // Empty since we removed image functionality
 
                 Item newItem;
-                switch(category) {
+                switch (category) {
                     case "Apparel":
                         newItem = new Apparel(name, price, currentUser, imagePath, category,
-                                (String)sizeCombo.getSelectedItem(), colorField.getText(), brandField.getText());
+                                (String) sizeCombo.getSelectedItem(), colorField.getText(), brandField.getText());
                         break;
                     case "Collectible":
                         newItem = new Collectible(name, price, currentUser, imagePath, category,
@@ -1427,7 +1439,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
                         break;
                     case "Electronic":
                         newItem = new Electronic(name, price, currentUser, imagePath, category,
-                                eTypeField.getText(), (int)yearSpinner.getValue());
+                                eTypeField.getText(), (int) yearSpinner.getValue());
                         break;
                     case "Home":
                         newItem = new Home(name, price, currentUser, imagePath, category,
@@ -1435,7 +1447,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
                         break;
                     case "Vehicle":
                         newItem = new Vehicle(name, price, currentUser, imagePath, category,
-                                (int)mileageSpinner.getValue(), (int)vYearSpinner.getValue(),
+                                (int) mileageSpinner.getValue(), (int) vYearSpinner.getValue(),
                                 vBrandField.getText());
                         break;
                     default:
