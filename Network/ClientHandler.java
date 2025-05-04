@@ -680,14 +680,14 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         return buyPanel;
     }
 
-    private void displayItems(List<Item> items, JPanel itemsPanel) {
-        itemsPanel.removeAll();
+    private void displayItems(List<Item> items, JPanel itemDisplayPanel) {
+        itemDisplayPanel.removeAll();
 
         if (items.isEmpty()) {
             JLabel noItemsLabel = new JLabel("No items found in this category");
             noItemsLabel.setHorizontalAlignment(JLabel.CENTER);
             noItemsLabel.setFont(new Font("Arial", Font.BOLD, 16));
-            itemsPanel.add(noItemsLabel);
+            itemDisplayPanel.add(noItemsLabel);
             return;
         }
 
@@ -747,7 +747,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
             //itemCard.add(imageLabel, BorderLayout.NORTH);
             itemCard.add(detailsPanel, BorderLayout.CENTER);
 
-            itemsPanel.add(itemCard);
+            itemDisplayPanel.add(itemCard);
         }
     }
 
@@ -863,9 +863,9 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
         titlePanel.add(titleLabel);
 
-        JPanel contentPanel = new JPanel();
-        contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
-        contentPanel.setBorder(BorderFactory.createEmptyBorder(20, 40, 20, 40));
+        JPanel sellContentPanel = new JPanel();
+        sellContentPanel.setLayout(new BoxLayout(sellContentPanel, BoxLayout.Y_AXIS));
+        sellContentPanel.setBorder(BorderFactory.createEmptyBorder(20, 40, 20, 40));
 
         JLabel instructionsLabel = new JLabel("List a new item for sale in the marketplace");
         instructionsLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -934,15 +934,15 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         scrollPane.setAlignmentX(Component.LEFT_ALIGNMENT);
         scrollPane.setPreferredSize(new Dimension(400, 200));
 
-        contentPanel.add(instructionsLabel);
-        contentPanel.add(Box.createRigidArea(new Dimension(0, 20)));
-        contentPanel.add(buttonPanel);
-        contentPanel.add(Box.createRigidArea(new Dimension(0, 20)));
-        contentPanel.add(yourItemsLabel);
-        contentPanel.add(scrollPane);
+        sellContentPanel.add(instructionsLabel);
+        sellContentPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+        sellContentPanel.add(buttonPanel);
+        sellContentPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+        sellContentPanel.add(yourItemsLabel);
+        sellContentPanel.add(scrollPane);
 
         sellPanel.add(titlePanel, BorderLayout.NORTH);
-        sellPanel.add(contentPanel, BorderLayout.CENTER);
+        sellPanel.add(sellContentPanel, BorderLayout.CENTER);
 
         return sellPanel;
     }
