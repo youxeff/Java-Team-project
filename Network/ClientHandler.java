@@ -43,7 +43,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
     /**
      * Output stream for sending messages to client
      */
-     PrintWriter out;
+    PrintWriter out;
     /**
      * Currently logged in user, null if no user is logged in
      */
@@ -371,22 +371,22 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
                 // Add to purchases table if current user is buyer
                 if (buyerUsername.equals(currentUser.getUserName())) {
                     purchasesTableModel.addRow(new Object[]{
-                            date,
-                            itemName,
-                            category,
-                            sellerUsername,
-                            price
+                        date,
+                        itemName,
+                        category,
+                        sellerUsername,
+                        price
                     });
                 }
 
                 // Add to sales table if current user is seller
                 if (sellerUsername.equals(currentUser.getUserName())) {
                     salesTableModel.addRow(new Object[]{
-                            date,
-                            itemName,
-                            category,
-                            buyerUsername,
-                            price
+                        date,
+                        itemName,
+                        category,
+                        buyerUsername,
+                        price
                     });
                 }
             }
@@ -447,7 +447,8 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         // Create user info labels
         usernameLabel = new JLabel("User: " + currentUser.getUserName());
         balanceLabel = new JLabel(String.format("Balance: $%.2f", currentUser.getBalance()));
-        ratingLabel = new JLabel(String.format("Rating: %.1f (%d)", currentUser.getAverageSellerRating(), currentUser.getNumberOfRatings()));
+        ratingLabel = new JLabel(String.format("Rating: %.1f (%d)", 
+            currentUser.getAverageSellerRating(), currentUser.getNumberOfRatings()));
 
         usernameLabel.setForeground(Color.WHITE);
         balanceLabel.setForeground(Color.WHITE);
@@ -992,8 +993,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         String date = java.time.LocalDate.now().toString();
 
         if (buyer.getUserName().equals(currentUser.getUserName())) {
-            // Add to purchases table
-            purchasesTableModel.addRow(new Object[]{
+        purchasesTableModel.addRow(new Object[]{
                     date,
                     item.getName(),
                     item.getCategory(),
@@ -1003,8 +1003,8 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         }
 
         if (item.getSoldBy().getUserName().equals(currentUser.getUserName())) {
-            // Add to sales table
-            salesTableModel.addRow(new Object[]{
+           
+        salesTableModel.addRow(new Object[]{
                     date,
                     item.getName(),
                     item.getCategory(),
@@ -1488,7 +1488,14 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         }
     }
 
-    // Custom renderer for messages in the list
+    /*
+     * Custom renderer for message list items
+     * Displays sender, date, and a preview of the message
+     * version 1.0
+     * @ author Youssef Abdelkader
+     * @ date 2025-04-20
+     * @ description This class is used to render the messages in the inbox.
+     */
     private class MessageCellRenderer extends DefaultListCellRenderer {
         @Override
         public Component getListCellRendererComponent(
@@ -1517,7 +1524,14 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         }
     }
 
-    // Custom renderer for star ratings
+    /*
+     * Custom renderer for message list items
+     * Displays sender, date, and a preview of the message
+     * version 1.0
+     * @ author Youssef Abdelkader
+     * @ date 2025-04-20
+     * @ description This class is used to render the messages in the inbox.
+     */
     private class StarRatingRenderer extends DefaultListCellRenderer {
         @Override
         public Component getListCellRendererComponent(
