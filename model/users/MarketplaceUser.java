@@ -507,20 +507,5 @@ public class MarketplaceUser implements User, Message, Serializable {
      * @param newPassword  User password
      * @return New MarketplaceUser or null if registration failed
      */
-    public static MarketplaceUser registerNewUser(String newFirstName, String newLastName,
-                                                  String newUserName, String newPassword) {
-        if (USER_CREDENTIALS.containsKey(newUserName)) {
-            System.out.println("Username already exists.");
-            return null;
-        }
-        MarketplaceUser user = new MarketplaceUser(
-                newFirstName,
-                newLastName,
-                newUserName,
-                newPassword,
-                0.0,
-                false);
-        user.createNewUser(newFirstName, newLastName, newUserName, newPassword);
-        return user;
-    }
+    
 }
