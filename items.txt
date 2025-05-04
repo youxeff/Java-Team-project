@@ -3,3 +3,8 @@ Electronic,Computer,200.00,yoon252,false,,Electronic,Apple,2021
 Apparel,T-shirt,50.00,yoon252,false,,Apparel,M,red,nike
 Electronic,Phone,150.00,yoon252,false,,Electronic,apple,2023
 Electronic,Phone,120.00,yoon252,false,,Electronic,apple,2023
+Home,home,200.00,yoon252,false,,Home,2 bedroom
+Home,House,500.00,yoon252,false,,Home,1 bed
+Electronic,phone,20.00,yoon252,false,,Electronic,apple,2023
+Vehicle,car,10.00,yoon252,false,,Vehicle,1110,2023,Toyota
+Electronic,Phone,300.00,yoon252,false,,Electronic,Apple,2023
