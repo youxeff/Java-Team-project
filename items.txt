@@ -1,2 +1,5 @@
 Apparel,happ,200.00,test,false,djjs,Apparel,adk,add,sak
 Electronic,Computer,200.00,yoon252,false,,Electronic,Apple,2021
+Apparel,T-shirt,50.00,yoon252,false,,Apparel,M,red,nike
+Electronic,Phone,150.00,yoon252,false,,Electronic,apple,2023
+Electronic,Phone,120.00,yoon252,false,,Electronic,apple,2023
