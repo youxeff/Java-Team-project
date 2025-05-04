@@ -43,10 +43,52 @@ public interface User {
     double getBalance();
 
     /**
+     * Sets the user's first name.
+     * @param firstName The new first name
+     */
+    void setFirstName(String firstName);
+
+    /**
+     * Sets the user's last name.
+     * @param lastName The new last name
+     */
+    void setLastName(String lastName);
+
+    /**
+     * Sets the user's username.
+     * @param userName The new username
+     */
+    void setUsername(String userName);
+
+    /**
+     * Sets the user's password.
+     * @param password The new password
+     */
+    void setPassword(String password);
+
+    /**
      * Sets the user's balance.
      * @param balance The new balance
      */
     void setBalance(double balance);
+
+    /**
+     * Creates a new user account.
+     * @param firstName User's first name
+     * @param lastName User's last name
+     * @param userName Unique username
+     * @param password User's password
+     * @return true if account creation was successful
+     */
+    boolean createNewUser(String firstName, String lastName, String userName, String password);
+
+    /**
+     * Authenticates user credentials.
+     * @param userName Username to verify
+     * @param password Password to verify
+     * @return true if login was successful
+     */
+    boolean login(String userName, String password);
 
     /**
      * Verifies if a given password matches the user's password.
@@ -74,12 +116,4 @@ public interface User {
      * @return number of ratings received
      */
     int getNumberOfRatings();
-
-    /**
-     * Sends a message to another user.
-     *
-     * @param recipientUsername the recipient's username
-     * @param message the message content
-     */
-    void sendMessageTo(String recipientUsername, String message);
 }
