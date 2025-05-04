@@ -1,6 +1,8 @@
 package Service;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.List;
+import java.nio.file.Files;
 import model.items.*;
 import model.users.MarketplaceUser;
 import model.users.User;
@@ -21,6 +23,7 @@ public class Marketplace implements IMarketplace {
     private final ArrayList<Item> items;
     private static final String USERS_FILE = "users.txt";
     private static final String ITEMS_FILE = "items.txt";
+    private static final String TRANSACTIONS_FILE = "transactions.txt";
     private final Object lock = new Object();
 
     /**
@@ -371,6 +374,8 @@ public class Marketplace implements IMarketplace {
     public synchronized boolean purchaseItem(Item item, User buyer) {
         synchronized (lock) {
             if (item.sellItem(buyer)) {
+                String date = java.time.LocalDate.now().toString();
+                saveTransaction(item, buyer, date);
                 rewriteItemsFile();
                 return true;
             }
@@ -390,5 +395,52 @@ public class Marketplace implements IMarketplace {
         } catch (IOException e) {
             System.err.println("Error rewriting items file: " + e.getMessage());
         }
+    }
+
+    /**
+     * Saves a transaction to the transactions file
+     */
+    private synchronized void saveTransaction(Item item, User buyer, String date) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(TRANSACTIONS_FILE, true))) {
+            String transaction = String.format("%s,%s,%s,%s,%s,%.2f,%s",
+                buyer.getUserName(),
+                item.getCategory(),
+                item.getName(),
+                item.getSoldBy().getUserName(),
+                date,
+                item.getCost(),
+                item.getCategory());
+            writer.write(transaction);
+            writer.newLine();
+        } catch (IOException e) {
+            System.err.println("Error saving transaction: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Load transactions for a specific user
+     */
+    public synchronized ArrayList<String[]> loadTransactions(String username) {
+        ArrayList<String[]> transactions = new ArrayList<>();
+        try {
+            File file = new File(TRANSACTIONS_FILE);
+            if (!file.exists()) {
+                return transactions;
+            }
+
+            List<String> lines = Files.readAllLines(file.toPath());
+            for (String line : lines) {
+                String[] parts = line.split(",");
+                if (parts.length >= 7) {
+                    // Add if user is either buyer or seller
+                    if (parts[0].equals(username) || parts[3].equals(username)) {
+                        transactions.add(parts);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error loading transactions: " + e.getMessage());
+        }
+        return transactions;
     }
 }
