@@ -1615,7 +1615,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
             ratingPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
             ratingPanel.setLayout(new BoxLayout(ratingPanel, BoxLayout.Y_AXIS));
 
-            // Display current rating info
+            // Display current rating info 
             JLabel currentRatingLabel = new JLabel(
                     String.format("Current rating: %.1f (%d ratings)",
                             seller.getAverageSellerRating(),
@@ -1645,11 +1645,13 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
                 try {
                     marketplace.updateUserData(seller);
 
-                    // Update UI in real-time
-                    ratingLabel.setText(String.format("Rating: %.1f (%d)",
-                            seller.getAverageSellerRating(),
-                            seller.getNumberOfRatings()));
-
+                    // Update UI in real-time if the seller and buyer are the same user
+                    if (seller.getUserName().equals(currentUser.getUserName())) {
+                        ratingLabel.setText(String.format("Rating: %.1f (%d)",
+                                currentUser.getAverageSellerRating(),
+                                currentUser.getNumberOfRatings()));
+                    }
+                    
                     if (sellerToRate != null && sellerToRate.getUserName().equals(currentUser.getUserName())) {
                         sellerRatingLabel.setText(String.format("%.1f", seller.getAverageSellerRating()));
                         numRatingsLabel.setText(String.valueOf(seller.getNumberOfRatings()));
