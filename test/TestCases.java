@@ -181,9 +181,9 @@ public class TestCases {
         @Test
         void testUserExists() {
             MarketplaceUser user = new MarketplaceUser("Arjun", "Anilkumar", 
-            "arjunA", "thisIsAStrongPassword", 0, true);
+                "arjunA", "thisIsAStrongPassword", 0, true);
             boolean userCreated = user.createNewUser("Arjun", "Anilkumar", 
-            "arjunA", "thisIsAStrongPassword");
+                "arjunA", "thisIsAStrongPassword");
             assertTrue(userCreated);
 
             MarketplaceUser loadedUser = MarketplaceUser.loadUser("arjunA");

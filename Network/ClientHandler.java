@@ -1005,8 +1005,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         }
 
         if (item.getSoldBy().getUserName().equals(currentUser.getUserName())) {
-            // Add to sales table
-            salesTableModel.addRow(new Object[] {
+                salesTableModel.addRow(new Object[] {
                     date,
                     item.getName(),
                     item.getCategory(),
