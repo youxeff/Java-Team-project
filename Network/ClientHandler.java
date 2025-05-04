@@ -1,7 +1,7 @@
 package Network;
 
 import java.io.*;
-import java.net.*;
+import  java.net.*;
 import java.nio.file.*;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -43,7 +43,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
     /**
      * Output stream for sending messages to client
      */
-    private PrintWriter out;
+     PrintWriter out;
     /**
      * Currently logged in user, null if no user is logged in
      */
@@ -52,6 +52,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
      * Marketplace instance for handling business logic
      */
     private Marketplace marketplace;
+
 
     // Main GUI components
     private JFrame mainFrame;
@@ -106,8 +107,6 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
     private JTextArea messageViewArea;
 
     // Rating GUI components
-    private JDialog ratingDialog;
-    private JComboBox<Integer> ratingComboBox;
     private User sellerToRate;
 
     private JTable itemsTable;
@@ -371,23 +370,23 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
 
                 // Add to purchases table if current user is buyer
                 if (buyerUsername.equals(currentUser.getUserName())) {
-                    purchasesTableModel.addRow(new Object[] {
-                        date,
-                        itemName,
-                        category,
-                        sellerUsername,
-                        price
+                    purchasesTableModel.addRow(new Object[]{
+                            date,
+                            itemName,
+                            category,
+                            sellerUsername,
+                            price
                     });
                 }
 
                 // Add to sales table if current user is seller
                 if (sellerUsername.equals(currentUser.getUserName())) {
-                    salesTableModel.addRow(new Object[] {
-                        date,
-                        itemName,
-                        category,
-                        buyerUsername,
-                        price
+                    salesTableModel.addRow(new Object[]{
+                            date,
+                            itemName,
+                            category,
+                            buyerUsername,
+                            price
                     });
                 }
             }
@@ -448,8 +447,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         // Create user info labels
         usernameLabel = new JLabel("User: " + currentUser.getUserName());
         balanceLabel = new JLabel(String.format("Balance: $%.2f", currentUser.getBalance()));
-        ratingLabel = new JLabel(String.format("Rating: %.1f (%d)", currentUser.getAverageSellerRating(),
-                currentUser.getNumberOfRatings()));
+        ratingLabel = new JLabel(String.format("Rating: %.1f (%d)", currentUser.getAverageSellerRating(), currentUser.getNumberOfRatings()));
 
         usernameLabel.setForeground(Color.WHITE);
         balanceLabel.setForeground(Color.WHITE);
@@ -616,7 +614,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
 
         // Category filter dropdown
-        String[] categories = { "All Categories", "Apparel", "Collectible", "Electronic", "Home", "Vehicle" };
+        String[] categories = {"All Categories", "Apparel", "Collectible", "Electronic", "Home", "Vehicle"};
         JComboBox<String> categoryFilter = new JComboBox<>(categories);
 
         // Search bar
@@ -647,8 +645,8 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
             String selectedCategory = (String) categoryFilter.getSelectedItem();
 
             List<Item> filteredItems = new ArrayList<>();
-            List<Item> itemsToSearch = selectedCategory.equals("All Categories") ? marketplace.getAvailableItems()
-                    : marketplace.searchByCategory(selectedCategory);
+            List<Item> itemsToSearch = selectedCategory.equals("All Categories") ?
+                    marketplace.getAvailableItems() : marketplace.searchByCategory(selectedCategory);
 
             for (Item item : itemsToSearch) {
                 if (item.getName().toLowerCase().contains(searchTerm)) {
@@ -672,8 +670,8 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         categoryFilter.addActionListener(e -> {
             String selectedCategory = (String) categoryFilter.getSelectedItem();
             itemsPanel.removeAll();
-            List<Item> itemsToShow = selectedCategory.equals("All Categories") ? marketplace.getAvailableItems()
-                    : marketplace.searchByCategory(selectedCategory);
+            List<Item> itemsToShow = selectedCategory.equals("All Categories") ?
+                    marketplace.getAvailableItems() : marketplace.searchByCategory(selectedCategory);
             displayItems(itemsToShow, itemsPanel);
             itemsPanel.revalidate();
             itemsPanel.repaint();
@@ -682,29 +680,28 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         return buyPanel;
     }
 
-    private void displayItems(List<Item> items, JPanel targetItemsPanel) {
-        targetItemsPanel.removeAll();
+    private void displayItems(List<Item> items, JPanel itemsPanel) {
+        itemsPanel.removeAll();
 
         if (items.isEmpty()) {
             JLabel noItemsLabel = new JLabel("No items found in this category");
             noItemsLabel.setHorizontalAlignment(JLabel.CENTER);
             noItemsLabel.setFont(new Font("Arial", Font.BOLD, 16));
-            targetItemsPanel.add(noItemsLabel);
+            itemsPanel.add(noItemsLabel);
             return;
         }
 
         for (Item item : items) {
-            if (!item.isAvailable())
-                continue;
+            if (!item.isAvailable()) continue;
 
             JPanel itemCard = new JPanel(new BorderLayout());
             itemCard.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
             itemCard.setPreferredSize(new Dimension(250, 350));
 
             // Item image
-            // JLabel imageLabel = new JLabel(new ImageIcon(item.getImagePath()));
-            // imageLabel.setPreferredSize(new Dimension(250, 150));
-            // imageLabel.setHorizontalAlignment(JLabel.CENTER);
+//            JLabel imageLabel = new JLabel(new ImageIcon(item.getImagePath()));
+//            imageLabel.setPreferredSize(new Dimension(250, 150));
+//            imageLabel.setHorizontalAlignment(JLabel.CENTER);
 
             // Item details
             JPanel detailsPanel = new JPanel();
@@ -747,10 +744,10 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
             detailsPanel.add(Box.createVerticalGlue());
             detailsPanel.add(buttonsPanel);
 
-            // itemCard.add(imageLabel, BorderLayout.NORTH);
+            //itemCard.add(imageLabel, BorderLayout.NORTH);
             itemCard.add(detailsPanel, BorderLayout.CENTER);
 
-            targetItemsPanel.add(itemCard);
+            itemsPanel.add(itemCard);
         }
     }
 
@@ -763,9 +760,9 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         detailPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         // Large image
-        // JLabel largeImage = new JLabel(new ImageIcon(item.getImagePath()));
-        // largeImage.setHorizontalAlignment(JLabel.CENTER);
-        // detailPanel.add(largeImage, BorderLayout.NORTH);
+//        JLabel largeImage = new JLabel(new ImageIcon(item.getImagePath()));
+//        largeImage.setHorizontalAlignment(JLabel.CENTER);
+//        detailPanel.add(largeImage, BorderLayout.NORTH);
 
         // Details panel
         JPanel infoPanel = new JPanel();
@@ -886,6 +883,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         refreshButton.setMaximumSize(new Dimension(200, 40));
         refreshButton.setFont(new Font("Arial", Font.BOLD, 14));
 
+
         // Button panel for List New Item and Refresh buttons
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
@@ -914,7 +912,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         yourItemsLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 10, 0));
 
         // Create table for user's items
-        String[] columns = { "Item", "Category", "Price", "Status" };
+        String[] columns = {"Item", "Category", "Price", "Status"};
         DefaultTableModel tableModel = new DefaultTableModel(columns, 0);
         itemsTable = new JTable(tableModel);
 
@@ -924,7 +922,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
                 .collect(Collectors.toList());
 
         for (Item item : userItems) {
-            tableModel.addRow(new Object[] {
+            tableModel.addRow(new Object[]{
                     item.getName(),
                     item.getCategory(),
                     String.format("$%.2f", item.getCost()),
@@ -967,7 +965,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         purchasesPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         // Create table models for dynamic updates
-        String[] purchaseColumns = { "Date", "Item", "Category", "Seller", "Price" };
+        String[] purchaseColumns = {"Date", "Item", "Category", "Seller", "Price"};
         purchasesTableModel = new DefaultTableModel(purchaseColumns, 0);
         purchasesTable = new JTable(purchasesTableModel);
         JScrollPane purchasesScrollPane = new JScrollPane(purchasesTable);
@@ -976,7 +974,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         JPanel salesPanel = new JPanel(new BorderLayout());
         salesPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        String[] salesColumns = { "Date", "Item", "Category", "Buyer", "Price" };
+        String[] salesColumns = {"Date", "Item", "Category", "Buyer", "Price"};
         salesTableModel = new DefaultTableModel(salesColumns, 0);
         salesTable = new JTable(salesTableModel);
         JScrollPane salesScrollPane = new JScrollPane(salesTable);
@@ -995,17 +993,18 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
 
         if (buyer.getUserName().equals(currentUser.getUserName())) {
             // Add to purchases table
-            purchasesTableModel.addRow(new Object[] {
-                date,
-                item.getName(),
-                item.getCategory(),
-                item.getSoldBy().getUserName(),
-                String.format("$%.2f", item.getCost())
+            purchasesTableModel.addRow(new Object[]{
+                    date,
+                    item.getName(),
+                    item.getCategory(),
+                    item.getSoldBy().getUserName(),
+                    String.format("$%.2f", item.getCost())
             });
         }
 
         if (item.getSoldBy().getUserName().equals(currentUser.getUserName())) {
-                salesTableModel.addRow(new Object[] {
+            // Add to sales table
+            salesTableModel.addRow(new Object[]{
                     date,
                     item.getName(),
                     item.getCategory(),
@@ -1024,7 +1023,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
                 .collect(Collectors.toList());
 
         for (Item item : userItems) {
-            tableModel.addRow(new Object[] {
+            tableModel.addRow(new Object[]{
                     item.getName(),
                     item.getCategory(),
                     String.format("$%.2f", item.getCost()),
@@ -1090,198 +1089,6 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
 
     /**
      * {@inheritDoc}
-     * Prompts for and processes user registration information.
-     * Validates input and creates new user account if valid.
-     */
-    @Override
-    public void registerUser() throws IOException {
-        out.println("\n=== User Registration ===");
-        out.println("Enter First Name: ");
-        String firstName = in.readLine();
-
-        out.println("Enter Last Name: ");
-        String lastName = in.readLine();
-
-        out.println("Enter Username: ");
-        String username = in.readLine();
-
-        out.println("Enter Password: ");
-        String password = in.readLine();
-
-        try {
-            if (MarketplaceUser.loadUser(username) != null) {
-                out.println("Username already exists.");
-                return;
-            }
-            MarketplaceUser newUser = new MarketplaceUser(firstName, lastName, username, password);
-            marketplace.updateUserData(newUser);
-
-            out.println("Registration successful!");
-
-        } catch (Exception e) {
-            out.println("Error during registration: " + e.getMessage());
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     * Authenticates user credentials and establishes user session if valid.
-     */
-    @Override
-    public void loginUser() throws IOException {
-        out.println("\n=== User Login ===");
-        out.println("Enter Username: ");
-        String username = in.readLine();
-
-        out.println("Enter Password: ");
-        String password = in.readLine();
-
-        try {
-            currentUser = MarketplaceUser.loadUser(username);
-            if (currentUser != null && currentUser.verifyPassword(password)) {
-                out.println("Login successful!");
-            } else {
-                out.println("Login failed. Invalid credentials.");
-                currentUser = null;
-            }
-        } catch (Exception e) {
-            out.println("Error during login: " + e.getMessage());
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     * Displays main menu for logged-in users and processes their choices.
-     */
-    @Override
-    public void showUserMenu() throws IOException {
-        out.println("\n=== User Menu ===");
-        out.println("1. View Profile");
-        out.println("2. Update Balance");
-        out.println("3. Choose Buy or Sell");
-        out.println("4. Send a Message");
-        out.println("5. View Messages");
-        out.println("6. Logout");
-        out.println("Choose an option: ");
-
-        String choice = in.readLine();
-        System.out.println("what is this why isn't it wokring");
-        switch (choice) {
-            case "1":
-                displayUserProfile();
-                break;
-            case "2":
-                updateBalance();
-                break;
-            case "3":
-                buyOrSell();
-                break;
-            case "4":
-                sendMessage();
-                break;
-            case "5":
-                viewMessages();
-                break;
-            case "6":
-                currentUser = null;
-                out.println("Logged out successfully.");
-                break;
-            default:
-                out.println("Invalid option. Please try again.");
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     * Sends current user's profile information to the client.
-     */
-    @Override
-    public void displayUserProfile() {
-        out.println("\n=== User Profile ===");
-        out.println("First Name: " + currentUser.getFirstName());
-        out.println("Last Name: " + currentUser.getLastName());
-        out.println("Username: " + currentUser.getUserName());
-        out.println("Balance: $" + String.format("%.2f", currentUser.getBalance()));
-        out.printf("Seller Rating: %.1f (%d ratings)%n",
-                currentUser.getAverageSellerRating(),
-                currentUser.getNumberOfRatings());
-    }
-
-    /**
-     * Updates the user's balance in both memory and persistent storage.
-     * Validates input and ensures proper synchronization of updates.
-     *
-     * @throws IOException if there's an error updating the balance in storage
-     */
-    private void updateBalance() throws IOException {
-        out.println("Enter new balance amount: $");
-        String balanceInput = in.readLine();
-
-        try {
-            double newBalance = Double.parseDouble(balanceInput);
-            currentUser.setBalance(newBalance);
-
-            File file = new File("users.txt");
-            List<String> lines = Files.readAllLines(file.toPath());
-            List<String> updatedLines = new ArrayList<>();
-
-            for (String line : lines) {
-                String[] parts = line.split(",");
-                if (parts.length >= 5 && parts[0].equals(currentUser.getUserName())) {
-                    String updatedLine = String.format(
-                            "%s,%s,%s,%s,%.2f",
-                            currentUser.getUserName(),
-                            currentUser.getPassword(),
-                            currentUser.getFirstName(),
-                            currentUser.getLastName(),
-                            newBalance);
-                    updatedLines.add(updatedLine);
-                } else {
-                    updatedLines.add(line);
-                }
-            }
-
-            Files.write(file.toPath(), updatedLines);
-            out.println("Balance updated successfully!");
-        } catch (NumberFormatException e) {
-            out.println("Please enter a valid number.");
-        } catch (IOException e) {
-            out.println("Error updating balance: " + e.getMessage());
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     * Manages the buy/sell menu loop and routes to appropriate handlers.
-     */
-    @Override
-    public void buyOrSell() throws IOException {
-        boolean buyOrSellMenu = true;
-        while (buyOrSellMenu) {
-            out.println("1. Sell");
-            out.println("2. Buy");
-            out.println("3. Exit");
-            out.println("Choose an option: ");
-
-            String choice = in.readLine();
-            switch (choice) {
-                case "1":
-                    sellItem();
-                    break;
-                case "2":
-                    buyItem();
-                    break;
-                case "3":
-                    buyOrSellMenu = false;
-                    break;
-                default:
-                    out.println("Invalid option. Please try again.");
-            }
-        }
-    }
-
-    /**
-     * {@inheritDoc}
      * Handles the complete process of listing a new item for sale.
      * Includes category selection and item-specific attribute collection.
      */
@@ -1297,7 +1104,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         JTextField nameField = new JTextField();
         JTextField priceField = new JTextField();
         JComboBox<String> categoryCombo = new JComboBox<>(
-                new String[] { "Apparel", "Collectible", "Electronic", "Home", "Vehicle" });
+                new String[]{"Apparel", "Collectible", "Electronic", "Home", "Vehicle"});
 
         nameField.setFont(new Font("Arial", Font.PLAIN, 14));
         priceField.setFont(new Font("Arial", Font.PLAIN, 14));
@@ -1316,7 +1123,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
 
         // Apparel panel with dropdown for sizes
         JPanel apparelPanel = new JPanel(new GridLayout(3, 2, 10, 10));
-        String[] sizes = { "XS", "S", "M", "L", "XL" };
+        String[] sizes = {"XS", "S", "M", "L", "XL"};
         JComboBox<String> sizeCombo = new JComboBox<>(sizes);
         JTextField colorField = new JTextField();
         JTextField brandField = new JTextField();
@@ -1477,172 +1284,88 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
 
     /**
      * {@inheritDoc}
-     * Manages the item purchase workflow including:
-     * - Category browsing
-     * - Item selection
-     * - Balance verification
-     * - Purchase transaction
-     * - Optional seller rating
-     */
-    @Override
-    public void buyItem() throws IOException {
-        out.println("Choose a category:");
-        out.println(" 1. Apparel");
-        out.println(" 2. Collectible");
-        out.println(" 3. Electronic");
-        out.println(" 4. Home");
-        out.println(" 5. Vehicle");
-
-        int categoryChoice = getValidatedInteger("Enter category number (1-5): ", 1, 5);
-        if (categoryChoice == -1)
-            return;
-
-        String category = "";
-        switch (categoryChoice) {
-            case 1:
-                category = "Apparel";
-                break;
-            case 2:
-                category = "Collectible";
-                break;
-            case 3:
-                category = "Electronic";
-                break;
-            case 4:
-                category = "Home";
-                break;
-            case 5:
-                category = "Vehicle";
-                break;
-            default:
-                out.println("Invalid category.");
-                return;
-        }
-        ArrayList<Item> categoryItems = marketplace.searchByCategory(category);
-        if (categoryItems.isEmpty()) {
-            out.println("No items found in this category.");
-            return;
-        }
-
-        out.println("\nAvailable Items:");
-        for (int i = 0; i < categoryItems.size(); i++) {
-            Item item = categoryItems.get(i);
-            if (item.isAvailable()) {
-                out.println(String.format(
-                        "[%d] %s - $%.2f (Seller: %s)",
-                        i + 1, item.getName(), item.getCost(), item.getSoldBy().getUserName()));
-            }
-        }
-
-        int itemIndex = getValidatedInteger(
-                "\nEnter the number of the item to purchase: ",
-                1,
-                categoryItems.size()) - 1;
-        if (itemIndex == -2)
-            return; // -2 because we subtracted 1 from -1
-
-        Item selectedItem = categoryItems.get(itemIndex);
-
-        if (selectedItem.getCost() > currentUser.getBalance()) {
-            out.println("Insufficient balance to complete the purchase.");
-            return;
-        }
-
-        boolean success = marketplace.purchaseItem(selectedItem, currentUser);
-        if (success) {
-            currentUser.setBalance(currentUser.getBalance() - selectedItem.getCost());
-            out.println("Purchase successful! Remaining Balance: $" + String.format("%.2f", currentUser.getBalance()));
-            promptForSellerRating(selectedItem.getSoldBy());
-        } else {
-            out.println("Purchase failed.");
-        }
-    }
-
-    /**
-     * Handles the sending of messages between users.
-     * Validates recipient existence and delivers the message.
-     *
-     * @throws IOException if there's an error in message transmission
-     */
-    private void sendMessage() throws IOException {
-        out.println("Who do you want to message?");
-        String recipientUsername = in.readLine();
-
-        if (!MarketplaceUser.userExists(recipientUsername)) {
-            out.println("User \"" + recipientUsername + "\" does not exist.");
-            return;
-        }
-
-        out.println("What is your message?");
-        String message = in.readLine();
-
-        currentUser.sendMessageTo(recipientUsername, message);
-        out.println("Message sent successfully!");
-    }
-
-    /**
-     * {@inheritDoc}
-     * Retrieves and displays all messages for the current user.
-     */
-    @Override
-    public void viewMessages() {
-        ArrayList<String> messages = currentUser.viewMessages();
-
-        if (messages.isEmpty()) {
-            out.println("You have no messages.");
-            return;
-        }
-
-        out.println("\n=== Your Messages ===");
-        for (String message : messages) {
-            out.println(message);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
      * Handles the seller rating process after a successful purchase.
      */
     @Override
     public void promptForSellerRating(User seller) {
         SwingUtilities.invokeLater(() -> {
-            JDialog sellerRatingDialog = new JDialog(mainFrame, "Rate Seller", true);
-            sellerRatingDialog.setSize(300, 200);
-            sellerRatingDialog.setLocationRelativeTo(mainFrame);
-            showRatingDialog(seller);
-        });
-    }
+            JDialog ratingDialog = new JDialog(mainFrame, "Rate Seller", true);
+            ratingDialog.setSize(350, 200);
+            ratingDialog.setLayout(new BorderLayout());
 
-    /**
-     * Validates and parses an integer input with retry logic.
-     * Keeps prompting until valid input is received or user cancels.
-     *
-     * @param prompt The prompt to display to the user
-     * @param min    Minimum allowed value (inclusive)
-     * @param max    Maximum allowed value (inclusive)
-     * @return The validated integer, or -1 if user cancels
-     * @throws IOException if there's an error reading input
-     */
-    private int getValidatedInteger(String prompt, int min, int max) throws IOException {
-        while (true) {
-            out.println(prompt);
-            String input = in.readLine();
+            JPanel ratingPanel = new JPanel();
+            ratingPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+            ratingPanel.setLayout(new BoxLayout(ratingPanel, BoxLayout.Y_AXIS));
 
-            if (input.equalsIgnoreCase("back")) {
-                return -1;
-            }
+            // Display current rating info 
+            JLabel currentRatingLabel = new JLabel(
+                    String.format("Current rating: %.1f (%d ratings)",
+                            seller.getAverageSellerRating(),
+                            seller.getNumberOfRatings()));
+            currentRatingLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-            try {
-                int value = Integer.parseInt(input);
-                if (value >= min && value <= max) {
-                    return value;
-                } else {
-                    out.println("Please enter a number between " + min + " and " + max + ".");
+            // Rating selection
+            JPanel starsPanel = new JPanel();
+            starsPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            starsPanel.add(new JLabel("Your rating: "));
+
+            Integer[] ratings = {1, 2, 3, 4, 5};
+            JComboBox<Integer> ratingCombo = new JComboBox<>(ratings);
+            ratingCombo.setRenderer(new StarRatingRenderer());
+            starsPanel.add(ratingCombo);
+
+            // Submit button
+            JButton submitButton = new JButton("Submit Rating");
+            submitButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+            submitButton.addActionListener(e -> {
+                int newRating = (Integer) ratingCombo.getSelectedItem();
+
+                // Add the new rating to the seller's ratings
+                seller.addSellerRating(newRating, currentUser);
+
+                // Update the seller's file
+                try {
+                    marketplace.updateUserData(seller);
+
+                    // Update UI in real-time if the seller and buyer are the same user
+                    if (seller.getUserName().equals(currentUser.getUserName())) {
+                        ratingLabel.setText(String.format("Rating: %.1f (%d)",
+                                currentUser.getAverageSellerRating(),
+                                currentUser.getNumberOfRatings()));
+                    }
+                    
+                    if (sellerToRate != null && sellerToRate.getUserName().equals(currentUser.getUserName())) {
+                        sellerRatingLabel.setText(String.format("%.1f", seller.getAverageSellerRating()));
+                        numRatingsLabel.setText(String.valueOf(seller.getNumberOfRatings()));
+                    }
+
+                    JOptionPane.showMessageDialog(ratingDialog,
+                            "Thank you for your rating!\n" +
+                                    String.format("Seller's new rating: %.1f (%d ratings)",
+                                            seller.getAverageSellerRating(),
+                                            seller.getNumberOfRatings()),
+                            "Success",
+                            JOptionPane.INFORMATION_MESSAGE);
+
+                    ratingDialog.dispose();
+                } catch (IOException ex) {
+                    JOptionPane.showMessageDialog(ratingDialog,
+                            "Failed to save rating: " + ex.getMessage(),
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
                 }
-            } catch (NumberFormatException e) {
-                out.println("Please enter a valid number.");
-            }
-        }
+            });
+
+            ratingPanel.add(currentRatingLabel);
+            ratingPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+            ratingPanel.add(starsPanel);
+            ratingPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+            ratingPanel.add(submitButton);
+
+            ratingDialog.add(ratingPanel, BorderLayout.CENTER);
+            ratingDialog.setLocationRelativeTo(mainFrame);
+            ratingDialog.setVisible(true);
+        });
     }
 
     private void createMessageComposeWindow() {
@@ -1721,7 +1444,8 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         JSplitPane splitPane = new JSplitPane(
                 JSplitPane.HORIZONTAL_SPLIT,
                 new JScrollPane(messageList),
-                new JScrollPane(messageViewArea));
+                new JScrollPane(messageViewArea)
+        );
         splitPane.setDividerLocation(200);
 
         // Compose button at the top
@@ -1764,59 +1488,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         }
     }
 
-    private void showRatingDialog(User seller) {
-        sellerToRate = seller;
-        ratingDialog = new JDialog(mainFrame, "Rate Seller", true);
-        ratingDialog.setSize(300, 150);
-        ratingDialog.setLayout(new BorderLayout());
-
-        JPanel ratingPanel = new JPanel(new FlowLayout());
-
-        // Rating combo box with stars
-        Integer[] ratings = { 1, 2, 3, 4, 5 };
-        ratingComboBox = new JComboBox<>(ratings);
-        ratingComboBox.setRenderer(new StarRatingRenderer());
-
-        JButton submitButton = new JButton("Submit Rating");
-        submitButton.addActionListener(e -> submitRating());
-
-        ratingPanel.add(new JLabel("Rating: "));
-        ratingPanel.add(ratingComboBox);
-
-        ratingDialog.add(ratingPanel, BorderLayout.CENTER);
-        ratingDialog.add(submitButton, BorderLayout.SOUTH);
-
-        ratingDialog.setLocationRelativeTo(mainFrame);
-        ratingDialog.setVisible(true);
-    }
-
-    private void submitRating() {
-        int rating = (Integer) ratingComboBox.getSelectedItem();
-        if (sellerToRate.addSellerRating(rating, currentUser)) {
-            JOptionPane.showMessageDialog(ratingDialog,
-                    "Rating submitted successfully!\n" +
-                            String.format("Seller's current rating: %.1f (%d ratings)",
-                                    sellerToRate.getAverageSellerRating(),
-                                    sellerToRate.getNumberOfRatings()),
-                    "Success",
-                    JOptionPane.INFORMATION_MESSAGE);
-            ratingDialog.dispose();
-        } else {
-            JOptionPane.showMessageDialog(ratingDialog,
-                    "Failed to submit rating",
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     * Closes the connection to the server and cleans up resources.
-     * Properly terminates all streams and socket connections.
-     * @version 1.0
-     */
-
-    
+    // Custom renderer for messages in the list
     private class MessageCellRenderer extends DefaultListCellRenderer {
         @Override
         public Component getListCellRendererComponent(
@@ -1845,11 +1517,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         }
     }
 
-    /*
-     *  Custom renderer for the star rating combo box.
-     *  Displays stars based on the selected rating value.
-     *  @version 1.0
-     */
+    // Custom renderer for star ratings
     private class StarRatingRenderer extends DefaultListCellRenderer {
         @Override
         public Component getListCellRendererComponent(
