@@ -820,7 +820,6 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
             boolean success = marketplace.purchaseItem(item, currentUser);
 
             if (success) {
-                currentUser.setBalance(currentUser.getBalance() - item.getCost());
                 balanceLabel.setText(String.format("Current Balance: $%.2f", currentUser.getBalance()));
                 profileBalanceLabel.setText(String.format("$%.2f", currentUser.getBalance()));
 
