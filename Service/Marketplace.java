@@ -117,8 +117,7 @@ public class Marketplace implements IMarketplace {
                                 lastName,
                                 userName,
                                 password,
-                                balance,
-                                true);
+                                balance);
                         loadedUsers.add(user);
                     }
                 }
