@@ -874,9 +874,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         refreshButton.setAlignmentX(Component.LEFT_ALIGNMENT);
         refreshButton.setMaximumSize(new Dimension(200, 40));
         refreshButton.setFont(new Font("Arial", Font.BOLD, 14));
-        refreshButton.setBackground(new Color(70, 130, 180));
-        refreshButton.setForeground(Color.WHITE);
-        refreshButton.setFocusPainted(false);
+    
 
         // Button panel for List New Item and Refresh buttons
         JPanel buttonPanel = new JPanel();
@@ -1394,7 +1392,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         // Submit button
         JButton submitButton = new JButton("List Item");
         submitButton.setFont(new Font("Arial", Font.BOLD, 14));
-        submitButton.setBackground(new Color(60, 179, 113));
+        submitButton.setBackground(new Color(70, 130, 180));
         submitButton.setForeground(Color.GREEN);
         submitButton.setFocusPainted(false);
         submitButton.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
