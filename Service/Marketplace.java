@@ -1,8 +1,10 @@
 package Service;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.nio.file.Files;
+
 import model.items.*;
 import model.users.MarketplaceUser;
 import model.users.User;
@@ -12,7 +14,7 @@ import model.users.User;
  * for managing users, items, and transactions in the marketplace system.
  *
  * @author Youssef Abdelkader
- * @author Anthony Kim  
+ * @author Anthony Kim
  * @author Caroline Murphy
  * @author Eric Yen
  * @author Isaac Yoon
@@ -29,7 +31,7 @@ public class Marketplace implements IMarketplace {
     /**
      * Constructs a new Marketplace instance and initializes the system by loading
      * existing user and item data from files.
-     * 
+     * <p>
      * If the data files don't exist, they will be created. Any IO errors during
      * initialization will be printed to stderr but won't prevent the marketplace
      * from being created.
@@ -48,7 +50,7 @@ public class Marketplace implements IMarketplace {
 
     /**
      * Updates the user data file with a new or existing user's information.
-     * 
+     *
      * @param user The user to be added or updated in the system
      * @return true if the operation was successful, false otherwise
      * @throws IOException if there's an error writing to the user data file
@@ -76,7 +78,7 @@ public class Marketplace implements IMarketplace {
 
     /**
      * Initializes the user data file if it doesn't already exist.
-     * 
+     *
      * @return true if the file was created or already exists, false if creation failed
      * @throws IOException if there's an error creating the file
      */
@@ -91,7 +93,7 @@ public class Marketplace implements IMarketplace {
 
     /**
      * Loads all users from the user data file into memory.
-     * 
+     *
      * @return An ArrayList containing all registered users
      * @throws IOException if there's an error reading the user data file
      */
@@ -111,12 +113,12 @@ public class Marketplace implements IMarketplace {
                         double balance = Double.parseDouble(parts[4]);
 
                         MarketplaceUser user = new MarketplaceUser(
-                            firstName, 
-                            lastName, 
-                            userName, 
-                            password, 
-                            balance, 
-                            true);
+                                firstName,
+                                lastName,
+                                userName,
+                                password,
+                                balance,
+                                true);
                         loadedUsers.add(user);
                     }
                 }
@@ -128,7 +130,7 @@ public class Marketplace implements IMarketplace {
 
     /**
      * Adds a new item to the marketplace and persists it to the items file.
-     * 
+     *
      * @param item The item to be added to the marketplace
      */
     public synchronized void addItem(Item item) {
@@ -140,7 +142,7 @@ public class Marketplace implements IMarketplace {
 
     /**
      * Saves an item to the items data file.
-     * 
+     *
      * @param item The item to be saved
      */
     private synchronized void saveItemToFile(Item item) {
@@ -154,7 +156,7 @@ public class Marketplace implements IMarketplace {
 
     /**
      * Converts an item to a string representation for file storage.
-     * 
+     *
      * @param item The item to convert
      * @return A comma-separated string representing the item
      */
@@ -190,7 +192,7 @@ public class Marketplace implements IMarketplace {
 
     /**
      * Loads all items from the items data file into memory.
-     * 
+     *
      * @throws IOException if there's an error reading the items file
      */
     private synchronized void loadAllItems() throws IOException {
@@ -213,7 +215,7 @@ public class Marketplace implements IMarketplace {
 
     /**
      * Parses a line from the items file into an Item object.
-     * 
+     *
      * @param line The line from the items file to parse
      * @return The parsed Item object, or null if parsing fails
      */
@@ -270,7 +272,7 @@ public class Marketplace implements IMarketplace {
 
     /**
      * Searches for sellers by username, first name, or last name (case-insensitive).
-     * 
+     *
      * @param sellerSearch The search string to match against seller information
      * @return A list of matching sellers
      */
@@ -293,7 +295,7 @@ public class Marketplace implements IMarketplace {
 
     /**
      * Searches for items by name (case-insensitive).
-     * 
+     *
      * @param nameSearch The search string to match against item names
      * @return A list of matching items
      */
@@ -314,7 +316,7 @@ public class Marketplace implements IMarketplace {
 
     /**
      * Searches for items by category (case-insensitive exact match).
-     * 
+     *
      * @param categorySearch The category to search for
      * @return A list of items in the specified category
      */
@@ -333,7 +335,7 @@ public class Marketplace implements IMarketplace {
 
     /**
      * Authenticates a user based on username and password.
-     * 
+     *
      * @param username The username to authenticate
      * @param password The password to verify
      * @return The authenticated User object if successful, null otherwise
@@ -349,7 +351,7 @@ public class Marketplace implements IMarketplace {
 
     /**
      * Retrieves all available (unsold) items in the marketplace.
-     * 
+     *
      * @return A list of all available items
      */
     public synchronized ArrayList<Item> getAvailableItems() {
@@ -366,8 +368,8 @@ public class Marketplace implements IMarketplace {
 
     /**
      * Processes a purchase transaction for an item.
-     * 
-     * @param item The item to be purchased
+     *
+     * @param item  The item to be purchased
      * @param buyer The user purchasing the item
      * @return true if the purchase was successful, false otherwise
      */
@@ -403,13 +405,13 @@ public class Marketplace implements IMarketplace {
     private synchronized void saveTransaction(Item item, User buyer, String date) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(TRANSACTIONS_FILE, true))) {
             String transaction = String.format("%s,%s,%s,%s,%s,%.2f,%s",
-                buyer.getUserName(),
-                item.getCategory(),
-                item.getName(),
-                item.getSoldBy().getUserName(),
-                date,
-                item.getCost(),
-                item.getCategory());
+                    buyer.getUserName(),
+                    item.getCategory(),
+                    item.getName(),
+                    item.getSoldBy().getUserName(),
+                    date,
+                    item.getCost(),
+                    item.getCategory());
             writer.write(transaction);
             writer.newLine();
         } catch (IOException e) {
