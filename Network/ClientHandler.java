@@ -31,7 +31,6 @@ import model.users.User;
  * @author Isaac Yoon
  * @version April 20 2025
  */
-
 public class ClientHandler extends JComponent implements Runnable, IClientHandler {
     /**
      * Socket for the client connection
@@ -373,22 +372,22 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
                 // Add to purchases table if current user is buyer
                 if (buyerUsername.equals(currentUser.getUserName())) {
                     purchasesTableModel.addRow(new Object[] {
-                            date,
-                            itemName,
-                            category,
-                            sellerUsername,
-                            price
+                        date,
+                        itemName,
+                        category,
+                        sellerUsername,
+                        price
                     });
                 }
 
                 // Add to sales table if current user is seller
                 if (sellerUsername.equals(currentUser.getUserName())) {
                     salesTableModel.addRow(new Object[] {
-                            date,
-                            itemName,
-                            category,
-                            buyerUsername,
-                            price
+                        date,
+                        itemName,
+                        category,
+                        buyerUsername,
+                        price
                     });
                 }
             }
@@ -997,11 +996,11 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         if (buyer.getUserName().equals(currentUser.getUserName())) {
             // Add to purchases table
             purchasesTableModel.addRow(new Object[] {
-                    date,
-                    item.getName(),
-                    item.getCategory(),
-                    item.getSoldBy().getUserName(),
-                    String.format("$%.2f", item.getCost())
+                date,
+                item.getName(),
+                item.getCategory(),
+                item.getSoldBy().getUserName(),
+                String.format("$%.2f", item.getCost())
             });
         }
 
@@ -1811,7 +1810,14 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         }
     }
 
-    // Custom renderer for messages in the list
+    /**
+     * {@inheritDoc}
+     * Closes the connection to the server and cleans up resources.
+     * Properly terminates all streams and socket connections.
+     * @version 1.0
+     */
+
+    
     private class MessageCellRenderer extends DefaultListCellRenderer {
         @Override
         public Component getListCellRendererComponent(
@@ -1840,7 +1846,11 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         }
     }
 
-    // Custom renderer for star ratings
+    /*
+     *  Custom renderer for the star rating combo box.
+     *  Displays stars based on the selected rating value.
+     *  @version 1.0
+     */
     private class StarRatingRenderer extends DefaultListCellRenderer {
         @Override
         public Component getListCellRendererComponent(
