@@ -25,7 +25,7 @@ public class MarketplaceUser implements User, Message, Serializable { private st
     private static final Map<String, String> USER_CREDENTIALS = new HashMap<>();
     private static final Object STATIC_LOCK = new Object();
     private final Object lOCK = new Object();
-    private final Map<String, Integer> rATINGS = new HashMap<>();
+    private final Map<String, ArrayList<Integer>> rATINGS = new HashMap<>();
     private final Object rATINGSLOCK = new Object();
     private static final Map<String, Object> MESSAGE_FILE_LOCKS = new HashMap<>();
     private static final Object MESSAGE_LOCKS_GUARD = new Object();
@@ -270,13 +270,17 @@ public class MarketplaceUser implements User, Message, Serializable { private st
         if (rating < 1 || rating > 5) {
             return false;
         }
-        
+
         synchronized (rATINGSLOCK) {
-            rATINGS.put(fromUser.getUserName(), rating);
+            // Initialize list if this is the first rating from this user
+            rATINGS.computeIfAbsent(fromUser.getUserName(), k -> new ArrayList<>());
+            // Add the new rating
+            rATINGS.get(fromUser.getUserName()).add(rating);
             saveRatingsToFile();
             return true;
         }
     }
+
 
     /**
      * Calculates the average seller rating.
@@ -288,13 +292,21 @@ public class MarketplaceUser implements User, Message, Serializable { private st
             if (rATINGS.isEmpty()) {
                 return 0;
             }
+
             double sum = 0;
-            for (int rating : rATINGS.values()) {
-                sum += rating;
+            int count = 0;
+
+            for (ArrayList<Integer> userRatings : rATINGS.values()) {
+                for (int rating : userRatings) {
+                    sum += rating;
+                    count++;
+                }
             }
-            return sum / rATINGS.size();
+
+            return count > 0 ? sum / count : 0;
         }
     }
+
 
     /**
      * Gets the number of ratings received.
@@ -303,9 +315,14 @@ public class MarketplaceUser implements User, Message, Serializable { private st
     @Override
     public synchronized int getNumberOfRatings() {
         synchronized (rATINGSLOCK) {
-            return rATINGS.size();
+            int count = 0;
+            for (ArrayList<Integer> userRatings : rATINGS.values()) {
+                count += userRatings.size();
+            }
+            return count;
         }
     }
+
 
     /**
      * Saves ratings to persistent storage.
@@ -318,8 +335,11 @@ public class MarketplaceUser implements User, Message, Serializable { private st
 
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(ratingsFile))) {
                 synchronized (rATINGSLOCK) {
-                    for (Map.Entry<String, Integer> entry : rATINGS.entrySet()) {
-                        writer.write(String.format("%s,%d%n", entry.getKey(), entry.getValue()));
+                    for (Map.Entry<String, ArrayList<Integer>> entry : rATINGS.entrySet()) {
+                        String rater = entry.getKey();
+                        for (Integer rating : entry.getValue()) {
+                            writer.write(String.format("%s,%d%n", rater, rating));
+                        }
                     }
                 }
             }
@@ -327,6 +347,8 @@ public class MarketplaceUser implements User, Message, Serializable { private st
             System.err.println("Error saving ratings: " + e.getMessage());
         }
     }
+
+
 
     /**
      * Loads ratings from persistent storage.
@@ -342,7 +364,10 @@ public class MarketplaceUser implements User, Message, Serializable { private st
                 while ((line = reader.readLine()) != null) {
                     String[] parts = line.split(",");
                     if (parts.length == 2) {
-                        rATINGS.put(parts[0], Integer.parseInt(parts[1]));
+                        String rater = parts[0];
+                        int rating = Integer.parseInt(parts[1]);
+                        rATINGS.computeIfAbsent(rater, k -> new ArrayList<>());
+                        rATINGS.get(rater).add(rating);
                     }
                 }
             }
