@@ -3,6 +3,11 @@ package Network;
 /**
  * Interface defining core client functionality for the marketplace system.
  * Handles client-side connection and communication with the server.
+ * @author Youssef Abdelkader
+ * @author Anthony Kim
+ * @author Caroline Murphy
+ * @author Eric Yen
+ * @author Isaac Yoon
  * 
  * @version April 20 2025
  */

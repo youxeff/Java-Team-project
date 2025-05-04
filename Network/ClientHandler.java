@@ -31,6 +31,7 @@ import model.users.User;
  * @author Isaac Yoon
  * @version April 20 2025
  */
+
 public class ClientHandler extends JComponent implements Runnable, IClientHandler {
     /**
      * Socket for the client connection
@@ -52,7 +53,6 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
      * Marketplace instance for handling business logic
      */
     private Marketplace marketplace;
-
 
     // Main GUI components
     private JFrame mainFrame;
@@ -372,7 +372,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
 
                 // Add to purchases table if current user is buyer
                 if (buyerUsername.equals(currentUser.getUserName())) {
-                    purchasesTableModel.addRow(new Object[]{
+                    purchasesTableModel.addRow(new Object[] {
                             date,
                             itemName,
                             category,
@@ -383,7 +383,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
 
                 // Add to sales table if current user is seller
                 if (sellerUsername.equals(currentUser.getUserName())) {
-                    salesTableModel.addRow(new Object[]{
+                    salesTableModel.addRow(new Object[] {
                             date,
                             itemName,
                             category,
@@ -449,7 +449,8 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         // Create user info labels
         usernameLabel = new JLabel("User: " + currentUser.getUserName());
         balanceLabel = new JLabel(String.format("Balance: $%.2f", currentUser.getBalance()));
-        ratingLabel = new JLabel(String.format("Rating: %.1f (%d)", currentUser.getAverageSellerRating(), currentUser.getNumberOfRatings()));
+        ratingLabel = new JLabel(String.format("Rating: %.1f (%d)", currentUser.getAverageSellerRating(),
+                currentUser.getNumberOfRatings()));
 
         usernameLabel.setForeground(Color.WHITE);
         balanceLabel.setForeground(Color.WHITE);
@@ -616,7 +617,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
 
         // Category filter dropdown
-        String[] categories = {"All Categories", "Apparel", "Collectible", "Electronic", "Home", "Vehicle"};
+        String[] categories = { "All Categories", "Apparel", "Collectible", "Electronic", "Home", "Vehicle" };
         JComboBox<String> categoryFilter = new JComboBox<>(categories);
 
         // Search bar
@@ -647,8 +648,8 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
             String selectedCategory = (String) categoryFilter.getSelectedItem();
 
             List<Item> filteredItems = new ArrayList<>();
-            List<Item> itemsToSearch = selectedCategory.equals("All Categories") ?
-                    marketplace.getAvailableItems() : marketplace.searchByCategory(selectedCategory);
+            List<Item> itemsToSearch = selectedCategory.equals("All Categories") ? marketplace.getAvailableItems()
+                    : marketplace.searchByCategory(selectedCategory);
 
             for (Item item : itemsToSearch) {
                 if (item.getName().toLowerCase().contains(searchTerm)) {
@@ -672,8 +673,8 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         categoryFilter.addActionListener(e -> {
             String selectedCategory = (String) categoryFilter.getSelectedItem();
             itemsPanel.removeAll();
-            List<Item> itemsToShow = selectedCategory.equals("All Categories") ?
-                    marketplace.getAvailableItems() : marketplace.searchByCategory(selectedCategory);
+            List<Item> itemsToShow = selectedCategory.equals("All Categories") ? marketplace.getAvailableItems()
+                    : marketplace.searchByCategory(selectedCategory);
             displayItems(itemsToShow, itemsPanel);
             itemsPanel.revalidate();
             itemsPanel.repaint();
@@ -694,16 +695,17 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         }
 
         for (Item item : items) {
-            if (!item.isAvailable()) continue;
+            if (!item.isAvailable())
+                continue;
 
             JPanel itemCard = new JPanel(new BorderLayout());
             itemCard.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
             itemCard.setPreferredSize(new Dimension(250, 350));
 
             // Item image
-//            JLabel imageLabel = new JLabel(new ImageIcon(item.getImagePath()));
-//            imageLabel.setPreferredSize(new Dimension(250, 150));
-//            imageLabel.setHorizontalAlignment(JLabel.CENTER);
+            // JLabel imageLabel = new JLabel(new ImageIcon(item.getImagePath()));
+            // imageLabel.setPreferredSize(new Dimension(250, 150));
+            // imageLabel.setHorizontalAlignment(JLabel.CENTER);
 
             // Item details
             JPanel detailsPanel = new JPanel();
@@ -746,7 +748,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
             detailsPanel.add(Box.createVerticalGlue());
             detailsPanel.add(buttonsPanel);
 
-            //itemCard.add(imageLabel, BorderLayout.NORTH);
+            // itemCard.add(imageLabel, BorderLayout.NORTH);
             itemCard.add(detailsPanel, BorderLayout.CENTER);
 
             targetItemsPanel.add(itemCard);
@@ -762,9 +764,9 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         detailPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         // Large image
-//        JLabel largeImage = new JLabel(new ImageIcon(item.getImagePath()));
-//        largeImage.setHorizontalAlignment(JLabel.CENTER);
-//        detailPanel.add(largeImage, BorderLayout.NORTH);
+        // JLabel largeImage = new JLabel(new ImageIcon(item.getImagePath()));
+        // largeImage.setHorizontalAlignment(JLabel.CENTER);
+        // detailPanel.add(largeImage, BorderLayout.NORTH);
 
         // Details panel
         JPanel infoPanel = new JPanel();
@@ -885,7 +887,6 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         refreshButton.setMaximumSize(new Dimension(200, 40));
         refreshButton.setFont(new Font("Arial", Font.BOLD, 14));
 
-
         // Button panel for List New Item and Refresh buttons
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
@@ -914,7 +915,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         yourItemsLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 10, 0));
 
         // Create table for user's items
-        String[] columns = {"Item", "Category", "Price", "Status"};
+        String[] columns = { "Item", "Category", "Price", "Status" };
         DefaultTableModel tableModel = new DefaultTableModel(columns, 0);
         itemsTable = new JTable(tableModel);
 
@@ -924,7 +925,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
                 .collect(Collectors.toList());
 
         for (Item item : userItems) {
-            tableModel.addRow(new Object[]{
+            tableModel.addRow(new Object[] {
                     item.getName(),
                     item.getCategory(),
                     String.format("$%.2f", item.getCost()),
@@ -967,7 +968,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         purchasesPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         // Create table models for dynamic updates
-        String[] purchaseColumns = {"Date", "Item", "Category", "Seller", "Price"};
+        String[] purchaseColumns = { "Date", "Item", "Category", "Seller", "Price" };
         purchasesTableModel = new DefaultTableModel(purchaseColumns, 0);
         purchasesTable = new JTable(purchasesTableModel);
         JScrollPane purchasesScrollPane = new JScrollPane(purchasesTable);
@@ -976,7 +977,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         JPanel salesPanel = new JPanel(new BorderLayout());
         salesPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        String[] salesColumns = {"Date", "Item", "Category", "Buyer", "Price"};
+        String[] salesColumns = { "Date", "Item", "Category", "Buyer", "Price" };
         salesTableModel = new DefaultTableModel(salesColumns, 0);
         salesTable = new JTable(salesTableModel);
         JScrollPane salesScrollPane = new JScrollPane(salesTable);
@@ -995,7 +996,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
 
         if (buyer.getUserName().equals(currentUser.getUserName())) {
             // Add to purchases table
-            purchasesTableModel.addRow(new Object[]{
+            purchasesTableModel.addRow(new Object[] {
                     date,
                     item.getName(),
                     item.getCategory(),
@@ -1006,7 +1007,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
 
         if (item.getSoldBy().getUserName().equals(currentUser.getUserName())) {
             // Add to sales table
-            salesTableModel.addRow(new Object[]{
+            salesTableModel.addRow(new Object[] {
                     date,
                     item.getName(),
                     item.getCategory(),
@@ -1025,7 +1026,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
                 .collect(Collectors.toList());
 
         for (Item item : userItems) {
-            tableModel.addRow(new Object[]{
+            tableModel.addRow(new Object[] {
                     item.getName(),
                     item.getCategory(),
                     String.format("$%.2f", item.getCost()),
@@ -1298,7 +1299,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         JTextField nameField = new JTextField();
         JTextField priceField = new JTextField();
         JComboBox<String> categoryCombo = new JComboBox<>(
-                new String[]{"Apparel", "Collectible", "Electronic", "Home", "Vehicle"});
+                new String[] { "Apparel", "Collectible", "Electronic", "Home", "Vehicle" });
 
         nameField.setFont(new Font("Arial", Font.PLAIN, 14));
         priceField.setFont(new Font("Arial", Font.PLAIN, 14));
@@ -1317,7 +1318,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
 
         // Apparel panel with dropdown for sizes
         JPanel apparelPanel = new JPanel(new GridLayout(3, 2, 10, 10));
-        String[] sizes = {"XS", "S", "M", "L", "XL"};
+        String[] sizes = { "XS", "S", "M", "L", "XL" };
         JComboBox<String> sizeCombo = new JComboBox<>(sizes);
         JTextField colorField = new JTextField();
         JTextField brandField = new JTextField();
@@ -1722,8 +1723,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         JSplitPane splitPane = new JSplitPane(
                 JSplitPane.HORIZONTAL_SPLIT,
                 new JScrollPane(messageList),
-                new JScrollPane(messageViewArea)
-        );
+                new JScrollPane(messageViewArea));
         splitPane.setDividerLocation(200);
 
         // Compose button at the top
@@ -1775,7 +1775,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         JPanel ratingPanel = new JPanel(new FlowLayout());
 
         // Rating combo box with stars
-        Integer[] ratings = {1, 2, 3, 4, 5};
+        Integer[] ratings = { 1, 2, 3, 4, 5 };
         ratingComboBox = new JComboBox<>(ratings);
         ratingComboBox.setRenderer(new StarRatingRenderer());
 
