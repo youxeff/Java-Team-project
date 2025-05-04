@@ -13,14 +13,15 @@ import java.util.Map;
  * - Messaging with other users
  * - Rating system for sellers
  * - Balance management
- * 
+ * <p>
  * Implements both User and Message interfaces to provide these functionalities.
  * Uses file-based persistence for user data, messages, and ratings.
  *
  * @author Youssef Abdelkader
  * @version April 20 2025
  */
-public class MarketplaceUser implements User, Message, Serializable { private static final long SERIAL_VERSION_UID = 1L;
+public class MarketplaceUser implements User, Message, Serializable {
+    private static final long SERIAL_VERSION_UID = 1L;
     private static final String USERS_FILE = "users.txt";
     private static final Map<String, String> USER_CREDENTIALS = new HashMap<>();
     private static final Object STATIC_LOCK = new Object();
@@ -29,7 +30,7 @@ public class MarketplaceUser implements User, Message, Serializable { private st
     private final Object rATINGSLOCK = new Object();
     private static final Map<String, Object> MESSAGE_FILE_LOCKS = new HashMap<>();
     private static final Object MESSAGE_LOCKS_GUARD = new Object();
-    
+
     private String firstName;
     private String lastName;
     private String password;
@@ -42,10 +43,11 @@ public class MarketplaceUser implements User, Message, Serializable { private st
 
     /**
      * Creates a new MarketplaceUser with basic information.
+     *
      * @param firstName User's first name
-     * @param lastName User's last name
-     * @param userName Unique username
-     * @param password User password
+     * @param lastName  User's last name
+     * @param userName  Unique username
+     * @param password  User password
      */
     public MarketplaceUser(String firstName, String lastName, String userName, String password) {
         this.firstName = firstName;
@@ -58,15 +60,16 @@ public class MarketplaceUser implements User, Message, Serializable { private st
 
     /**
      * Creates a new MarketplaceUser with all information including balance.
-     * @param firstName User's first name
-     * @param lastName User's last name
-     * @param userName Unique username
-     * @param password User password
-     * @param balance Initial account balance
+     *
+     * @param firstName  User's first name
+     * @param lastName   User's last name
+     * @param userName   Unique username
+     * @param password   User password
+     * @param balance    Initial account balance
      * @param saveToFile Whether to save to persistence immediately
      */
     public MarketplaceUser(String firstName, String lastName, String userName,
-                         String password, double balance, boolean saveToFile) {
+                           String password, double balance, boolean saveToFile) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.password = password;
@@ -109,6 +112,7 @@ public class MarketplaceUser implements User, Message, Serializable { private st
 
     /**
      * Loads a user from persistent storage.
+     *
      * @param inputUserName Username to load
      * @return MarketplaceUser object or null if not found
      */
@@ -121,12 +125,13 @@ public class MarketplaceUser implements User, Message, Serializable { private st
             if (parts.length < 4) return null;
             double balance = parts.length >= 5 ? Double.parseDouble(parts[4]) : 0.0;
             return new MarketplaceUser(parts[2], parts[3], parts[0],
-                parts[1], balance, false);
+                    parts[1], balance, false);
         }
     }
 
     /**
      * Verifies user credentials against stored values.
+     *
      * @param inputUserName Username to verify
      * @param inputPassword Password to verify
      * @return true if credentials match, false otherwise
@@ -135,12 +140,13 @@ public class MarketplaceUser implements User, Message, Serializable { private st
         synchronized (STATIC_LOCK) {
             loadUserCredentials(); // Reload credentials to get latest data
             return USER_CREDENTIALS.containsKey(inputUserName) &&
-                   USER_CREDENTIALS.get(inputUserName).split(",")[1].equals(inputPassword);
+                    USER_CREDENTIALS.get(inputUserName).split(",")[1].equals(inputPassword);
         }
     }
 
     /**
      * Saves user data to the persistence file.
+     *
      * @param userData Formatted user data string
      */
     private synchronized void saveToFile(String userData) {
@@ -158,6 +164,7 @@ public class MarketplaceUser implements User, Message, Serializable { private st
 
     /**
      * Gets or creates a lock object for a specific message file
+     *
      * @param username The username whose message file needs locking
      * @return The lock object for that user's message file
      */
@@ -169,13 +176,14 @@ public class MarketplaceUser implements User, Message, Serializable { private st
 
     /**
      * Sends a message to another user.
+     *
      * @param recipientUsername Username of message recipient
-     * @param message Content of the message
+     * @param message           Content of the message
      */
     public void sendMessageTo(String recipientUsername, String message) {
         // Get the lock specific to this recipient's message file
         Object messageLock = getMessageFileLock(recipientUsername);
-        
+
         synchronized (messageLock) {
             String messageFilePath = "messages/" + recipientUsername + ".txt";
             File messageFile = new File(messageFilePath);
@@ -204,7 +212,7 @@ public class MarketplaceUser implements User, Message, Serializable { private st
             }
         }
     }
-    
+
     /**
      * Displays all messages received by this user.
      */
@@ -231,10 +239,11 @@ public class MarketplaceUser implements User, Message, Serializable { private st
             }
             return messages;
         }
-    }   
+    }
 
     /**
      * Checks if a user exists in the system.
+     *
      * @param recipientUsername Username to check
      * @return true if user exists, false otherwise
      */
@@ -261,7 +270,8 @@ public class MarketplaceUser implements User, Message, Serializable { private st
 
     /**
      * Adds a seller rating for this user.
-     * @param rating Rating value (1-5)
+     *
+     * @param rating   Rating value (1-5)
      * @param fromUser User providing the rating
      * @return true if rating was successfully added
      */
@@ -284,6 +294,7 @@ public class MarketplaceUser implements User, Message, Serializable { private st
 
     /**
      * Calculates the average seller rating.
+     *
      * @return Average rating (0 if no ratings)
      */
     @Override
@@ -310,6 +321,7 @@ public class MarketplaceUser implements User, Message, Serializable { private st
 
     /**
      * Gets the number of ratings received.
+     *
      * @return Count of ratings
      */
     @Override
@@ -349,7 +361,6 @@ public class MarketplaceUser implements User, Message, Serializable { private st
     }
 
 
-
     /**
      * Loads ratings from persistent storage.
      */
@@ -378,10 +389,11 @@ public class MarketplaceUser implements User, Message, Serializable { private st
 
     /**
      * Creates a new user account.
+     *
      * @param newFirstName User's first name
-     * @param newLastName User's last name
-     * @param newUserName Unique username
-     * @param newPassword User password
+     * @param newLastName  User's last name
+     * @param newUserName  Unique username
+     * @param newPassword  User password
      * @return true if creation was successful
      */
     @Override
@@ -400,12 +412,12 @@ public class MarketplaceUser implements User, Message, Serializable { private st
             }
 
             String userData = String.format(
-                "%s,%s,%s,%s,%.2f", 
-                newUserName, 
-                newPassword, 
-                newFirstName, 
-                newLastName, 
-                balance);
+                    "%s,%s,%s,%s,%.2f",
+                    newUserName,
+                    newPassword,
+                    newFirstName,
+                    newLastName,
+                    balance);
             saveToFile(userData);
 
             USER_CREDENTIALS.put(newUserName, newPassword);
@@ -415,6 +427,7 @@ public class MarketplaceUser implements User, Message, Serializable { private st
 
     /**
      * Authenticates a user.
+     *
      * @param inputUserName Username to authenticate
      * @param inputPassword Password to verify
      * @return true if authentication succeeds
@@ -426,6 +439,7 @@ public class MarketplaceUser implements User, Message, Serializable { private st
 
     /**
      * Verifies the user's password.
+     *
      * @param inputPassword Password to verify
      * @return true if password matches
      */
@@ -434,38 +448,78 @@ public class MarketplaceUser implements User, Message, Serializable { private st
     }
 
     // Standard getters and setters with synchronization
-    @Override public synchronized String getFirstName() { return firstName; }
-    @Override public synchronized String getLastName() { return lastName; }
-    @Override public synchronized String getUserName() { return userName; }
-    @Override public synchronized String getPassword() { return password; }
-    @Override public synchronized double getBalance() { return balance; }
-    @Override public synchronized void setFirstName(String firstName) { this.firstName = firstName; }
-    @Override public synchronized void setLastName(String lastName) { this.lastName = lastName; }
-    @Override public synchronized void setUsername(String newUserName) { this.userName = newUserName; }
-    @Override public synchronized void setPassword(String password) { this.password = password; }
-    @Override public synchronized void setBalance(double balance) { this.balance = balance; }
+    @Override
+    public synchronized String getFirstName() {
+        return firstName;
+    }
+
+    @Override
+    public synchronized String getLastName() {
+        return lastName;
+    }
+
+    @Override
+    public synchronized String getUserName() {
+        return userName;
+    }
+
+    @Override
+    public synchronized String getPassword() {
+        return password;
+    }
+
+    @Override
+    public synchronized double getBalance() {
+        return balance;
+    }
+
+    @Override
+    public synchronized void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    @Override
+    public synchronized void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    @Override
+    public synchronized void setUsername(String newUserName) {
+        this.userName = newUserName;
+    }
+
+    @Override
+    public synchronized void setPassword(String password) {
+        this.password = password;
+    }
+
+    @Override
+    public synchronized void setBalance(double balance) {
+        this.balance = balance;
+    }
 
     /**
      * Registers a new user with the system.
+     *
      * @param newFirstName User's first name
-     * @param newLastName User's last name
-     * @param newUserName Unique username
-     * @param newPassword User password
+     * @param newLastName  User's last name
+     * @param newUserName  Unique username
+     * @param newPassword  User password
      * @return New MarketplaceUser or null if registration failed
      */
-    public static MarketplaceUser registerNewUser(String newFirstName, String newLastName, 
-            String newUserName, String newPassword) {
+    public static MarketplaceUser registerNewUser(String newFirstName, String newLastName,
+                                                  String newUserName, String newPassword) {
         if (USER_CREDENTIALS.containsKey(newUserName)) {
             System.out.println("Username already exists.");
             return null;
         }
         MarketplaceUser user = new MarketplaceUser(
-            newFirstName, 
-            newLastName, 
-            newUserName, 
-            newPassword, 
-            0.0, 
-            false);
+                newFirstName,
+                newLastName,
+                newUserName,
+                newPassword,
+                0.0,
+                false);
         user.createNewUser(newFirstName, newLastName, newUserName, newPassword);
         return user;
     }
