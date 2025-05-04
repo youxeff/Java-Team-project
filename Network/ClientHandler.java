@@ -5,6 +5,7 @@ import java.net.*;
 import java.nio.file.*;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -99,6 +100,9 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
     private JComboBox<Integer> ratingComboBox;
     private User sellerToRate;
 
+    private JTable itemsTable;
+    private JPanel itemsPanel;
+
     /**
      * Creates a new client handler for a connected client.
      * Initializes the communication streams and marketplace instance.
@@ -176,23 +180,59 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
     }
 
     private JPanel welcomePanel() {
-        JPanel welcomePanel = new JPanel(new BorderLayout());
+        JPanel welcomePanel = new JPanel(new BorderLayout(20, 20));
+        welcomePanel.setBackground(new Color(240, 240, 240));
+        welcomePanel.setBorder(BorderFactory.createEmptyBorder(40, 40, 40, 40));
 
-        JButton loginButton = new JButton("Login");
-        JButton registerButton = new JButton("Register New User");
-        JButton exitButton = new JButton("Exit");
+        // Title
+        JLabel titleLabel = new JLabel("Welcome to Marketplace", SwingConstants.CENTER);
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 28));
+        titleLabel.setForeground(new Color(51, 51, 51));
+
+        // Subtitle
+        JLabel subtitleLabel = new JLabel("Buy and sell items in our community", SwingConstants.CENTER);
+        subtitleLabel.setFont(new Font("Arial", Font.PLAIN, 16));
+        subtitleLabel.setForeground(new Color(102, 102, 102));
+
+        JPanel headerPanel = new JPanel(new BorderLayout(5, 5));
+        headerPanel.setOpaque(false);
+        headerPanel.add(titleLabel, BorderLayout.CENTER);
+        headerPanel.add(subtitleLabel, BorderLayout.SOUTH);
+
+        // Buttons Panel
+        JPanel buttonsPanel = new JPanel(new GridLayout(3, 1, 10, 10));
+        buttonsPanel.setOpaque(false);
+        buttonsPanel.setBorder(BorderFactory.createEmptyBorder(30, 60, 30, 60));
+
+        JButton loginButton = createStyledButton("Login", new Color(70, 130, 180));
+        JButton registerButton = createStyledButton("Register New User", new Color(60, 179, 113));
+        JButton exitButton = createStyledButton("Exit", new Color(128, 128, 128));
 
         loginButton.addActionListener(e -> authCardLayout.show(cards, "Login"));
         registerButton.addActionListener(e -> authCardLayout.show(cards, "Register"));
         exitButton.addActionListener(e -> authFrame.dispose());
 
-        JPanel centerButtons = new JPanel(new GridLayout(3, 1, 10, 10));
-        centerButtons.add(loginButton);
-        centerButtons.add(registerButton);
-        centerButtons.add(exitButton);
+        buttonsPanel.add(loginButton);
+        buttonsPanel.add(registerButton);
+        buttonsPanel.add(exitButton);
 
-        welcomePanel.add(centerButtons, BorderLayout.CENTER);
+        welcomePanel.add(headerPanel, BorderLayout.NORTH);
+        welcomePanel.add(buttonsPanel, BorderLayout.CENTER);
+
         return welcomePanel;
+    }
+
+    private JButton createStyledButton(String text, Color backgroundColor) {
+        JButton button = new JButton(text);
+        button.setFont(new Font("Arial", Font.BOLD, 14));
+        button.setBackground(backgroundColor);
+        button.setForeground(Color.WHITE);
+        button.setFocusPainted(false);
+        button.setBorder(BorderFactory.createEmptyBorder(15, 25, 15, 25));
+        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        button.setOpaque(true);
+        
+        return button;
     }
 
     private JPanel registerPanel() {
@@ -292,7 +332,10 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
                 currentUser = user;
                 JOptionPane.showMessageDialog(authFrame, "Login successful! Welcome " + currentUser.getFirstName());
                 authFrame.dispose();
-                SwingUtilities.invokeLater(() -> createAndShowGUI());
+                SwingUtilities.invokeLater(() -> {
+                    createAndShowGUI();
+                    loadUserTransactions(); // Load transaction history
+                });
             } else {
                 JOptionPane.showMessageDialog(authFrame, "Invalid username or password.");
             }
@@ -301,11 +344,51 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         }
     }
 
+    private void loadUserTransactions() {
+        // Clear existing data first
+        purchasesTableModel.setRowCount(0);
+        salesTableModel.setRowCount(0);
+
+        ArrayList<String[]> transactions = marketplace.loadTransactions(currentUser.getUserName());
+        for (String[] transaction : transactions) {
+            if (transaction.length >= 7) {
+                String buyerUsername = transaction[0];
+                String itemName = transaction[2];
+                String sellerUsername = transaction[3];
+                String date = transaction[4];
+                String price = "$" + transaction[5];
+                String category = transaction[6];
+
+                // Add to purchases table if current user is buyer
+                if (buyerUsername.equals(currentUser.getUserName())) {
+                    purchasesTableModel.addRow(new Object[]{
+                        date,
+                        itemName,
+                        category,
+                        sellerUsername,
+                        price
+                    });
+                }
+
+                // Add to sales table if current user is seller
+                if (sellerUsername.equals(currentUser.getUserName())) {
+                    salesTableModel.addRow(new Object[]{
+                        date,
+                        itemName,
+                        category,
+                        buyerUsername,
+                        price
+                    });
+                }
+            }
+        }
+    }
+
     private void createAndShowGUI() {
         mainFrame = new JFrame("Marketplace System");
         mainFrame.setSize(900, 600);
         mainFrame.setMinimumSize(new Dimension(800, 500));
-        mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        mainFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         mainFrame.setLocationRelativeTo(null);
 
         mainPanel = new JPanel(new BorderLayout());
@@ -538,7 +621,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         buyPanel.add(searchPanel, BorderLayout.NORTH);
 
         // Items grid view
-        JPanel itemsPanel = new JPanel(new GridLayout(0, 3, 10, 10));
+        itemsPanel = new JPanel(new GridLayout(0, 3, 10, 10));
         itemsPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         // Display all items initially
@@ -749,8 +832,9 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
                 // Prompt to rate seller
                 promptForSellerRating(item.getSoldBy());
 
-                // Update transaction history
+                // Update transaction history and refresh items
                 updateTransactionHistory(item, currentUser);
+                refreshItemsList();
             } else {
                 JOptionPane.showMessageDialog(mainFrame,
                         "Purchase failed. Please try again later.",
@@ -785,6 +869,23 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         sellItemButton.setMaximumSize(new Dimension(200, 40));
         sellItemButton.setFont(new Font("Arial", Font.BOLD, 14));
 
+        // Create refresh button
+        JButton refreshButton = new JButton("Refresh List");
+        refreshButton.setAlignmentX(Component.LEFT_ALIGNMENT);
+        refreshButton.setMaximumSize(new Dimension(200, 40));
+        refreshButton.setFont(new Font("Arial", Font.BOLD, 14));
+        refreshButton.setBackground(new Color(70, 130, 180));
+        refreshButton.setForeground(Color.WHITE);
+        refreshButton.setFocusPainted(false);
+
+        // Button panel for List New Item and Refresh buttons
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
+        buttonPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        buttonPanel.add(sellItemButton);
+        buttonPanel.add(Box.createRigidArea(new Dimension(10, 0)));
+        buttonPanel.add(refreshButton);
+
         sellItemButton.addActionListener(e -> {
             try {
                 sellItem();
@@ -796,28 +897,40 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
             }
         });
 
+        refreshButton.addActionListener(e -> refreshItemsList());
+
         // Add your items list
         JLabel yourItemsLabel = new JLabel("Your Listed Items");
         yourItemsLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         yourItemsLabel.setFont(new Font("Arial", Font.BOLD, 16));
         yourItemsLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 10, 0));
 
-        // Temp listed items
+        // Create table for user's items
         String[] columns = {"Item", "Category", "Price", "Status"};
-        Object[][] data = {
-                {"Sample Item 1", "Electronics", "$1500", "Available"},
-                {"Sample Item 2", "Apparel", "$45", "Available"},
-                {"Sample Item 3", "Home", "$1209999", "Sold"}
-        };
+        DefaultTableModel tableModel = new DefaultTableModel(columns, 0);
+        itemsTable = new JTable(tableModel);
+        
+        // Initial population of table with user's items
+        List<Item> userItems = marketplace.getAvailableItems().stream()
+                .filter(item -> item.getSoldBy().getUserName().equals(currentUser.getUserName()))
+                .collect(Collectors.toList());
+                
+        for (Item item : userItems) {
+            tableModel.addRow(new Object[]{
+                item.getName(),
+                item.getCategory(),
+                String.format("$%.2f", item.getCost()),
+                item.isAvailable() ? "Available" : "Sold"
+            });
+        }
 
-        JTable itemsTable = new JTable(data, columns);
         JScrollPane scrollPane = new JScrollPane(itemsTable);
         scrollPane.setAlignmentX(Component.LEFT_ALIGNMENT);
         scrollPane.setPreferredSize(new Dimension(400, 200));
 
         contentPanel.add(instructionsLabel);
         contentPanel.add(Box.createRigidArea(new Dimension(0, 20)));
-        contentPanel.add(sellItemButton);
+        contentPanel.add(buttonPanel);
         contentPanel.add(Box.createRigidArea(new Dimension(0, 20)));
         contentPanel.add(yourItemsLabel);
         contentPanel.add(scrollPane);
@@ -870,7 +983,6 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
     }
 
     private void updateTransactionHistory(Item item, User buyer) {
-        // Get current date
         String date = java.time.LocalDate.now().toString();
         
         if (buyer.getUserName().equals(currentUser.getUserName())) {
@@ -893,6 +1005,32 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
                 buyer.getUserName(),
                 String.format("$%.2f", item.getCost())
             });
+        }
+    }
+
+    private void refreshItemsList() {
+        // For sell panel
+        DefaultTableModel tableModel = (DefaultTableModel) itemsTable.getModel();
+        tableModel.setRowCount(0);
+        List<Item> userItems = marketplace.getAvailableItems().stream()
+                .filter(item -> item.getSoldBy().getUserName().equals(currentUser.getUserName()))
+                .collect(Collectors.toList());
+                
+        for (Item item : userItems) {
+            tableModel.addRow(new Object[]{
+                item.getName(),
+                item.getCategory(),
+                String.format("$%.2f", item.getCost()),
+                item.isAvailable() ? "Available" : "Sold"
+            });
+        }
+
+        // For buy panel
+        if (itemsPanel != null) {
+            itemsPanel.removeAll();
+            displayItems(marketplace.getAvailableItems(), itemsPanel);
+            itemsPanel.revalidate();
+            itemsPanel.repaint();
         }
     }
 
@@ -1145,12 +1283,17 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         frame.setSize(500, 600);
         frame.setLayout(new BorderLayout());
 
-        // Common fields panel
-        JPanel commonPanel = new JPanel(new GridLayout(3, 2));
+        // Common fields panel with improved styling
+        JPanel commonPanel = new JPanel(new GridLayout(3, 2, 10, 10));
+        commonPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         JTextField nameField = new JTextField();
         JTextField priceField = new JTextField();
         JComboBox<String> categoryCombo = new JComboBox<>(
                 new String[]{"Apparel", "Collectible", "Electronic", "Home", "Vehicle"});
+        
+        nameField.setFont(new Font("Arial", Font.PLAIN, 14));
+        priceField.setFont(new Font("Arial", Font.PLAIN, 14));
+        categoryCombo.setFont(new Font("Arial", Font.PLAIN, 14));
 
         commonPanel.add(new JLabel("Item Name:"));
         commonPanel.add(nameField);
@@ -1161,51 +1304,73 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
 
         // Category panels
         JPanel cardPanel = new JPanel(new CardLayout());
+        cardPanel.setBorder(BorderFactory.createEmptyBorder(0, 20, 20, 20));
 
-        // Apparel
-        JPanel apparelPanel = new JPanel(new GridLayout(3, 2));
-        JTextField sizeField = new JTextField();
+        // Apparel panel with dropdown for sizes
+        JPanel apparelPanel = new JPanel(new GridLayout(3, 2, 10, 10));
+        String[] sizes = {"XS", "S", "M", "L", "XL"};
+        JComboBox<String> sizeCombo = new JComboBox<>(sizes);
         JTextField colorField = new JTextField();
         JTextField brandField = new JTextField();
+        
+        sizeCombo.setFont(new Font("Arial", Font.PLAIN, 14));
+        colorField.setFont(new Font("Arial", Font.PLAIN, 14));
+        brandField.setFont(new Font("Arial", Font.PLAIN, 14));
+
         apparelPanel.add(new JLabel("Size:"));
-        apparelPanel.add(sizeField);
+        apparelPanel.add(sizeCombo);
         apparelPanel.add(new JLabel("Color:"));
         apparelPanel.add(colorField);
         apparelPanel.add(new JLabel("Brand:"));
         apparelPanel.add(brandField);
 
-        // Collectible
-        JPanel collectiblePanel = new JPanel(new GridLayout(2, 2));
+        // Collectible panel
+        JPanel collectiblePanel = new JPanel(new GridLayout(2, 2, 10, 10));
         JTextField cTypeField = new JTextField();
         JTextField conditionField = new JTextField();
+        
+        cTypeField.setFont(new Font("Arial", Font.PLAIN, 14));
+        conditionField.setFont(new Font("Arial", Font.PLAIN, 14));
+
         collectiblePanel.add(new JLabel("Type:"));
         collectiblePanel.add(cTypeField);
         collectiblePanel.add(new JLabel("Condition:"));
         collectiblePanel.add(conditionField);
 
-        // Electronic
-        JPanel electronicPanel = new JPanel(new GridLayout(2, 2));
+        // Electronic panel
+        JPanel electronicPanel = new JPanel(new GridLayout(2, 2, 10, 10));
         JTextField eTypeField = new JTextField();
         JSpinner yearSpinner = new JSpinner(
                 new SpinnerNumberModel(2023, 1900, LocalDateTime.now().getYear(), 1));
+        
+        eTypeField.setFont(new Font("Arial", Font.PLAIN, 14));
+        yearSpinner.setFont(new Font("Arial", Font.PLAIN, 14));
+
         electronicPanel.add(new JLabel("Type:"));
         electronicPanel.add(eTypeField);
         electronicPanel.add(new JLabel("Year:"));
         electronicPanel.add(yearSpinner);
 
-        // Home
-        JPanel homePanel = new JPanel(new GridLayout(1, 2));
+        // Home panel
+        JPanel homePanel = new JPanel(new GridLayout(1, 2, 10, 10));
         JTextField hTypeField = new JTextField();
+        hTypeField.setFont(new Font("Arial", Font.PLAIN, 14));
+        
         homePanel.add(new JLabel("Type:"));
         homePanel.add(hTypeField);
 
-        // Vehicle
-        JPanel vehiclePanel = new JPanel(new GridLayout(3, 2));
+        // Vehicle panel
+        JPanel vehiclePanel = new JPanel(new GridLayout(3, 2, 10, 10));
         JSpinner mileageSpinner = new JSpinner(
                 new SpinnerNumberModel(0, 0, 1000000, 1000));
         JSpinner vYearSpinner = new JSpinner(
                 new SpinnerNumberModel(2023, 1900, LocalDateTime.now().getYear(), 1));
         JTextField vBrandField = new JTextField();
+        
+        mileageSpinner.setFont(new Font("Arial", Font.PLAIN, 14));
+        vYearSpinner.setFont(new Font("Arial", Font.PLAIN, 14));
+        vBrandField.setFont(new Font("Arial", Font.PLAIN, 14));
+
         vehiclePanel.add(new JLabel("Mileage:"));
         vehiclePanel.add(mileageSpinner);
         vehiclePanel.add(new JLabel("Year:"));
@@ -1228,6 +1393,12 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
 
         // Submit button
         JButton submitButton = new JButton("List Item");
+        submitButton.setFont(new Font("Arial", Font.BOLD, 14));
+        submitButton.setBackground(new Color(60, 179, 113));
+        submitButton.setForeground(Color.GREEN);
+        submitButton.setFocusPainted(false);
+        submitButton.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+        
         submitButton.addActionListener(e -> {
             try {
                 String name = nameField.getText();
@@ -1251,7 +1422,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
                 switch(category) {
                     case "Apparel":
                         newItem = new Apparel(name, price, currentUser, imagePath, category,
-                                sizeField.getText(), colorField.getText(), brandField.getText());
+                                (String)sizeCombo.getSelectedItem(), colorField.getText(), brandField.getText());
                         break;
                     case "Collectible":
                         newItem = new Collectible(name, price, currentUser, imagePath, category,
@@ -1285,9 +1456,14 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
             }
         });
 
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
+        buttonPanel.add(submitButton);
+
         frame.add(commonPanel, BorderLayout.NORTH);
         frame.add(cardPanel, BorderLayout.CENTER);
-        frame.add(submitButton, BorderLayout.SOUTH);
+        frame.add(buttonPanel, BorderLayout.SOUTH);
+        frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
 
