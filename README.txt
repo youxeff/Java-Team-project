@@ -1,6 +1,28 @@
 MARKETPLACE - READ ME!
 ===========================================
 
+
+COMPILATION
+-----------
+
+To compile and run the marketplace project
+from the terminal, follow these steps:
+
+1. Open Terminal and Navigate to Project Directory using 'cd' command 
+(make sure you are in the right directory using 'pwd' on mac or linux and 'cd' for windows
+then 'ls' or 'dir' respectivly and make sure you can find "Team-Project")
+2. compile the project using : javac -d out -sourcepath src $(find src -name "*.java")
+3. run Server.java file using:  java Server.java
+4. run Client.java file using: java Client.java
+
+SUBMISSIONS
+-----------
+
+Youssef Abdelkader : Submitted report on BrightSpace
+Youssef Abdelkader : Submitted Vocareum workspace.
+Caroline Murphy : Submitted Project Video
+
+
 1. SYSTEM OVERVIEW
 ------------------
 A Java-based marketplace platform with buying/selling functionality including:
