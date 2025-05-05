@@ -994,22 +994,22 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
 
         if (buyer.getUserName().equals(currentUser.getUserName())) {
             purchasesTableModel.addRow(new Object[] {
-            date,
-            item.getName(),
-            item.getCategory(),
-            item.getSoldBy().getUserName(),
-            String.format("$%.2f", item.getCost())
+                date,
+                item.getName(),
+                item.getCategory(),
+                item.getSoldBy().getUserName(),
+                String.format("$%.2f", item.getCost())
             });
         }
 
         if (item.getSoldBy().getUserName().equals(currentUser.getUserName())) {
            
-        salesTableModel.addRow(new Object[]{
-                    date,
-                    item.getName(),
-                    item.getCategory(),
-                    buyer.getUserName(),
-                    String.format("$%.2f", item.getCost())
+            salesTableModel.addRow(new Object[]{
+                date,
+                item.getName(),
+                item.getCategory(),
+                buyer.getUserName(),
+                String.format("$%.2f", item.getCost())
             });
         }
     }
@@ -1488,14 +1488,14 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         }
     }
 
-    /*
-     * Custom renderer for message list items
-     * Displays sender, date, and a preview of the message
-     * version 1.0
-     * @ author Youssef Abdelkader
-     * @ date 2025-04-20
-     * @ description This class is used to render the messages in the inbox.
-     */
+/*
+    * Custom renderer for message list items
+    * Displays sender, date, and a preview of the message
+    * version 1.0
+    * @ author Youssef Abdelkader
+    * @ date 2025-04-20
+    * @ description This class is used to render the messages in the inbox.
+    */
     private class MessageCellRenderer extends DefaultListCellRenderer {
         @Override
         public Component getListCellRendererComponent(
@@ -1524,14 +1524,14 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         }
     }
 
-    /*
-     * Custom renderer for message list items
-     * Displays sender, date, and a preview of the message
-     * version 1.0
-     * @ author Youssef Abdelkader
-     * @ version May 4 2025
-     * @ description This class is used to render the messages in the inbox.
-     */
+/*
+    * Custom renderer for message list items
+    * Displays sender, date, and a preview of the message
+    * version 1.0
+    * @ author Youssef Abdelkader
+    * @ version May 4 2025
+    * @ description This class is used to render the messages in the inbox.
+    */
     private class StarRatingRenderer extends DefaultListCellRenderer {
         @Override
         public Component getListCellRendererComponent(
