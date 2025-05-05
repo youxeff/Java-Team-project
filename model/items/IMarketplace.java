@@ -73,4 +73,44 @@ public interface IMarketplace {
      * @throws IOException if file reading fails
      */
     ArrayList<User> loadAllUsers() throws IOException;
+
+    /**
+     * Adds an item to the marketplace.
+     *
+     * @param item the Item object to add
+     */
+    void addItem(Item item);
+
+    /**
+     * Authenticates a user based on username and password.
+     *
+     * @param username the username of the user
+     * @param password the password of the user
+     * @return the authenticated User object, or null if authentication fails
+     */
+    User authenticateUser(String username, String password);
+
+    /**
+     * Retrieves all available items in the marketplace.
+     *
+     * @return ArrayList of all available Items
+     */
+    ArrayList<Item> getAvailableItems();
+
+    /**
+     * Processes the purchase of an item by a buyer.
+     *
+     * @param item the Item object to purchase
+     * @param buyer the User object representing the buyer
+     * @return true if the purchase was successful, false otherwise
+     */
+    boolean purchaseItem(Item item, User buyer);
+
+    /**
+     * Loads all transactions for a specific user.
+     *
+     * @param username the username of the user
+     * @return ArrayList of transactions, where each transaction is represented as a String array
+     */
+    ArrayList<String[]> loadTransactions(String username);
 }

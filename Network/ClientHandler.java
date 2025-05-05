@@ -231,6 +231,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         return welcomePanel;
     }
 
+    @Override
     public JButton createStyledButton(String text, Color backgroundColor) {
         JButton button = new JButton(text);
         button.setFont(new Font("Arial", Font.BOLD, 14));
