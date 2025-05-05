@@ -581,6 +581,15 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
             public void actionPerformed(ActionEvent e) {
                 try {
                     double newBalance = Double.parseDouble(newBalanceField.getText());
+
+                    // Check if the balance is negative
+                    if (newBalance < 0) {
+                        JOptionPane.showMessageDialog(mainFrame,
+                                "Balance cannot be negative.",
+                                "Invalid Input",
+                                JOptionPane.ERROR_MESSAGE);
+                        return; // Exit early
+                    }
                     updateBalanceGUI(newBalance);
                 } catch (NumberFormatException ex) {
                     JOptionPane.showMessageDialog(mainFrame,
