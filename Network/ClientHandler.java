@@ -993,12 +993,12 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         String date = java.time.LocalDate.now().toString();
 
         if (buyer.getUserName().equals(currentUser.getUserName())) {
-        purchasesTableModel.addRow(new Object[]{
-                    date,
-                    item.getName(),
-                    item.getCategory(),
-                    item.getSoldBy().getUserName(),
-                    String.format("$%.2f", item.getCost())
+            purchasesTableModel.addRow(new Object[] {
+            date,
+            item.getName(),
+            item.getCategory(),
+            item.getSoldBy().getUserName(),
+            String.format("$%.2f", item.getCost())
             });
         }
 
@@ -1529,7 +1529,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
      * Displays sender, date, and a preview of the message
      * version 1.0
      * @ author Youssef Abdelkader
-     * @ date 2025-04-20
+     * @ version May 4 2025
      * @ description This class is used to render the messages in the inbox.
      */
     private class StarRatingRenderer extends DefaultListCellRenderer {
