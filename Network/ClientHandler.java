@@ -814,6 +814,14 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
     }
 
     public void attemptPurchase(Item item) throws IOException {
+        if (item.getSoldBy().getUserName().equals(currentUser.getUserName())) {
+            JOptionPane.showMessageDialog(mainFrame,
+                    "You cannot purchase your own items",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
         if (currentUser.getBalance() < item.getCost()) {
             JOptionPane.showMessageDialog(mainFrame,
                     "Insufficient balance for this purchase",
