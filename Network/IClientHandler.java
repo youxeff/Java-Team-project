@@ -1,7 +1,12 @@
 package Network;
 
 import java.io.IOException;
+import java.util.List;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import java.awt.Color;
 import model.users.User;
+import model.items.Item;
 
 /**
  * Interface defining the client handler functionality for the marketplace system.
@@ -15,21 +20,39 @@ import model.users.User;
  * @version May 4, 2025
  */
 public interface IClientHandler {
-    /**
-     * Handles the item selling process over the network connection.
-     * @throws IOException if there's an error in network communication
-     */
+    // Core functionality methods
+    void run();
     void sellItem() throws IOException;
-
-    /**
-     * Prompts for and handles seller rating after a purchase.
-     * @param seller the User object representing the seller to be rated
-     * @throws IOException if there's an error in network communication
-     */
     void promptForSellerRating(User seller) throws IOException;
 
-    /**
-     * Displays the authentication GUI for login or registration.
-     */
+    // GUI methods
     void createAuthGUI();
+    void createAndShowGUI();
+    void createMessageComposeWindow();
+    void createMessageInboxPanel();
+    void createProfilePanel();
+    void createTransactionHistoryPanel();
+
+    // Helper methods
+    void displayItems(List<Item> items, JPanel targetItemsPanel);
+    void updateTransactionHistory(Item item, User buyer);
+    void refreshItemsList();
+    void updateBalanceGUI(double newBalance);
+    void refreshMessages();
+    void register();
+    void login();
+    void loadUserTransactions();
+    void createSidebar();
+
+    // GUI component creation methods
+    JButton createStyledButton(String text, Color backgroundColor);
+    JPanel createBuyPanel();
+    JPanel createSellPanel();
+    JPanel welcomePanel();
+    JPanel registerPanel();
+    JPanel loginPanel();
+
+    // Action methods
+    void showItemDetail(Item item);
+    void attemptPurchase(Item item) throws IOException;
 }

@@ -188,7 +188,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         authFrame.setVisible(true);
     }
 
-    private JPanel welcomePanel() {
+    public JPanel welcomePanel() {
         JPanel welcomePanel = new JPanel(new BorderLayout(20, 20));
         welcomePanel.setBackground(new Color(240, 240, 240));
         welcomePanel.setBorder(BorderFactory.createEmptyBorder(40, 40, 40, 40));
@@ -231,7 +231,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         return welcomePanel;
     }
 
-    private JButton createStyledButton(String text, Color backgroundColor) {
+    public JButton createStyledButton(String text, Color backgroundColor) {
         JButton button = new JButton(text);
         button.setFont(new Font("Arial", Font.BOLD, 14));
         button.setBackground(backgroundColor);
@@ -244,7 +244,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         return button;
     }
 
-    private JPanel registerPanel() {
+    public JPanel registerPanel() {
         JPanel registerPanel = new JPanel(new BorderLayout());
         JPanel registerGrid = new JPanel(new GridLayout(5, 2, 5, 5));
 
@@ -275,7 +275,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         return registerPanel;
     }
 
-    private JPanel loginPanel() {
+    public JPanel loginPanel() {
         JPanel loginPanel = new JPanel(new BorderLayout());
         JPanel loginGrid = new JPanel(new GridLayout(3, 2, 5, 5));
 
@@ -300,7 +300,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         return loginPanel;
     }
 
-    private void register() {
+    public void register() {
         String first = regFirstNameField.getText();
         String last = regLastNameField.getText();
         String username = regUsernameField.getText();
@@ -326,7 +326,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         }
     }
 
-    private void login() {
+    public void login() {
         String username = loginUsernameField.getText();
         String password = new String(loginPasswordField.getPassword());
 
@@ -353,7 +353,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         }
     }
 
-    private void loadUserTransactions() {
+    public void loadUserTransactions() {
         // Clear existing data first
         purchasesTableModel.setRowCount(0);
         salesTableModel.setRowCount(0);
@@ -393,7 +393,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         }
     }
 
-    private void createAndShowGUI() {
+    public void createAndShowGUI() {
         mainFrame = new JFrame("Marketplace System");
         mainFrame.setSize(900, 600);
         mainFrame.setMinimumSize(new Dimension(800, 500));
@@ -429,7 +429,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         mainFrame.setVisible(true);
     }
 
-    private void createSidebar() {
+    public void createSidebar() {
         sidebarPanel = new JPanel();
         sidebarPanel.setLayout(new BoxLayout(sidebarPanel, BoxLayout.Y_AXIS));
         sidebarPanel.setBackground(new Color(50, 50, 50));
@@ -517,7 +517,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         return button;
     }
 
-    private void createProfilePanel() {
+    public void createProfilePanel() {
         profilePanel = new JPanel();
         profilePanel.setLayout(new BorderLayout());
 
@@ -599,7 +599,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         profilePanel.add(updateBalancePanel, BorderLayout.SOUTH);
     }
 
-    private JPanel createBuyPanel() {
+    public JPanel createBuyPanel() {
         JPanel buyPanel = new JPanel(new BorderLayout());
 
         // Create title panel
@@ -681,7 +681,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         return buyPanel;
     }
 
-    private void displayItems(List<Item> items, JPanel itemDisplayPanel) {
+    public void displayItems(List<Item> items, JPanel itemDisplayPanel) {
         itemDisplayPanel.removeAll();
 
         if (items.isEmpty()) {
@@ -752,7 +752,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         }
     }
 
-    private void showItemDetail(Item item) {
+    public void showItemDetail(Item item) {
         JDialog detailDialog = new JDialog(mainFrame, "Item Details", true);
         detailDialog.setSize(600, 500);
         detailDialog.setLocationRelativeTo(mainFrame);
@@ -812,7 +812,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         detailDialog.setVisible(true);
     }
 
-    private void attemptPurchase(Item item) throws IOException {
+    public void attemptPurchase(Item item) throws IOException {
         if (currentUser.getBalance() < item.getCost()) {
             JOptionPane.showMessageDialog(mainFrame,
                     "Insufficient balance for this purchase",
@@ -853,7 +853,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         }
     }
 
-    private JPanel createSellPanel() {
+    public JPanel createSellPanel() {
         JPanel sellPanel = new JPanel(new BorderLayout());
 
         JPanel titlePanel = new JPanel();
@@ -948,7 +948,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         return sellPanel;
     }
 
-    private void createTransactionHistoryPanel() {
+    public void createTransactionHistoryPanel() {
         transactionHistoryPanel = new JPanel(new BorderLayout());
 
         JPanel titlePanel = new JPanel();
@@ -989,7 +989,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         transactionHistoryPanel.add(tabbedPane, BorderLayout.CENTER);
     }
 
-    private void updateTransactionHistory(Item item, User buyer) {
+    public void updateTransactionHistory(Item item, User buyer) {
         String date = java.time.LocalDate.now().toString();
 
         if (buyer.getUserName().equals(currentUser.getUserName())) {
@@ -1014,7 +1014,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         }
     }
 
-    private void refreshItemsList() {
+    public void refreshItemsList() {
         // For sell panel
         DefaultTableModel tableModel = (DefaultTableModel) itemsTable.getModel();
         tableModel.setRowCount(0);
@@ -1040,7 +1040,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         }
     }
 
-    private void updateBalanceGUI(double newBalance) {
+    public void updateBalanceGUI(double newBalance) {
         try {
             currentUser.setBalance(newBalance);
 
@@ -1368,7 +1368,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         });
     }
 
-    private void createMessageComposeWindow() {
+    public void createMessageComposeWindow() {
         messageComposeFrame = new JFrame("Compose Message");
         messageComposeFrame.setSize(400, 300);
         messageComposeFrame.setLayout(new BorderLayout());
@@ -1424,7 +1424,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         messageComposeFrame.setVisible(true);
     }
 
-    private void createMessageInboxPanel() {
+    public void createMessageInboxPanel() {
         messageInboxPanel = new JPanel(new BorderLayout());
         messageInboxPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
@@ -1474,7 +1474,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
         contentPanel.add(messageInboxPanel, "MESSAGES");
     }
 
-    private void refreshMessages() {
+    public void refreshMessages() {
         messageListModel.clear();
         ArrayList<String> messages = currentUser.viewMessages();
 
