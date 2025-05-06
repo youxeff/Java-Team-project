@@ -308,7 +308,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
     }
 
     public void register() {
-        synchronized(userLock) {
+        synchronized (userLock) {
             String first = regFirstNameField.getText();
             String last = regLastNameField.getText();
             String username = regUsernameField.getText();
@@ -336,7 +336,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
     }
 
     public void login() {
-        synchronized(userLock) {
+        synchronized (userLock) {
             String username = loginUsernameField.getText();
             String password = new String(loginPasswordField.getPassword());
 
@@ -833,7 +833,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
     }
 
     public void attemptPurchase(Item item) throws IOException {
-        synchronized(marketplaceLock) {
+        synchronized (marketplaceLock) {
             if (item.getSoldBy().getUserName().equals(currentUser.getUserName())) {
                 JOptionPane.showMessageDialog(mainFrame,
                         "You cannot purchase your own items",
@@ -1020,7 +1020,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
     }
 
     public void updateTransactionHistory(Item item, User buyer) {
-        synchronized(tableLock) {
+        synchronized (tableLock) {
             String date = java.time.LocalDate.now().toString();
             
             if (buyer.getUserName().equals(currentUser.getUserName())) {
@@ -1076,7 +1076,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
     }
 
     public void updateBalanceGUI(double newBalance) {
-        synchronized(userLock) {
+        synchronized (userLock) {
             try {
                 currentUser.setBalance(newBalance);
 
@@ -1131,7 +1131,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
      */
     @Override
     public void sellItem() throws IOException {
-        synchronized(marketplaceLock) {
+        synchronized (marketplaceLock) {
             JFrame frame = new JFrame("List New Item");
             frame.setSize(500, 600);
             frame.setLayout(new BorderLayout());
@@ -1514,7 +1514,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
     }
 
     public void refreshMessages() {
-        synchronized(messageLock) {
+        synchronized (messageLock) {
             messageListModel.clear();
             ArrayList<String> messages = currentUser.viewMessages();
 
