@@ -2,18 +2,35 @@ MARKETPLACE - READ ME!
 ===========================================
 
 
-COMPILATION
------------
+COMPILATION AND RUNNING INSTRUCTIONS
+--------------------------------
 
-To compile and run the marketplace project
-from the terminal, follow these steps:
+To compile and run the marketplace project, follow these steps:
 
-1. Open Terminal and Navigate to Project Directory using 'cd' command 
-(make sure you are in the right directory using 'pwd' on mac or linux and 'cd' for windows
-then 'ls' or 'dir' respectivly and make sure you can find "Team-Project")
-2. compile the project using : javac -d out -sourcepath src $(find src -name "*.java")
-3. run Server.java file using:  java Server.java
-4. run Client.java file using: java Client.java
+1. Navigate to the Project Directory:
+   - Open Terminal/Command Prompt
+   - Use 'cd' to navigate to the Team-Project directory
+   - Verify correct directory:
+     * macOS/Linux: Use 'pwd' command
+     * Windows: Use 'cd' command
+   - You should see "Team-Project" when using 'ls' (macOS/Linux) or 'dir' (Windows)
+
+2. Compile the Project:
+   - On macOS/Linux:
+     javac -d . Team-Project/Network/*.java Team-Project/Service/*.java Team-Project/model/*/*.java
+   
+   - On Windows:
+     javac -d . Team-Project\Network\*.java Team-Project\Service\*.java Team-Project\model\*\*.java
+
+3. Start the Server:
+   java Network.Server
+
+4. Start the Client(s):
+   - Open a new terminal window for each client
+   - Run: java Network.Client
+
+Note: You must start the Server before running any Clients.
+      Multiple Clients can connect to the same Server.
 
 SUBMISSIONS
 -----------
@@ -83,24 +100,32 @@ Main.java
   * Profile viewing/editing
 
 Marketplace.java
-- Central business logic hub
+- Central business logic hub for managing marketplace operations
 - Manages:
   * User data operations
   * Item inventory
   * Transaction processing
   * Search functionality
+  * Data persistence
 - Core methods:
+  * Constructor - Initializes marketplace and loads data
   * updateUserData() - Updates user information in persistence
   * initializeUserDataFile() - Creates/verifies data files exist
-  * loadAllUsers() - Loads all users from persistence
+  * loadAllUsers() - Loads users from persistence
   * addItem() - Adds new item to marketplace
   * searchSeller() - Finds sellers by name
-  * searchByName() - Finds items by name
-  * searchByCategory() - Finds items by category
+  * searchByName() - Searches items by name (case-insensitive)
+  * searchByCategory() - Filters items by exact category match
   * authenticateUser() - Verifies user credentials
   * getAvailableItems() - Lists all unsold items
   * purchaseItem() - Processes item purchase
-- Updates data to files
+  * saveTransaction() - Records transaction details
+  * loadTransactions() - Gets user's transaction history
+  * loadAllItems() - Loads items from storage
+  * parseItem() - Converts stored item data to objects
+  * itemToString() - Serializes items for storage
+  * rewriteItemsFile() - Updates item storage after changes
+  * saveItemToFile() - Persists new items to storage
 
 3.2 USER MANAGEMENT CLASSES
 
@@ -277,6 +302,48 @@ ClientHandler.java
   * Resource cleanup in finally blocks
   * Proper stream management
 
+Nested Classes:
+1. MessageCellRenderer:
+   * Extends DefaultListCellRenderer
+   * Custom formatting for message list items
+   * Displays: sender, date, message preview
+   * HTML-based layout with bold sender name
+   * Message preview truncated to 30 chars
+   * Handles "No messages" special case
+
+2. StarRatingRenderer:
+   * Extends DefaultListCellRenderer
+   * Visual representation of ratings (1-5)
+   * Converts numeric ratings to stars (★★★☆☆)
+   * Used in rating selection dropdowns
+   * Consistent star display format
+
+Transaction History Implementation:
+1. Panel Creation (createTransactionHistoryPanel):
+   * Tabbed interface (Purchases/Sales)
+   * Table-based transaction display
+   * Real-time updates support
+   * Columns:
+     - Date
+     - Item Name
+     - Category
+     - Seller/Buyer
+     - Price
+
+2. Transaction Updates (updateTransactionHistory):
+   * Thread-safe using tableLock
+   * SwingUtilities.invokeLater for EDT safety
+   * Dual-view updates (buyer/seller)
+   * Real-time table population
+   * Price formatting with currency
+
+3. Historical Data (loadUserTransactions):
+   * Initial data loading on login
+   * Parses transaction records
+   * Filters user-relevant transactions
+   * Populates both transaction views
+   * Error handling for file operations
+
 5.4 USER INTERFACE IMPROVEMENTS
 ------------------------------
 
@@ -291,3 +358,190 @@ Input Formatting:
 2. Consistent formatting across all menus
 3. Clear indication of available options
 4. Input validation with helpful error messages
+
+5. THREAD SAFETY AND SYNCHRONIZATION
+------------------------------
+
+5.1 LOCK OBJECTS
+- userLock: Protects user-related operations
+- marketplaceLock: Protects marketplace operations
+- tableLock: Protects transaction history updates
+- messageLock: Protects message operations
+- STATIC_LOCK: Protects static user credentials
+- MESSAGE_LOCKS_GUARD: Protects message file locks map
+
+5.2 SYNCHRONIZED RESOURCES
+- User Operations:
+  * Registration/login
+  * Balance updates
+  * Profile modifications
+  * Credential verification
+  
+- Marketplace Operations:
+  * Item listing/purchasing
+  * Transaction processing
+  * Search operations
+  * Category filtering
+  
+- Data Access:
+  * File operations (read/write)
+  * Database updates
+  * Message handling
+  * Transaction logging
+
+5.3 CONCURRENCY MANAGEMENT
+- GUI Updates:
+  * SwingUtilities.invokeLater() for EDT safety
+  * Atomic transaction updates
+  * Thread-safe model modifications
+  
+- Resource Cleanup:
+  * Proper stream closure
+  * Lock release in finally blocks
+  * Socket cleanup on disconnect
+
+5.4 FILE OPERATIONS
+- Atomic Writes:
+  * User data updates
+  * Item listing changes
+  * Transaction records
+  * Message persistence
+  
+- Synchronized Reads:
+  * User profile loading
+  * Item availability checks
+  * Transaction history retrieval
+  * Message fetching
+
+5.5 CLIENT HANDLER METHODS
+
+Core Methods:
+- run() - Main processing loop managing client connections
+  * Handles authentication flow
+  * Manages GUI lifecycle
+  * Ensures proper resource cleanup
+
+GUI Methods:
+- createAuthGUI() - Creates authentication interface
+  * Welcome screen
+  * Login form
+  * Registration form
+  * Navigation between screens
+
+- welcomePanel() - Creates landing page
+  * Welcome message
+  * Login/Register options
+  * Exit functionality
+
+- loginPanel() - Implements login interface
+  * Username/password inputs
+  * Login button handling
+  * Navigation controls
+
+- registerPanel() - Implements registration
+  * All required user fields
+  * Input validation
+  * Account creation
+
+Update Methods:
+- updateBalanceGUI() - Updates user balance
+  * Atomic balance modification
+  * File persistence
+  * UI synchronization
+
+- refreshItemsList() - Updates item displays
+  * Sell panel items table
+  * Buy panel item grid
+  * Available items filtering
+
+- refreshMessages() - Updates message inbox
+  * Thread-safe message loading
+  * UI updates via EDT
+  * Empty state handling
+
+Display Methods:
+- displayItems() - Renders item grid
+  * Card-based layout
+  * Item details formatting
+  * Action button wiring
+
+- showItemDetail() - Shows item details
+  * Detailed item information
+  * Purchase functionality
+  * Seller details
+
+Message System:
+- createMessageComposeWindow() - New message interface
+  * Recipient selection
+  * Message composition
+  * Send functionality
+
+- createMessageInboxPanel() - Message center
+  * Message list with custom renderer
+  * Message preview
+  * Real-time updates
+
+Transaction Management:
+- updateTransactionHistory() - Records transactions
+  * Purchase/sale logging
+  * Table updates
+  * Date formatting
+
+Security:
+- register() - New account creation
+  * Input validation
+  * Duplicate checking
+  * Account initialization
+
+- login() - User authentication
+  * Credential verification
+  * Session initialization
+  * Profile loading
+
+6. MARKETPLACE SERVICE DETAILS
+------------------------------
+
+6.1 CORE FEATURES
+- User Management:
+  * updateUserData() - Updates user information atomically
+  * initializeUserDataFile() - Creates/verifies data files
+  * loadAllUsers() - Loads users with thread safety
+  * authenticateUser() - Thread-safe credential verification
+
+- Item Operations:
+  * addItem() - Adds new items with persistence
+  * searchByName() - Case-insensitive name search
+  * searchByCategory() - Category-based filtering
+  * getAvailableItems() - Lists unsold items
+  * purchaseItem() - Atomic purchase transaction
+
+- Transaction Management:
+  * saveTransaction() - Records purchase details
+  * loadTransactions() - Retrieves user history
+  * rewriteItemsFile() - Updates item availability
+
+6.2 DATA PERSISTENCE
+- File Structure:
+  * users.txt - User credentials and profiles
+  * items.txt - Item listings and status
+  * transactions.txt - Purchase records
+  * messages/ - User communication
+  * ratings/ - Seller feedback
+
+- File Format:
+  * Users: username,password,firstName,lastName,balance
+  * Items: className,name,cost,seller,available,image,category,[specific attributes]
+  * Transactions: buyer,category,itemName,seller,date,cost,category
+
+6.3 SYNCHRONIZATION MECHANISMS
+- Object-Level Locks:
+  * Per-user message locks
+  * Marketplace operation lock
+  * Transaction record lock
+  * File access synchronization
+
+- Method-Level Synchronization:
+  * All public interface methods
+  * File operations
+  * User data modifications
+  * Item state changes
