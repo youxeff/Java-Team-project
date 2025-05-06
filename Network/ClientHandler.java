@@ -1571,7 +1571,7 @@ public class ClientHandler extends JComponent implements Runnable, IClientHandle
      * Converts numeric ratings (1-5) into a visual star representation (★★★☆☆).
      * 
      * @author Youssef Abdelkader
-     * @version May 4 2025
+     * @version cMay 4 2025
      */
     private class StarRatingRenderer extends DefaultListCellRenderer {
         @Override

@@ -21,7 +21,6 @@ import java.util.Map;
  * @version April 20 2025
  */
 public class MarketplaceUser implements User, Message, Serializable {
-    private static final long SERIAL_VERSION_UID = 1L;
     private static final String USERS_FILE = "users.txt";
     private static final Map<String, String> USER_CREDENTIALS = new HashMap<>();
     private static final Object STATIC_LOCK = new Object();
